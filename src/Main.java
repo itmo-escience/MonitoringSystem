@@ -22,12 +22,17 @@ import java.util.List;
 
 public class Main {
 
+
     public static void main(String[] args) {
 	// write your code here
         GangliaMonitor gmon = new GangliaMonitor();
-        gmon.GetCurrentMetrics();
+        //gmon.GetCurrentMetrics();
+        //gmon.GetCurrentMetrics();
+        List<String> clusterNames = gmon.GetClusterNames();
+        List<String> hostNames = gmon.GetClusterHosts(clusterNames.get(0));
 
-
+        String[] metrics = new String[]{"cpu_system", "mem_total", "disk_total", "network_total"};
+        gmon.GetMetricsByHost(hostNames.get(0), metrics);
     }
 
     public void GetClavireTasks(){
