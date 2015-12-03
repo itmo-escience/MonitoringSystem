@@ -24,8 +24,13 @@ public class Main {
 
     public static void main(String[] args) {
 	// write your code here
+        GangliaMonitor gmon = new GangliaMonitor();
+        gmon.GetCurrentMetrics();
 
 
+    }
+
+    public void GetClavireTasks(){
         MongoClient mongoClient = new MongoClient( "192.168.13.133" , 27017 );
         MongoDatabase db = mongoClient.getDatabase("logging");
         MongoCollection coll = db.getCollection("clavire_overhs");

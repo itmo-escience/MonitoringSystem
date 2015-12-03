@@ -58,7 +58,6 @@ public class Task {
         try{
             Duration allTime = Duration.parse("PT"+timestr.substring(0,2)+"H"+timestr.substring(3,5)+"M"+timestr.substring(6,8)+"S");
             startTimestamp = finishTimestamp.minusNanos(allTime.toNanos());
-            System.out.println("123");
         }
         catch (Exception e){
             System.out.println("err");
