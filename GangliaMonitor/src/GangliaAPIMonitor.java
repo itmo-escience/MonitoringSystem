@@ -1,6 +1,12 @@
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,23 +16,58 @@ import java.util.*;
 
 
 public class GangliaAPIMonitor{
-    //private LOG = LogFactory.getLog(class$org$apache$commons$httpclient$HttpClient == null?(class$org$apache$commons$httpclient$HttpClient = class$("org.apache.commons.httpclient.HttpClient")):class$org$apache$commons$httpclient$HttpClient);
-    //private String baseurl = "http://192.168.92.11:8080/ganglia/api/v1/metrics";
+    private static Log logger = LogFactory.getLog(GangliaAPIMonitor.class);
+
+    private int sleepInterval=3000;
+    private String[] metrics;
     private String serverurl;
+    private MongoDatabase db;
+    private MongoCollection coll;
+
     private String getbaseurl(){
         return "http://"+serverurl+":8080/ganglia/api/v1/metrics";
     }
+
     private HashMap<String,String> baseparams = new HashMap<String, String>(){{
         put("environment","servers");
         put("service","default");
     }};
 
-    public GangliaAPIMonitor(String serverUrl){
-        serverurl = serverUrl;
+    public GangliaAPIMonitor(String ApiServerUrl, String[] Metrics){
+        serverurl = ApiServerUrl;
+        if(Metrics!=null)
+            metrics=Metrics;
+        MongoClient mongoClient = new MongoClient( "192.168.13.133" , 27017 );
+        db = mongoClient.getDatabase("logging");
+        coll = db.getCollection("metrics");
+    }
+
+    public void StartMonitoring(){
+        while(1==1){
+            try {
+                List<String> clusterNames = GetClusterNames();
+                for (String clusterName : clusterNames) {
+                    List<String> hostNames = GetClusterHosts(clusterName);
+                    for (String hostName : hostNames){
+                        HashMap<String, String> hostMetrics = GetMetricsByHost(hostName, metrics);
+                        if(hostMetrics.keySet().size()>0){
+                            Document doc = new Document("host", hostName);
+                            doc.append("time", new Date());
+                            for (String key : hostMetrics.keySet())
+                                doc.append(key, hostMetrics.get(key));
+                            coll.insertOne(doc);
+                        }
+                    }
+                }
+                Thread.sleep(sleepInterval);
+            } catch (InterruptedException e) {
+                logger.error(e);
+            }
+        }
     }
 
     public List<String> requestItems(HashMap<String, String> params, String propName){
-
+          logger.debug("requestItems()");
           HashMap<String,String> mergedparams = new HashMap<String,String>(baseparams);
           mergedparams.putAll(params);
           String paramString = "";
@@ -46,12 +87,13 @@ public class GangliaAPIMonitor{
                 }
           }
           catch (Exception e){
-            System.out.println("Some error with json reading");
+              logger.error("Some error with json reading", e);
           }
         return ret;
     }
 
-    public HashMap<String, String> requestMetrics(HashMap<String, String> params, Set<String> requiredMetricNames){
+    public HashMap<String, String> requestMetrics(HashMap<String, String> params, Set<String> requiredMetricNames) {
+        logger.debug("requestMetrics()");
         HashMap<String,String> mergedparams = new HashMap<String,String>(baseparams);
         mergedparams.putAll(params);
         String paramString = "";
@@ -60,9 +102,7 @@ public class GangliaAPIMonitor{
             paramString+=key+"="+mergedparams.get(key);
         }
         String url = getbaseurl()+"?"+paramString;
-
         JSONObject json = queryServer(url);
-
         HashMap<String, String> ret = new HashMap<String, String>();
         try{
             JSONArray metrics =  ((JSONArray)((JSONObject) json.get("response")).get("metrics"));
@@ -75,45 +115,38 @@ public class GangliaAPIMonitor{
                        ret.put(name, value);
                 }else
                     ret.put(name, value);
-
-
-            }
+             }
         }
         catch (Exception e){
-            System.out.println("Some error with json reading");
+            logger.error("Some error with json reading", e);
         }
         return ret;
     }
 
     public JSONObject queryServer(String url){
-        System.out.println(url);
+        logger.debug("Requesting "+url);
+
         JSONObject ret = null;
         HttpClient client = new HttpClient();
         GetMethod method = new GetMethod(url);
-
-
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 
         try {
             int statusCode = client.executeMethod(method);
 
             if (statusCode != HttpStatus.SC_OK) {
-                System.err.println("Method failed: " + method.getStatusLine());
+                logger.error("Method failed: " + method.getStatusLine());
             }
-
-            // Read the response body.
             byte[] responseBody = method.getResponseBody();
             String res = new String(responseBody);
             ret = new JSONObject(res);
 
         } catch (HttpException e) {
-            System.err.println("Fatal protocol violation: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("HttpException: ", e);
         } catch (IOException e) {
-            System.err.println("Fatal transport error: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("IOException: ", e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            logger.error("JSONException: ", e);
         } finally {
             // Release the connection.
             method.releaseConnection();
@@ -122,15 +155,16 @@ public class GangliaAPIMonitor{
     }
 
     public List<String> GetClusterNames(){
+        logger.debug("Getting cluster names");
         HashMap<String, String> requestParams = new HashMap<String, String>(){{
             put("metric", "cpu_system");  //get any
         }};
         List<String> ret = requestItems(requestParams, "cluster");
         return ret;
-
-  }
+    }
 
     public List<String> GetClusterHosts(String clusterName){
+        logger.debug("Getting hosts for cluster "+clusterName);
         HashMap<String, String> requestParams = new HashMap<String, String>(){{
             put("metric", "heartbeat");
             put("cluster", clusterName);
@@ -140,6 +174,8 @@ public class GangliaAPIMonitor{
     }
 
     public HashMap<String, String> GetMetricsByHost(String hostName, String[] metricNames){
+        logger.debug("Getting metrics for "+hostName);
+
         HashMap<String, String> requestParams = new HashMap<String, String>(){{
             put("host", hostName);
         }};

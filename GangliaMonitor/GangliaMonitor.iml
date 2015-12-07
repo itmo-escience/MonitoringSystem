@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/mongo-java-driver-3.2.0-rc0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/org-apache-commons-logging.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -19,7 +19,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/org.json-20120521.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/mongo-java-driver-3.2.0-rc0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -28,7 +28,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/org.apache.commons.httpclient.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/org.apache.commons.httpclient.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -37,7 +37,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/org-apache-commons-logging.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/org.json-20120521.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -46,7 +46,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/org-apache-commons-codec.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/log4j-1.2.17.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -55,7 +55,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/log4j-1.2.17.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/org-apache-commons-codec.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

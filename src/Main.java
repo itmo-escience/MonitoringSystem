@@ -21,39 +21,39 @@ public class Main {
 
 
         //GetMesosAllocations();
-        GetCurrentMetrics();
+        //GetCurrentMetrics();
 
     }
 
-    public static void GetCurrentMetrics(){
-        String[] metrics = new String[]{"cpu_user","mem_total", "part_max_used", "bytes_in", "bytes_out"};
-        MongoClient mongoClient = new MongoClient( "192.168.13.133" , 27017 );
-        MongoDatabase db = mongoClient.getDatabase("logging");
-        MongoCollection coll = db.getCollection("metrics");
-
-        GangliaAPIMonitor gmon = new GangliaAPIMonitor("localhost"); //"192.168.13.133:8080"
-        List<String> clusterNames = gmon.GetClusterNames();
-        while(1==1) {
-            try {
-                for (String clusterName : clusterNames) {
-                    List<String> hostNames = gmon.GetClusterHosts(clusterName);
-                    for (String hostName : hostNames){
-                        HashMap<String, String> hostMetrics = gmon.GetMetricsByHost(hostName, metrics);
-                        if(hostMetrics.keySet().size()>0){
-                            Document doc = new Document("host", hostName);
-                            doc.append("time", new Date());
-                            for (String key : hostMetrics.keySet())
-                                doc.append(key, hostMetrics.get(key));
-                            db.getCollection("metrics").insertOne(doc);
-                        }
-                    }
-                }
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    public static void GetCurrentMetrics(){
+//        String[] metrics = new String[]{"cpu_user","mem_total", "part_max_used", "bytes_in", "bytes_out"};
+//        MongoClient mongoClient = new MongoClient( "192.168.13.133" , 27017 );
+//        MongoDatabase db = mongoClient.getDatabase("logging");
+//        MongoCollection coll = db.getCollection("metrics");
+//
+//        GangliaAPIMonitor gmon = new GangliaAPIMonitor("localhost"); //"192.168.13.133:8080"
+//        List<String> clusterNames = gmon.GetClusterNames();
+//        while(1==1) {
+//            try {
+//                for (String clusterName : clusterNames) {
+//                    List<String> hostNames = gmon.GetClusterHosts(clusterName);
+//                    for (String hostName : hostNames){
+//                        HashMap<String, String> hostMetrics = gmon.GetMetricsByHost(hostName, metrics);
+//                        if(hostMetrics.keySet().size()>0){
+//                            Document doc = new Document("host", hostName);
+//                            doc.append("time", new Date());
+//                            for (String key : hostMetrics.keySet())
+//                                doc.append(key, hostMetrics.get(key));
+//                            db.getCollection("metrics").insertOne(doc);
+//                        }
+//                    }
+//                }
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public static void GetMesosAllocations(){
         MongoClient mongoClient = new MongoClient( "192.168.13.133" , 27017 );
