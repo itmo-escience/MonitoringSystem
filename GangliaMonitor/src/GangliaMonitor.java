@@ -1,6 +1,6 @@
 
 
-public class Main {
+public class GangliaMonitor {
 
     public static void main(String[] args) {
         String ApiServerUrl = "localhost";  //"192.168.13.133:8080"
