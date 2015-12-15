@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: log4j-1.2.17.jar org-apache-commons-logging.jar org-apache
+ -commons-codec.jar mongo-java-driver-3.2.0-rc0.jar org.json-20120521.
+ jar org.apache.commons.httpclient.jar
+Main-Class: MetricsMonitor
+
