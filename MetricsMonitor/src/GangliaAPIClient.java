@@ -1,7 +1,4 @@
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
+import com.mongodb.client.FindIterable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
@@ -13,16 +10,16 @@ import java.util.*;
 /**
  * Created by Pavel Smirnov
  */
-public class GangliaAPIMonitor{
+public class GangliaAPIClient {
 
-    private static Log logger = LogFactory.getLog(GangliaAPIMonitor.class);
+    private static Log logger = LogFactory.getLog(GangliaAPIClient.class);
     private int sleepInterval = 3000;
-    private String[] metrics;
+    private String[] desirableMetrics;
     private String serverurl;
     public CommonMongoClient mongoClient;
 
     private String getbaseurl(){
-        return "http://"+serverurl+":8080/ganglia/api/v1/metrics";
+        return "http://"+serverurl+"/ganglia/api/v1/metrics";
     }
 
     private HashMap<String,String> baseparams = new HashMap<String, String>(){{
@@ -30,37 +27,26 @@ public class GangliaAPIMonitor{
         put("service","default");
     }};
 
-    public GangliaAPIMonitor(String ApiServerUrl, String[] Metrics){
+    public GangliaAPIClient(String ApiServerUrl, String[] desirableMetrics){
         serverurl = ApiServerUrl;
-        if(Metrics!=null)
-            metrics=Metrics;
+        if(desirableMetrics !=null)
+            this.desirableMetrics = desirableMetrics;
 
-        //coll = db.getCollection("metrics");
+        //coll = db.getCollection("desirableMetrics");
     }
 
-    public void StartMonitoring(){
-        while(1==1){
-            try {
-                List<String> clusterNames = GetClusterNames();
-                for (String clusterName : clusterNames) {
-                    List<String> hostNames = GetClusterHosts(clusterName);
-                    for (String hostName : hostNames){
-                        TreeMap<String, String> hostMetrics = GetMetricsByHost(hostName, metrics);
-
-                        if(hostMetrics.keySet().size()>0){
-                            Document metricsEntry = new Document();
-                            metricsEntry.append("timestamp", new Date());
-                            metricsEntry.append("hostname",  hostName);
-                            metricsEntry.append("metrics",  hostMetrics);
-                            mongoClient.saveDocumentToDB(metricsEntry, "metrics");
-                        }
-                    }
-                }
-                Thread.sleep(sleepInterval);
-            } catch (InterruptedException e) {
-                logger.error(e);
+    public TreeMap<String, TreeMap<String, Object>> GetActualState(){
+        TreeMap<String, TreeMap<String, Object>> ret = new TreeMap<String, TreeMap<String, Object>>();
+        List<String> clusterNames = GetClusterNames();
+        for (String clusterName : clusterNames) {
+            List<String> hostNames = GetClusterHosts(clusterName);
+            for (String hostName : hostNames){
+                TreeMap<String, Object> hostMetrics = GetMetricsByHost(hostName, desirableMetrics);
+                if (hostMetrics.keySet().size() > 0)
+                    ret.put(hostName, hostMetrics);
             }
         }
+        return ret;
     }
 
     public List<String> requestItems(HashMap<String, String> params, String propName){
@@ -89,8 +75,9 @@ public class GangliaAPIMonitor{
         return ret;
     }
 
-    public TreeMap<String, String> requestMetrics(HashMap<String, String> params, Set<String> requiredMetricNames) {
+    public TreeMap<String, Object> requestMetrics(HashMap<String, String> params, Set<String> requiredMetricNames) {
         logger.debug("requestMetrics()");
+        TreeMap<String, Object> ret = new TreeMap<String, Object>();
         HashMap<String,String> mergedparams = new HashMap<String,String>(baseparams);
         mergedparams.putAll(params);
         String paramString = "";
@@ -100,7 +87,6 @@ public class GangliaAPIMonitor{
         }
         String url = getbaseurl()+"?"+paramString;
         JSONObject json = Utils.getJsonFromUrl(url);
-        TreeMap<String, String> ret = new TreeMap<String, String>();
         try{
             JSONArray metrics =  ((JSONArray)((JSONObject) json.get("response")).get("metrics"));
             for (int i = 0; i < metrics.length(); i++){
@@ -139,8 +125,8 @@ public class GangliaAPIMonitor{
         return ret;
     }
 
-    public TreeMap<String, String> GetMetricsByHost(String hostName, String[] metricNames){
-        logger.debug("Getting metrics for "+hostName);
+    public TreeMap<String, Object> GetMetricsByHost(String hostName, String[] metricNames){
+        logger.debug("Getting desirableMetrics for "+hostName);
 
         HashMap<String, String> requestParams = new HashMap<String, String>(){{
             put("host", hostName);
@@ -148,7 +134,7 @@ public class GangliaAPIMonitor{
         Set<String> requiredNames = null;
         if (metricNames!=null)
             requiredNames = new HashSet<String>(Arrays.asList(metricNames));
-        TreeMap<String, String> ret = requestMetrics(requestParams, requiredNames);
+        TreeMap<String, Object> ret = requestMetrics(requestParams, requiredNames);
         return ret;
     }
 

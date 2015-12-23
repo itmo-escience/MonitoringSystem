@@ -1,18 +1,13 @@
+import StateStructures.ClusterState;
 import ifmo.escience.dapris.common.data.IRepository;
+import ifmo.escience.dapris.common.data.Uow;
 import ifmo.escience.dapris.common.entities.*;
 import ifmo.escience.dapris.common.helpers.NodeStateDateComparator;
 
-import java.net.InetAddress;
-import java.rmi.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- *
- * @author Alexander Visheratin
- */
+
 public class StatisticsRepository implements IRepository {
 
     private List<NetworkType> networkTypes = new ArrayList<NetworkType>();
@@ -24,132 +19,41 @@ public class StatisticsRepository implements IRepository {
     private List<TaskType> taskTypes = new ArrayList<TaskType>();
     private List<Task> tasks = new ArrayList<Task>();
     private int nodesNumber = 0;
+    private CommonMongoClient mongoClient;
+    private ClusterStateMonitor clusterStateMonitor;
+    private MetricsMonitor metricsMonitor;
+    private ClusterState clusterState;
 
-    public StatisticsRepository() {
-        initNetworkTypes();
-        initNetworks();
-        try {
-            initNodes();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(StatisticsRepository.class.getName()).log(Level.SEVERE, null, ex);
+    public static void main(String[] args){
+        StatisticsRepository repo = new StatisticsRepository(new CommonMongoClient());
+        Uow.instance.repo = repo;
+        List<Task> tasks = new ArrayList<Task>(repo.getAllTasks());
+        List<Node> nodes = new ArrayList<Node>(repo.getAllNodes());
+
+        for (Task task : tasks){
+            List<NodeState> nodeStates = task.getNodeStates();
         }
-        initLayers();
-        initData();
-        initTaskTypes();
-        initTasks();
-    }
-
-    private void initNodes() throws UnknownHostException{
-
-
-        nodesNumber = 20;
-        for (int i = 1; i <= nodesNumber; i++) {
-            Random rand = new Random(i);
-            String idString = String.valueOf(i);
-            String name = "Node " + idString;
-            String ip = "192.168.0." + idString;
-            int parentId = 0;
-            if(i%4 != 0)
-                parentId = i / 4;
-            NodeStatus status = NodeStatus.Runnung;
-            double cpuTotal = rand.nextInt(16);
-            double memTotal = rand.nextInt(16000);
-            double gpuTotal = rand.nextInt(4086);
-            int networkId = rand.nextInt(networks.size()-1);
-            LocalDateTime initTime = LocalDateTime.now();
-            Node node = new Node(i, name, ip, parentId,
-                    cpuTotal, memTotal, gpuTotal, networkId);
-            nodes.add(node);
-            for (int j = 0; j < 40; j++) {
-                LocalDateTime time = initTime.plusMinutes(i);
-                double cpuUsage = rand.nextInt(4);
-                double memUsage = rand.nextInt(4000);
-                double gpuUsage = rand.nextInt(512);
-                double netInUsage = rand.nextInt(1000);
-                double netOutUsage = rand.nextInt(1000);
-                NodeState state = new NodeState(j, i, time, status,
-                        cpuUsage, memUsage, gpuUsage, netInUsage, netOutUsage);
-                nodeStates.add(state);
-            }
-        }
-    }
-
-    private void initNetworkTypes(){
-        for (int i = 1; i < 3; i++) {
-            Random rand = new Random(i);
-            String name = "Type " + String.valueOf(i);
-            NetworkType type = new NetworkType(i, name, rand.nextInt(1000),
-                    rand.nextInt(1000), rand.nextInt(15));
-            networkTypes.add(type);
-        }
-    }
-
-    private void initNetworks(){
-
-        //Network net = new Network("1", name,rand.nextInt(1200),rand.nextInt(1200),rand.nextInt(300));
-        //networks.add(net);
+        String test = "123";
 
     }
 
-    private void initLayers(){
-        for (int i = 1; i < 55; i++) {
-            Random rand = new Random(i);
-            String name = "Layer " + String.valueOf(i);
-            DataLayer layer = new DataLayer(i, name, rand.nextInt(nodes.size()-1),
-                    rand.nextInt(5000), rand.nextInt(5000), rand.nextInt(100000));
-            layers.add(layer);
-        }
+    public StatisticsRepository(){
+
+    }
+    public StatisticsRepository(CommonMongoClient mongoClient){
+        this.mongoClient = mongoClient;
+        this.clusterStateMonitor = new ClusterStateMonitor("192.168.92.11", mongoClient);
+        this.metricsMonitor = new MetricsMonitor(mongoClient);
+        //ClusterState state = clusterStateMonitor.getClusterStateFromDB();
+        ClusterState state = clusterStateMonitor.getActualClusterState();
+        nodes = clusterStateMonitor.getNodes(state);
+        tasks = clusterStateMonitor.getTasks(state);
+
     }
 
-    private void initData(){
-        Random rand = new Random();
-        for (int i = 1; i < 155; i++) {
-            String name = "Data " + String.valueOf(i);
-            Data data = new Data(i, rand.nextInt(layers.size()-1),
-                    name, rand.nextInt(5000));
-            this.data.add(data);
-        }
-    }
 
-    private void initTaskTypes(){
-        Random rand = new Random();
-        for (int i = 1; i < 6; i++) {
-            String name = "Task type " + String.valueOf(i);
-            TaskType type = new TaskType(i, name);
-            taskTypes.add(type);
-        }
-    }
 
-    private void initTasks(){
-        for (int i = 1; i < 500; i++) {
-            Random rand = new Random(i);
-            String name = "Task " + String.valueOf(i);
-            // int typeId = rand.nextInt(taskTypes.size()-1)+1;
-            int typeId = 3;
-            Hashtable<String, Double> parameters = new Hashtable<>();
-            double sum = 0.0;
-            for (int j = 0; j < typeId; j++) {
-                String key = "key" + String.valueOf(j);
-                double value = rand.nextDouble() * rand.nextInt(30);
-                parameters.put(key, value);
-                sum += value;
-            }
-            int nodeId = rand.nextInt(nodesNumber-1);
-            LocalDateTime start = LocalDateTime.now().plusMinutes(rand.nextInt(10));
-            LocalDateTime finish = start.plusMinutes((int) sum);
-            HashSet<Data> inData = new HashSet<>();
-            for (int j = 0; j < rand.nextInt(20); j++) {
-                inData.add(this.data.get(rand.nextInt(this.data.size()-1)));
-            }
-            HashSet<Data> outData = new HashSet<>();
-            for (int j = 0; j < rand.nextInt(20); j++) {
-                outData.add(this.data.get(rand.nextInt(this.data.size()-1)));
-            }
-            Task task = new Task(i, null, typeId, parameters, nodeId+1,
-                    TaskStatus.Finished, start, finish, inData, outData);
-            tasks.add(task);
-        }
-    }
+
 
     @Override
     public Set<Data> getAllData() {
@@ -157,7 +61,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public Set<Data> getDataByLayer(int layerId) {
+    public Set<Data> getDataByLayer(String layerId) {
         HashSet<Data> result = new HashSet<>();
         for (Data item : data){
             if(item.getLayerId() == layerId){
@@ -189,7 +93,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public Data getDataById(int id) {
+    public Data getDataById(String id) {
         for (Data item : data){
             if(item.getId() == id){
                 return item;
@@ -214,7 +118,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public DataLayer getLayerById(int id) {
+    public DataLayer getLayerById(String id) {
         for (DataLayer item : layers){
             if(item.getId() == id){
                 return item;
@@ -224,7 +128,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public Set<DataLayer> getLayersByNode(int nodeId) {
+    public Set<DataLayer> getLayersByNode(String nodeId) {
         HashSet<DataLayer> result = new HashSet<>();
         for (DataLayer item : layers){
             if(item.getNodeId() == nodeId){
@@ -247,23 +151,23 @@ public class StatisticsRepository implements IRepository {
 
     @Override
     public Set<Node> getAllNodes() {
-        return new HashSet<>(nodes);
+       return new HashSet<>(nodes);
     }
 
     @Override
-    public Set<Node> getChildNodes(int parentId) {
+    public Set<Node> getChildNodes(String parentId) {
         HashSet<Node> result = new HashSet<>();
         for(Node node : nodes){
-            if(node.getParentId() == parentId)
+            if(node.getParentId().equals(parentId))
                 result.add(node);
         }
         return result;
     }
 
     @Override
-    public Node getNodeById(int id) {
+    public Node getNodeById(String id) {
         for(Node node : nodes){
-            if(node.getId() == id)
+            if(node.getId().equals(id))
                 return node;
         }
         return null;
@@ -272,7 +176,7 @@ public class StatisticsRepository implements IRepository {
     @Override
     public Node getNodeByName(String name) {
         for(Node node : nodes){
-            if(node.getName() == name)
+            if(node.getName().equals(name))
                 return node;
         }
         return null;
@@ -289,37 +193,21 @@ public class StatisticsRepository implements IRepository {
         return result;
     }
 
-    @Override
-    public List<NodeState> getNodeStateForPeriod(String name, LocalDateTime start, LocalDateTime finish) {
-        ArrayList<NodeState> result = new ArrayList<>();
-        for(NodeState state : nodeStates){
-            if(state.getNode().getName() == name && state.getTimestamp().isAfter(start) &&
-                    state.getTimestamp().isBefore(finish))
-                result.add(state);
-        }
-        Collections.sort(result, new NodeStateDateComparator());
-        return result;
-    }
 
     @Override
-    public List<NodeState> getNodeStateForPeriod(int nodeId, LocalDateTime start, LocalDateTime finish) {
-        ArrayList<NodeState> result = new ArrayList<>();
-        for(NodeState state : nodeStates){
-            if(state.getNode().getId() == nodeId && state.getTimestamp().isAfter(start) &&
-                    state.getTimestamp().isBefore(finish))
-                result.add(state);
-        }
-        Collections.sort(result, new NodeStateDateComparator());
-        return result;
+    public List<NodeState> getNodeStateForPeriod(String nodeId, LocalDateTime start, LocalDateTime finish){
+        Node node = getNodeById(nodeId);
+        return metricsMonitor.getNodeStateForPeriod(node, start, finish);
     }
 
+
     @Override
-    public Set<Task> getAllTasks() {
+    public Set<Task> getAllTasks(){
         return new HashSet<>(tasks);
     }
 
     @Override
-    public Task getTaskById(int id) {
+    public Task getTaskById(String id){
         for(Task task : tasks){
             if(task.getId() == id)
                 return task;
@@ -338,7 +226,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public Set<Task> getTasksByType(int typeId) {
+    public Set<Task> getTasksByType(String typeId) {
         HashSet<Task> result = new HashSet<>();
         for(Task task : tasks){
             if(task.getTypeId() == typeId)
@@ -353,7 +241,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public TaskType getTaskTypeById(int id) {
+    public TaskType getTaskTypeById(String id) {
         for(TaskType type : taskTypes){
             if(type.getId() == id)
                 return type;
@@ -367,7 +255,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public NetworkType getNetworkTypeById(int id) {
+    public NetworkType getNetworkTypeById(String id) {
         for(NetworkType type : networkTypes){
             if(type.getId() == id)
                 return type;
@@ -381,7 +269,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public Network getNetworkById(int networkId) {
+    public Network getNetworkById(String networkId) {
         for(Network network : networks){
             if(network.getId() == networkId)
                 return network;
@@ -390,7 +278,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public Set<Task> getTasksByType(int typeId, String nodeName) {
+    public Set<Task> getTasksByType(String typeId, String nodeName) {
         HashSet<Task> result = new HashSet<>();
         for(Task task : tasks){
             if(task.getTypeId() == typeId && task.getNode().getName() == nodeName)

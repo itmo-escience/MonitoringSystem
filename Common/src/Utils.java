@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
@@ -15,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +34,7 @@ public class Utils {
 
         JSONObject ret = null;
         HttpClient client = new HttpClient();
+        System.out.println("Requesting "+url);
         GetMethod method = new GetMethod(url);
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 
@@ -40,7 +43,11 @@ public class Utils {
             if (statusCode != HttpStatus.SC_OK){
                 logger.error("Method failed: " + method.getStatusLine());
             }
-            byte[] responseBody = method.getResponseBody();
+
+            //byte[] responseBody = method.getResponseBody();
+            InputStream stream = method.getResponseBodyAsStream();
+            byte[] responseBody = IOUtils.toByteArray(stream);
+
             String res = new String(responseBody);
             ret = new JSONObject(res);
 
