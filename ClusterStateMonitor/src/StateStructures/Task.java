@@ -1,5 +1,7 @@
 package StateStructures;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.javers.core.metamodel.annotation.Id;
 
 import java.util.*;
@@ -7,6 +9,7 @@ import java.util.*;
 /**
  * Created by Pavel Smirnov
  */
+@JsonIgnoreProperties({"Started","Finished", "Status"})
 public class Task {
     @Id
     private String id;
@@ -34,7 +37,7 @@ public class Task {
     public String getSlaveId(){ return slaveId; }
     public void setSlaveId(String slaveId){ this.slaveId=slaveId; }
 
-    public String getStatus(){ return statusChanges.get(statusChanges.size()).status; }
+
 
     public List<StatusChange> getStatusChanges(){ return statusChanges; }
     public void setStatusChanges(List<StatusChange> value){ this.statusChanges=value; }
@@ -45,15 +48,20 @@ public class Task {
     public List<Pair> getResources(){ return resources; }
     public void setResources(List<Pair> resources){ this.resources = resources; }
 
+    @JsonProperty("Status")
+    public String getStatus(){ return statusChanges.get(statusChanges.size()-1).status; }
+
+    @JsonProperty("Started")
     public Date getStarted(){
         if(statusChanges.size()>0)
-            return statusChanges.get(0).getTimestamp();
+            return statusChanges.get(0).getTimeStamp();
         return null;
     }
 
+    @JsonProperty("Finished")
     public Date getFinished(){
         if(statusChanges.size()>1)
-            return statusChanges.get(statusChanges.size()-1).getTimestamp();
+            return statusChanges.get(statusChanges.size()-1).getTimeStamp();
         return null;
     }
 }

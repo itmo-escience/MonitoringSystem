@@ -1,7 +1,5 @@
-import com.mongodb.client.FindIterable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,7 +10,7 @@ import java.util.*;
  */
 public class GangliaAPIClient {
 
-    private static Log logger = LogFactory.getLog(GangliaAPIClient.class);
+    private static Log log = LogFactory.getLog(GangliaAPIClient.class);
     private int sleepInterval = 3000;
     private String[] desirableMetrics;
     private String serverurl;
@@ -50,7 +48,7 @@ public class GangliaAPIClient {
     }
 
     public List<String> requestItems(HashMap<String, String> params, String propName){
-          logger.debug("requestItems()");
+          log.debug("requestItems()");
           HashMap<String,String> mergedparams = new HashMap<String,String>(baseparams);
           mergedparams.putAll(params);
           String paramString = "";
@@ -70,13 +68,13 @@ public class GangliaAPIClient {
                 }
           }
           catch (Exception e){
-              logger.error("Some error with json reading", e);
+              log.error("Some error with json reading", e);
           }
         return ret;
     }
 
     public TreeMap<String, Object> requestMetrics(HashMap<String, String> params, Set<String> requiredMetricNames) {
-        logger.debug("requestMetrics()");
+        log.debug("requestMetrics()");
         TreeMap<String, Object> ret = new TreeMap<String, Object>();
         HashMap<String,String> mergedparams = new HashMap<String,String>(baseparams);
         mergedparams.putAll(params);
@@ -101,13 +99,13 @@ public class GangliaAPIClient {
              }
         }
         catch (Exception e){
-            logger.error("Some error with json reading", e);
+            log.error("Some error with json reading", e);
         }
         return ret;
     }
 
     public List<String> GetClusterNames(){
-        logger.debug("Getting cluster names");
+        log.debug("Getting cluster names");
         HashMap<String, String> requestParams = new HashMap<String, String>(){{
             put("metric", "cpu_system");  //get any
         }};
@@ -116,7 +114,7 @@ public class GangliaAPIClient {
     }
 
     public List<String> GetClusterHosts(String clusterName){
-        logger.debug("Getting hosts for cluster "+clusterName);
+        log.debug("Getting hosts for cluster " + clusterName);
         HashMap<String, String> requestParams = new HashMap<String, String>(){{
             put("metric", "heartbeat");
             put("cluster", clusterName);
@@ -126,7 +124,7 @@ public class GangliaAPIClient {
     }
 
     public TreeMap<String, Object> GetMetricsByHost(String hostName, String[] metricNames){
-        logger.debug("Getting desirableMetrics for "+hostName);
+        log.debug("Getting desirableMetrics for " + hostName);
 
         HashMap<String, String> requestParams = new HashMap<String, String>(){{
             put("host", hostName);

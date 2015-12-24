@@ -1,7 +1,4 @@
-//package MonitoringSystem.Common;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.MongoCollection;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
@@ -9,9 +6,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,16 +15,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  *
  * @author Pavel Smirnov
  */
 public class Utils {
-
-    private static Log logger = LogFactory.getLog(Utils.class);
+    private static Logger log = LogManager.getLogger(Utils.class);
 
     public static JSONObject getJsonFromUrl(String url){
-        logger.debug("Requesting "+url);
+        log.debug("Requesting "+url);
 
         JSONObject ret = null;
         HttpClient client = new HttpClient();
@@ -41,7 +37,7 @@ public class Utils {
         try {
             int statusCode = client.executeMethod(method);
             if (statusCode != HttpStatus.SC_OK){
-                logger.error("Method failed: " + method.getStatusLine());
+                log.error("Method failed: " + method.getStatusLine());
             }
 
             //byte[] responseBody = method.getResponseBody();
@@ -52,11 +48,11 @@ public class Utils {
             ret = new JSONObject(res);
 
         } catch (HttpException e) {
-            logger.error("HttpException: ", e);
+            log.error("HttpException: ", e);
         } catch (IOException e) {
-            logger.error("IOException: ", e);
+            log.error("IOException: ", e);
         } catch (JSONException e) {
-            logger.error("JSONException: ", e);
+            log.error("JSONException: ", e);
         } finally {
             // Release the connection.
             method.releaseConnection();
@@ -85,7 +81,7 @@ public class Utils {
             try {
                 value = jsonList.getJSONObject(i);
             } catch (JSONException e) {
-                logger.error("Error getting ElementFromJSONArray("+i+"):", e);
+                log.error("Error getting ElementFromJSONArray("+i+"):", e);
             }
             value = ConvertUnknownJSON(value);
             ret.add(value);
@@ -107,7 +103,7 @@ public class Utils {
             ret = new ObjectMapper().readValue(json, type);
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("IOException: ", e);
+            log.error("IOException: ", e);
         }
         return ret;
     }

@@ -1,25 +1,27 @@
 package StateStructures;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.javers.core.metamodel.annotation.Id;
 
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Created by Pavel Smirnov
  */
-public class StatusChange {
+@JsonIgnoreProperties({"Timestamp"})
+public class StatusChange implements java.io.Serializable {
 
     @Id
     public String id;
-    public Date timestamp;
+    public Double time;
     public String status;
 
     public StatusChange(){}
-    public StatusChange(String id, String status, Date timestamp){
+    public StatusChange(String id, String status, Double time){
         this.id = id;
         this.status = status;
-        this.timestamp = timestamp;
+        this.time = time;
     }
 
     public void setId(String id){ this.id = id; }
@@ -28,6 +30,9 @@ public class StatusChange {
     public void setStatus(String value){ this.status = value; }
     public String getStatus(){ return status; }
 
-    public void setTimestamp(Date date){ this.timestamp = date; }
-    public Date getTimestamp(){ return timestamp; }
+    public void setTime(Double time){ this.time = time; }
+    public Double getTime(){ return time; }
+
+    @JsonProperty("Timestamp")
+    public Date getTimeStamp(){ return  new Date((long) (time * 1000)); }
 }

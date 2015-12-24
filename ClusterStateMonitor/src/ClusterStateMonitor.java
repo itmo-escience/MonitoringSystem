@@ -1,9 +1,11 @@
 import StateStructures.*;
 import StateStructures.Task;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import ifmo.escience.dapris.common.entities.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.bson.Document;
 
 import org.javers.core.Javers;
@@ -22,16 +24,14 @@ import java.util.*;
  */
 public class ClusterStateMonitor {
 
-    private static Log logger = LogFactory.getLog(ClusterStateMonitor.class);
+    private static Logger log = LogManager.getLogger(ClusterStateMonitor.class);
     private Javers javers;
-    private int sleepInterval = 500;
+    private int sleepInterval = 3000;
+    public boolean useVersioning = false;
     public String masterHost;
     private CommonMongoClient mongoClient;
 
     public static void main(String[] args){
-        logger.info("Info");
-        logger.debug("Debug1");
-        logger.error("Error2");
         ClusterStateMonitor monitor = new ClusterStateMonitor("192.168.92.11", new CommonMongoClient());
         if (args!=null  && args.length>0 && args[0].equals("getData")){
             ArrayList<String> dates = monitor.getStartedClusters();
@@ -39,7 +39,6 @@ public class ClusterStateMonitor {
             monitor.getStateFromDB(stateID);
         }else{
               monitor.startMonitoring();
-              //monitor.TestJavers2();
         }
 
     }
@@ -52,13 +51,15 @@ public class ClusterStateMonitor {
     }
 
     public void startMonitoring(){
+        log.info("Monitoring stated");
         while(1==1){
             try {
                 ClusterState state = getActualClusterState();
                 UpdateStateInDB(state);
                 Thread.sleep(sleepInterval);
+                log.trace("Wainting " + sleepInterval+"ms");
             } catch (InterruptedException e){
-                logger.error(e);
+                log.error(e);
             }
         }
     }
@@ -71,12 +72,11 @@ public class ClusterStateMonitor {
 
         JSONObject json = Utils.getJsonFromUrl("http://" + this.masterHost + ":5050/master/state.json");
         HashMap state = Utils.getHashMapFromJSONObject(json);
-        Double startedTime = (Double) state.get("start_time");
+        Double started = (Double) state.get("start_time");
 
         ClusterState clusterState = null;
-        if (startedTime != null){
-            Date started = new Date((long) (startedTime * 1000));
-            clusterState = new ClusterState("Mesos", started);
+        if (started != null){
+            clusterState = new ClusterState("Mesos@"+this.masterHost, started);
 
             List<Slave> slaves = new ArrayList<Slave>();
             for (HashMap slavemap : (ArrayList<HashMap>) state.get("slaves")){
@@ -102,10 +102,7 @@ public class ClusterStateMonitor {
                     HashMap frameworkmap = frameworkList.get(frameworkI);
                     String status = (frkey.contains("completed") ? "Completed" : "Active");
                     String frid = frameworkmap.get("id").toString();
-                    Framework framework = new Framework(frid,
-                                                                       frameworkmap.get("name").toString(),
-                                                                       clusterState.getStarted().toString(),
-                                                                       status);
+                    Framework framework = new Framework(frid,frameworkmap.get("name").toString(), clusterState.getId(),status);
                     HashMap resourceMap = (HashMap)frameworkmap.get("resources");
                     List <Pair> resources = new ArrayList<Pair>();
                     for (String key : (Set<String>) resourceMap.keySet())
@@ -145,8 +142,8 @@ public class ClusterStateMonitor {
                             List<StatusChange> statusChanges = new ArrayList<StatusChange>();
                             for (HashMap statusChangeObj : (ArrayList<HashMap>) taskmap.get("statuses")){
                                 status = statusChangeObj.get("state").toString();
-                                Double doublestamp = (Double) statusChangeObj.get("timestamp");
-                                Date timestamp = new Date((long) (doublestamp * 1000));
+                                Double timestamp = (Double) statusChangeObj.get("timestamp");
+                                //DateTime timestamp = new DateTime((long) (doublestamp * 1000));
 
                                 StatusChange statusChange = new StatusChange(tid+"-"+status, status, timestamp);
                                 statusChanges.add(statusChange);
@@ -169,10 +166,9 @@ public class ClusterStateMonitor {
 
     public ArrayList<String> getStartedClusters(){
         ArrayList<String> ret = new ArrayList<String>();
-        FindIterable<Document> res = mongoClient.getDocumentsFromDB(new Document("masterHost", masterHost), "clusterStates");
+        FindIterable<Document> res = mongoClient.getDocumentsFromDB(new Document("name", "Mesos"+this.masterHost), "startedClusters");
         Iterator keysIter = res.iterator();
         while (keysIter.hasNext()){
-            //System.out.println(flavoursIter.next());
             Document resultmap = (Document)keysIter.next();
             ret.add(resultmap.get("started").toString());
         }
@@ -188,14 +184,20 @@ public class ClusterStateMonitor {
         System.out.println("Getting cluster state from DB");
         Long operationStarted = System.currentTimeMillis();
         ClusterState ret = null;
-        List<CdoSnapshot> snapshots = javers.findSnapshots(QueryBuilder.byInstanceId(id, ClusterState.class).build());
-        if (snapshots.size()>0){
-            CdoSnapshot first = snapshots.get(0);
-
-            MyJaversShapshotsCompiler snapCompiler = new MyJaversShapshotsCompiler(javers);
-            ret = (ClusterState) snapCompiler.compileEntityStateFromSnapshot(first);
+        if(useVersioning){
+            List<CdoSnapshot> snapshots = javers.findSnapshots(QueryBuilder.byInstanceId(id, ClusterState.class).build());
+            if (snapshots.size() > 0){
+                CdoSnapshot first = snapshots.get(0);
+                MyJaversShapshotsCompiler snapCompiler = new MyJaversShapshotsCompiler(javers);
+                ret = (ClusterState) snapCompiler.compileEntityStateFromSnapshot(first);
+                System.out.println("Compiling cluster state from DB took: "+ (System.currentTimeMillis()-operationStarted)/1000+" seconds");
+                return ret;
+            }
         }
-
+        //FindIterable<Document> res = mongoClient.getDocumentsFromDB(new Document("name", "Mesos@"+this.masterHost), "clusterStates");
+        List<ClusterState> res = mongoClient.getObjectsFromDB(new BasicDBObject(){{ put("name", "Mesos@"+masterHost); }}, "clusterStates", ClusterState.class);
+        if(res.size()>0)
+            ret = res.get(0);
         System.out.println("Getting cluster state from DB took: "+ (System.currentTimeMillis()-operationStarted)/1000+" seconds");
         return ret;
     }
@@ -204,25 +206,42 @@ public class ClusterStateMonitor {
         System.out.println("Updating state in DB");
         Long operationStarted = System.currentTimeMillis();
         ClusterState prevState = getStateFromDB(state.getStarted().toString());
+
         if (prevState!=null){
+            System.out.println("Comparing prev & curr states");
             Diff diff = javers.compare(prevState, state);
             Diff diff1 = javers.compareCollections(prevState.getSlaves(), state.getSlaves(), Slave.class);
             Diff diff2 = javers.compareCollections(prevState.getAllTasks(), state.getAllTasks(), Task.class);
-            if(diff.hasChanges()){
-                SaveStateToDB(state);
-            }
-        }else
-            SaveStateToDB(state);
+            if(!diff.hasChanges())
+                return;
+
+//            if(useVersioning){
+//                saveStateToDB(state);
+//                return;
+//            }else{  //merge executors & delete state from DB
+//
+//            }
+        }
+        saveStateToDB(state);
         System.out.println("Updating state in DB took: "+ (System.currentTimeMillis()-operationStarted)/1000+" seconds");
     }
 
-    public void SaveStateToDB(ClusterState state){
+    public void saveStateToDB(ClusterState state){
         Long operationStarted = System.currentTimeMillis();
         System.out.println("Saving state to DB");
-        String id = state.getStarted().toString();
-        if (!getStartedClusters().contains(id))
-            mongoClient.saveDocumentToDB(new Document("masterHost", masterHost).append("started",id), "clusterStates");
+
+
+        BasicDBObject find = new BasicDBObject(){{ put("name","Mesos@"+masterHost); put("started", state.getStartedToDate().toString());  }};
+        BasicDBObject update = new BasicDBObject(find){{ put("updated", new Date().toString()); }};
+        mongoClient.saveObjectToDB("startedClusters", find, update);
+
+        String id = state.getId();
+        mongoClient.saveObjectToDB("clusterStates", new BasicDBObject(){{ put("id", id); }}, state);
+
+        //if(useVersioning)
+        System.out.println("Commiting to javers");
         javers.commit(id, state);
+
         System.out.println("Saving state to DB took: "+ (System.currentTimeMillis()-operationStarted)/1000+" seconds");
     }
 

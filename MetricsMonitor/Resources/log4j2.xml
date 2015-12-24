@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <File name="File" fileName="MetricsMonitor.log" bufferedIO="false">
+            <PatternLayout>
+                <Pattern>%d %m %ex%n</Pattern>
+            </PatternLayout>
+        </File>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss} %p [%t] %-5level %logger{36} - %msg%n"/>
+            <!--%d %p %c{1.} [%t] %m%n-->
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="trace">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>
