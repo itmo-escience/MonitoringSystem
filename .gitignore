@@ -1,2 +1,15 @@
 target
 /.idea
+artifacts
+copyright
+libraries
+compiler.xml
+description.html
+gradle.xml
+misc.xml
+modules.xml
+project-template.xml
+uiDesigner.xml
+vcs.xml
+workspace.xml
+.idea

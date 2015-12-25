@@ -1,12 +1,3 @@
 Manifest-Version: 1.0
-Class-Path: log4j-1.2.17.jar org.apache.commons.httpclient.jar org.jso
- n-20120521.jar IntellectualModule.jar org-apache-commons-codec.jar or
- g-apache-commons-logging.jar mongo-java-driver-3.2.0-rc0.jar org.json
- -20120521.jar mongo-java-driver-3.2.0-rc0.jar org-apache-commons-code
- c.jar bson4jackson-1.3.0.jar jackson-core-2.6.3.jar jackson-databind-
- 2.6.3.jar jackson-annotations-2.6.3.jar org-apache-commons-logging.ja
- r gson-2.3.1.jar joda-time-2.3.jar slf4j-api-1.7.2.jar javers-core-1.
- 3.22.jar picocontainer-2.14.3.jar javers-snapshots-compiler.jar javer
- s-persistence-mongo-1.3.22.jar
 Main-Class: ClusterStateMonitor
 

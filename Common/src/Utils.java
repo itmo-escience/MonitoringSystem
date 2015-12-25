@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -108,6 +109,10 @@ public class Utils {
         return ret;
     }
 
+    public static Double DateToEpoch(Date date){
+        return new Double(date.toInstant().now().getEpochSecond());
+    }
+    public static Date EpochToDate(Double epoch){  return new Date((long) (epoch * 1000)); }
 
 
 }

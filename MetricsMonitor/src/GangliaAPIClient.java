@@ -33,7 +33,7 @@ public class GangliaAPIClient {
         //coll = db.getCollection("desirableMetrics");
     }
 
-    public TreeMap<String, TreeMap<String, Object>> GetActualState(){
+    public TreeMap<String, TreeMap<String, Object>> GetActualMetricValues(){
         TreeMap<String, TreeMap<String, Object>> ret = new TreeMap<String, TreeMap<String, Object>>();
         List<String> clusterNames = GetClusterNames();
         for (String clusterName : clusterNames) {

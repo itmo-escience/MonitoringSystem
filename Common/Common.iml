@@ -50,7 +50,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/org-apache-commons-logging.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/org.json-20120521.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -59,10 +59,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/org.json-20120521.jar!/" />
+          <root url="file://$MODULE_DIR$/../lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../lib" recursive="false" />
       </library>
     </orderEntry>
   </component>

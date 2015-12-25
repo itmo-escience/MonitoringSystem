@@ -166,7 +166,7 @@ public class ClusterStateMonitor {
 
     public ArrayList<String> getStartedClusters(){
         ArrayList<String> ret = new ArrayList<String>();
-        FindIterable<Document> res = mongoClient.getDocumentsFromDB(new Document("name", "Mesos"+this.masterHost), "startedClusters");
+        FindIterable<Document> res = mongoClient.getDocumentsFromDB("startedClusters", new Document("name", "Mesos"+this.masterHost));
         Iterator keysIter = res.iterator();
         while (keysIter.hasNext()){
             Document resultmap = (Document)keysIter.next();
@@ -195,7 +195,7 @@ public class ClusterStateMonitor {
             }
         }
         //FindIterable<Document> res = mongoClient.getDocumentsFromDB(new Document("name", "Mesos@"+this.masterHost), "clusterStates");
-        List<ClusterState> res = mongoClient.getObjectsFromDB(new BasicDBObject(){{ put("name", "Mesos@"+masterHost); }}, "clusterStates", ClusterState.class);
+        List<ClusterState> res = mongoClient.getObjectsFromDB("clusterStates", new BasicDBObject(){{ put("name", "Mesos@"+masterHost); }}, 0, ClusterState.class);
         if(res.size()>0)
             ret = res.get(0);
         System.out.println("Getting cluster state from DB took: "+ (System.currentTimeMillis()-operationStarted)/1000+" seconds");

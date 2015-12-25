@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.*;
 import com.mongodb.bulk.*;
 import com.mongodb.client.FindIterable;
@@ -14,6 +15,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +60,8 @@ public class CommonMongoClient {
     public DBObject CreateDBObject(Object obj){
         if(!(obj instanceof String)){
             ObjectMapper mapper = new ObjectMapper();
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
+            mapper.setDateFormat(df);
             try {
                 mapper.writeValue(new File("tmp.json"), obj);
                 obj = mapper.writeValueAsString(obj);
@@ -71,19 +76,20 @@ public class CommonMongoClient {
         return (DBObject)obj;
     }
 
+    public void saveDocumentToDB(String collection, Document doc){
+        MongoCollection coll = defaultDB.getCollection(collection);
+        coll.insertOne(doc);
+        return;
 
+    }
 
     public void saveObjectToDB(String collection, Object insert){
         saveObjectToDB(collection, null, insert);
     }
 
-    public void saveObjectToDB(String collection, Object find, Object update){
 
-//        if(update instanceof Document){
-//            MongoCollection coll = defaultDB.getCollection(collection);
-//            coll.insertOne(update);
-//            return;
-//        }
+
+    public void saveObjectToDB(String collection, Object find, Object update){
 
         if(!(find instanceof DBObject))
             find = CreateDBObject(find);
@@ -97,8 +103,13 @@ public class CommonMongoClient {
             dbCollection.save((DBObject)update);
     }
 
-    public FindIterable<Document> getDocumentsFromDB(Document condition, String collection){
+    public FindIterable<Document> getDocumentsFromDB(String collection, Document condition){
+        return  getDocumentsFromDB(collection, condition, null, 0);
+    }
 
+    public FindIterable<Document> getDocumentsFromDB(String collection, Document condition, Document sort, int limit){
+        if(sort==null)
+            sort = new Document("_id",1);
          /* Example:
         FindIterable<Document> res = mongoClient.getDocumentsFromDB(new Document(), "clusterStates");
         Iterator keysIter = res.iterator();
@@ -110,18 +121,20 @@ public class CommonMongoClient {
        */
 
         MongoCollection coll = defaultDB.getCollection(collection);
-        FindIterable<Document> ret = coll.find(condition).projection(new Document("_id", 0));
+        FindIterable<Document> ret = coll.find(condition).sort(sort).projection(new Document("_id", 0)).limit(limit);
         return ret;
     }
 
-    public <T> List<T> getObjectsFromDB(BasicDBObject condition, String collection, Class<T> targetClass){
+    public <T> List<T> getObjectsFromDB(String collection, DBObject condition, int limit, Class<T> targetClass){
+        //Example:  List<ClusterState> res = getObjectsFromDB("clusterStates", new BasicDBObject(){{ put("name", "Mesos"); }}, ClusterState.class);
         List<T> ret = new ArrayList<T>();
-        DBCollection dbCollection = db.getCollection(collection);
-        DBCursor cursor = dbCollection.find(condition, new BasicDBObject("_id", 0));
+
+        DBCursor cursor = getObjectsFromDB(collection, condition, limit);
         while (cursor.hasNext()){
             BasicDBObject dbObj = (BasicDBObject)cursor.next();
             String jsonStr = dbObj.toJson().toString();
             ObjectMapper mapper = new ObjectMapper();
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             T retObj = null;
             try {
                 retObj = mapper.readValue(jsonStr, targetClass);
@@ -132,6 +145,14 @@ public class CommonMongoClient {
 
         }
         return ret;
+    }
+
+    public DBCursor getObjectsFromDB(String collection, DBObject condition, int limit){
+
+        DBCollection dbCollection = db.getCollection(collection);
+        DBCursor cursor = dbCollection.find(condition, new BasicDBObject("_id", 0)).limit(limit);
+
+        return cursor;
     }
 }
 
