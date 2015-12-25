@@ -4,6 +4,9 @@ import ifmo.escience.dapris.common.entities.NodeState;
 import ifmo.escience.dapris.common.entities.NodeStatus;
 
 import org.bson.Document;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,13 +21,14 @@ import org.apache.logging.log4j.LogManager;
  */
 public class MetricsMonitor {
     private static Logger log = LogManager.getLogger(MetricsMonitor.class);
-    private int sleepInterval = 3000;
+    private int sleepInterval = 5000;
     private GangliaAPIClient client;
     private CommonMongoClient mongoClient;
     public String monitoringHost = "192.168.92.11:8081"; //"192.168.13.133:8082"
     private String startedMetricsMons = "startedMetricsMons";
     private String defaultCollection = "metrics";
     private String[] desiredMetrics = new String[]{ "bytes_in", "bytes_out", "cpu_user","mem_free", "part_max_used"};
+    private List<String> clusterNames;
     public static void main(String[] args) {
 
 //        String ApiServerUrl = "192.168.13.133:8082";  //"192.168.13.133:8080"
@@ -39,20 +43,33 @@ public class MetricsMonitor {
     }
 
     public MetricsMonitor(CommonMongoClient mongoClient){
-        client = new GangliaAPIClient(monitoringHost, desiredMetrics);
         this.mongoClient = mongoClient;
+        client = new GangliaAPIClient(monitoringHost, desiredMetrics);
+        clusterNames = client.GetClusterNames();
     }
 
     public void StartMonitoring(){
-        log.trace("Start monitoring");
+
+        String startedAt = "";
+        try {
+            startedAt = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        log.info("Start monitoring for "+monitoringHost);
         Document startedEntry = new Document();
-        startedEntry.append("hostname", monitoringHost);
+        startedEntry.append("monitoringHost", monitoringHost);
+        startedEntry.append("startedAt", startedAt);
         startedEntry.append("timestamp", new Date());
-        mongoClient.saveDocumentToDB(startedMetricsMons, startedEntry);
+        mongoClient.insertDocumentToDB(startedMetricsMons, startedEntry);
         while(1==1){
             try {
-                TreeMap<String, TreeMap<String, Object>> state = GetActualMetrics();
-                SaveMetricsToDb(state);
+
+                for(String clusterName : clusterNames){
+                    TreeMap<String, TreeMap<String, Object>> state = client.GetActualMetricsOfCluster(clusterName, desiredMetrics);
+                    SaveMetricsToDb(state);
+                }
+                log.trace("Sleeping " + sleepInterval + "ms");
                 Thread.sleep(sleepInterval);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -60,31 +77,27 @@ public class MetricsMonitor {
         }
     }
 
-    public TreeMap<String, TreeMap<String, Object>> GetActualMetrics(){
-        return client.GetActualMetricValues();
-    }
-
-    public void SaveMetricsToDb(TreeMap<String, TreeMap<String, Object>> metricsPerHosts){
+    private void SaveMetricsToDb(TreeMap<String, TreeMap<String, Object>> metricsPerHosts){
         for(String hostname : metricsPerHosts.keySet()){
             TreeMap<String, Object> hostMetrics = metricsPerHosts.get(hostname);
-            MetricsEntry metricsEntry = new MetricsEntry(new Double(Instant.now().getEpochSecond()), hostname, hostMetrics);
+           // MetricsEntry metricsEntry = new MetricsEntry(new Double(Instant.now().getEpochSecond()), hostname, hostMetrics);
             //metricsEntry.date = LocalDateTime.now();
-            metricsEntry.date = new Date();
+            //metricsEntry.date = new Date();
 
-            //List<MetricsEntry> res = mongoClient.getObjectsFromDB(defaultCollection, new BasicDBObject(){{ put("hostname", hostname); }}, 1, MetricsEntry.class );
+            mongoClient.open();
             FindIterable<Document> res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname",hostname), new Document("_id",-1),1);
-
             //mongoClient.saveObjectToDB(defaultCollection, metricsEntry);
-            if (res.first() == null || (res.first() != null && !res.first().get("metrics").equals(hostMetrics))){
+
+            if (res.first() == null || (res.first() != null && !res.first().get("metrics").toString().contains(hostMetrics.toString()))){
                 Document metricsEntry2 = new Document();
                 metricsEntry2.append("timestamp", new Date());
                 metricsEntry2.append("hostname", hostname);
                 metricsEntry2.append("metrics", hostMetrics);
-                mongoClient.saveDocumentToDB(defaultCollection, metricsEntry2);
+                log.trace("Inserting metrics to DB: "+hostname+" "+(res.first()!=null?"Equality:"+res.first().get("metrics").toString()+"=="+hostMetrics.toString():"0 found"));
+                mongoClient.insertDocumentToDB(defaultCollection, metricsEntry2);
            }
-
-
         }
+        mongoClient.close();
     }
 
 //    public List<MetricsEntry> GetMetricsFromDb2(String hostname, LocalDateTime starttime, LocalDateTime endtime){
@@ -105,7 +118,8 @@ public class MetricsMonitor {
 //        return ret;
 //    }
 
-    public TreeMap<LocalDateTime, TreeMap<String, Object>> GetMetricsFromDb(String hostname, LocalDateTime starttime, LocalDateTime endtime){
+    private TreeMap<LocalDateTime, TreeMap<String, Object>> GetMetricsFromDb(String hostname, LocalDateTime starttime, LocalDateTime endtime){
+        log.debug("Getting GetMetrics from Db from DB "+hostname);
         //log.trace("Getting GetMetrics from Db from DB "+hostname);
         TreeMap<LocalDateTime, TreeMap<String, Object>> ret = new TreeMap<LocalDateTime, TreeMap<String, Object>>();
         Date start = Date.from(starttime.toInstant(starttime.atZone(ZoneId.systemDefault()).getOffset()));
@@ -119,13 +133,17 @@ public class MetricsMonitor {
 
         }
         FindIterable<Document> res = null;
+        mongoClient.open();
         res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname", hostname).append("timestamp", dateFilter));
-        if(res.first()==null){
-            FindIterable<Document> lastStarted = mongoClient.getDocumentsFromDB(startedMetricsMons, new Document("hostname", monitoringHost), new Document("_id", -1), 1);
+        if(res.first()==null){ //Find monitor, started before task started
+            log.debug("No metrics for range. Getting uprange");
+            FindIterable<Document> lastStartedMonitor = mongoClient.getDocumentsFromDB(startedMetricsMons, new Document("monitoringHost", monitoringHost).append("timestamp", new Document("$lte", start)), new Document("_id", -1), 1);
             Document timespampfilter = new Document("$lte", start);
-            if(lastStarted.first()!=null){
-                timespampfilter.append("$gte", lastStarted.first().get("timestamp"));
+            if(lastStartedMonitor.first()!=null){
+                log.debug("Getting uprange only till "+lastStartedMonitor.first().get("timestamp"));
+                timespampfilter.append("$gte", lastStartedMonitor.first().get("timestamp"));
             }
+            //find states before task started until the started monitor (if exists)
             res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname", hostname).append("timestamp", timespampfilter), new Document("_id", -1), 1);
         }
         Iterator<Document> iterator = res.iterator();
@@ -138,6 +156,7 @@ public class MetricsMonitor {
             ret.put(localDateTime, new TreeMap<String, Object>(((Document) iter.get("metrics"))));
             i++;
         }
+        mongoClient.close();
         //log.trace("Getting metrics for "+hostname+" "+start.toString()+" "+end.toString()+": "+ i+" found");
         return ret;
 

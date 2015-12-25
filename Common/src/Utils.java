@@ -1,16 +1,22 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.io.IOUtils;
+//import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,42 +29,56 @@ import org.apache.logging.log4j.LogManager;
  *
  * @author Pavel Smirnov
  */
-public class Utils {
+class Utils {
     private static Logger log = LogManager.getLogger(Utils.class);
 
     public static JSONObject getJsonFromUrl(String url){
-        log.debug("Requesting "+url);
+        log.trace("Requesting " + url);
 
         JSONObject ret = null;
+
+        //RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(30 * 1000).build();
+        //HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+
         HttpClient client = new HttpClient();
-        System.out.println("Requesting "+url);
         GetMethod method = new GetMethod(url);
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+        method.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 3000);
+        while (ret==null){
+            try {
+                int statusCode = client.executeMethod(method);
+                if (statusCode != HttpStatus.SC_OK)
+                    throw new HttpException("Method failed: " + method.getStatusLine());
 
-        try {
-            int statusCode = client.executeMethod(method);
-            if (statusCode != HttpStatus.SC_OK){
-                log.error("Method failed: " + method.getStatusLine());
+                InputStream stream = method.getResponseBodyAsStream();
+                byte[] responseBody = IOUtils.toByteArray(stream);
+                stream.close();
+                String res = new String(responseBody);
+                ret = new JSONObject(res);
+
+            } catch (HttpException e) {
+                log.error("HttpException: ", e);
+                Sleep(1000);
+            } catch (IOException e) {
+                log.error("IOException: ", e);
+                Sleep(1000);
             }
-
-            //byte[] responseBody = method.getResponseBody();
-            InputStream stream = method.getResponseBodyAsStream();
-            byte[] responseBody = IOUtils.toByteArray(stream);
-
-            String res = new String(responseBody);
-            ret = new JSONObject(res);
-
-        } catch (HttpException e) {
-            log.error("HttpException: ", e);
-        } catch (IOException e) {
-            log.error("IOException: ", e);
-        } catch (JSONException e) {
-            log.error("JSONException: ", e);
-        } finally {
-            // Release the connection.
-            method.releaseConnection();
+            catch (JSONException e) {
+                log.error("JSONException: ", e);
+                Sleep(1000);
+            } finally {
+                method.releaseConnection();
+            }
         }
         return ret;
+    }
+
+    public static void Sleep(int interval){
+        try {
+            Thread.sleep(interval);
+        } catch (InterruptedException e) {
+            log.error(e);
+        }
     }
 
     public static HashMap<String, Object> getHashMapFromJSONObject(JSONObject object){

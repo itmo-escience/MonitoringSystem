@@ -8,8 +8,11 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.json.JSONObject;
 
@@ -25,16 +28,19 @@ import java.util.List;
  * Created by Pavel Smirnov
  */
 public class CommonMongoClient {
-    private static Log log = LogFactory.getLog(CommonMongoClient.class);
+    private static Logger log = LogManager.getLogger(CommonMongoClient.class);
     public static String metricsCollection = "metrics";
     public static String stateCollection = "clusterStates";
     private String serverUrl = "192.168.13.133";
     private String defaultDBname = "logging";
+    public MongoClient mongoClient;
     private MongoDatabase defaultDB;
+    private Mongo mongo;
     private DB db;
-
+    private Boolean isOpened=false;
+    private Boolean closeAtFinish=false;
     public CommonMongoClient(){
-        Init();
+
     }
 
     public MongoDatabase getDefaultDB(){ return defaultDB; }
@@ -42,20 +48,30 @@ public class CommonMongoClient {
     public CommonMongoClient(String serverUrl, String defaultDBname){
         this.serverUrl = serverUrl;
         this.defaultDBname = defaultDBname;
-        Init();
     }
 
-    public void Init(){
-        MongoClient mongoClient = new MongoClient(serverUrl, 27017 );
-        Mongo mongo = new Mongo(serverUrl, 27017);
+    public void open(){
+        if(isOpened)return;
+        log.trace("Mongo client open()");
+        mongoClient = new MongoClient(serverUrl, 27017 );
         defaultDB = mongoClient.getDatabase(defaultDBname);
+        mongo = new Mongo(serverUrl, 27017);
         db = mongo.getDB(defaultDBname);
+        isOpened=true;
+    }
+
+    public void close(){
+        log.trace("Mongo client close()");
+        mongoClient.close();
+        mongo.close();
+        isOpened=false;
+        closeAtFinish=false;
     }
 //    public void saveObjectToDB(Object obj, String collection){
 //        JSONObject stateJSON = new JSONObject(obj);
 //        String jsonStr = stateJSON.toString();
 //        Document doc = Document.parse(jsonStr);
-//        saveDocumentToDB(doc, collection);
+//        insertDocumentToDB(doc, collection);
 //    }
     public DBObject CreateDBObject(Object obj){
         if(!(obj instanceof String)){
@@ -76,11 +92,17 @@ public class CommonMongoClient {
         return (DBObject)obj;
     }
 
-    public void saveDocumentToDB(String collection, Document doc){
-        MongoCollection coll = defaultDB.getCollection(collection);
-        coll.insertOne(doc);
-        return;
-
+    public void insertDocumentToDB(String collection, Document doc){
+        if(!isOpened){ open(); closeAtFinish = true;}
+        //log.trace("Inserting document to DB: "+collection);
+        try {
+            MongoCollection coll = defaultDB.getCollection(collection);
+            coll.insertOne(doc);
+        }
+        catch (Exception e){
+            log.error(e);
+        }
+        if(closeAtFinish)close();
     }
 
     public void saveObjectToDB(String collection, Object insert){
@@ -96,11 +118,13 @@ public class CommonMongoClient {
 
         if(!(update instanceof DBObject))
             update = CreateDBObject(update);
+        if(!isOpened){ open(); closeAtFinish = true;}
         DBCollection dbCollection = db.getCollection(collection);
         if (find!=null)
             dbCollection.update((DBObject) find, (DBObject) update, true, false);
         else
             dbCollection.save((DBObject)update);
+        if(closeAtFinish)close();
     }
 
     public FindIterable<Document> getDocumentsFromDB(String collection, Document condition){
@@ -108,6 +132,7 @@ public class CommonMongoClient {
     }
 
     public FindIterable<Document> getDocumentsFromDB(String collection, Document condition, Document sort, int limit){
+
         if(sort==null)
             sort = new Document("_id",1);
          /* Example:
@@ -120,8 +145,10 @@ public class CommonMongoClient {
         }
        */
 
+        if(!isOpened){ open(); closeAtFinish = true;}
         MongoCollection coll = defaultDB.getCollection(collection);
         FindIterable<Document> ret = coll.find(condition).sort(sort).projection(new Document("_id", 0)).limit(limit);
+        if(closeAtFinish)close();
         return ret;
     }
 
@@ -148,10 +175,10 @@ public class CommonMongoClient {
     }
 
     public DBCursor getObjectsFromDB(String collection, DBObject condition, int limit){
-
+        if(!isOpened){ open(); closeAtFinish = true;}
         DBCollection dbCollection = db.getCollection(collection);
         DBCursor cursor = dbCollection.find(condition, new BasicDBObject("_id", 0)).limit(limit);
-
+        if(closeAtFinish)close();
         return cursor;
     }
 }
