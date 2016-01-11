@@ -66,5 +66,20 @@
         <jarDirectory url="file://$MODULE_DIR$/../lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/javers/gson-2.3.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javers/joda-time-2.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javers/slf4j-api-1.7.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javers/javers-core-1.3.22.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javers/picocontainer-2.14.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javers/javers-snapshots-compiler.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javers/javers-persistence-mongo-1.3.22.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

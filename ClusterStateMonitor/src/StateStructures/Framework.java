@@ -48,8 +48,6 @@ public class Framework {
     public List<Executor> getExecutors(){ return executors; }
     public void setExecutors(List<Executor> executors){  this.executors = executors; }
 
-    //public HashMap<String, Object> getResources(){ return resources; }
-    //public void setResources(HashMap<String, Object> resources){ this.resources = resources; }
     public List<Pair> getResources(){ return resources; }
     public void setResources(List<Pair> resources){ this.resources = resources; }
 }

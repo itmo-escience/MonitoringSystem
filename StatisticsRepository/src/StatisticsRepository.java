@@ -1,10 +1,13 @@
 import StateStructures.ClusterState;
+import StateStructures.Slave;
+import com.sun.org.apache.xml.internal.security.Init;
 import ifmo.escience.dapris.common.data.IRepository;
 import ifmo.escience.dapris.common.data.Uow;
 import ifmo.escience.dapris.common.entities.*;
 import ifmo.escience.dapris.common.helpers.NodeStateDateComparator;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 
@@ -21,12 +24,14 @@ public class StatisticsRepository implements IRepository {
     private int nodesNumber = 0;
     private CommonMongoClient mongoClient;
     private ClusterStateMonitor clusterStateMonitor;
+    private DstorageMonitor dstorageMonitor;
     private MetricsMonitor metricsMonitor;
     private ClusterState clusterState;
 
     public static void main(String[] args){
         StatisticsRepository repo = new StatisticsRepository(new CommonMongoClient());
         Uow.instance.repo = repo;
+
         List<Task> tasks = new ArrayList<Task>(repo.getAllTasks());
         List<Node> nodes = new ArrayList<Node>(repo.getAllNodes());
 
@@ -44,16 +49,84 @@ public class StatisticsRepository implements IRepository {
         this.mongoClient = mongoClient;
         this.clusterStateMonitor = new ClusterStateMonitor("192.168.92.11", mongoClient);
         this.metricsMonitor = new MetricsMonitor(mongoClient);
-        //ClusterState state = clusterStateMonitor.getClusterStateFromDB();
-        ClusterState state = clusterStateMonitor.getActualClusterState();
-        nodes = clusterStateMonitor.getNodes(state);
-        tasks = clusterStateMonitor.getTasks(state);
+        this.dstorageMonitor = new DstorageMonitor(mongoClient);
 
+        ClusterState state = clusterStateMonitor.getClusterStateFromDB();
+        nodes = getNodes(state);
+        tasks = getTasks(state);
+        InitDataLayers();
     }
 
+    public void InitDataLayers(){
+        layers = new ArrayList<DataLayer>();
+        double readSpeed = 0;
+        double writeSpeed = 0;
+        double totalSize = 0;
 
+        String nodeId = null;
+        layers.add(new DataLayer("0", "HDD", nodeId, readSpeed, writeSpeed, totalSize));
+        layers.add(new DataLayer("1", "SSD", nodeId, readSpeed, writeSpeed, totalSize));
+        layers.add(new DataLayer("2", "RAM", nodeId, readSpeed, writeSpeed, totalSize));
 
+        //dstorageMonitor.GetLeveledRequests();
+    }
 
+    public List<ifmo.escience.dapris.common.entities.Node> getNodes(ClusterState state){
+        ArrayList<ifmo.escience.dapris.common.entities.Node> ret = new ArrayList<ifmo.escience.dapris.common.entities.Node>();
+        for(Slave slave : state.getSlaves()){
+            String id = slave.getId();
+            String name =  slave.getPid();
+            String ip = slave.getHostname();
+            String parentNodeId = null;
+            String networkId = "networkID";
+            Map<String, Object> resourceMap = slave.getResourceMap();
+            Double cpuTotal = Double.parseDouble(resourceMap.get("cpus").toString());
+            Double memoryTotal = Double.parseDouble(resourceMap.get("mem").toString());
+            Double gpuTotal = 0.0;
+            ifmo.escience.dapris.common.entities.Node node = new ifmo.escience.dapris.common.entities.Node(id, name, ip, parentNodeId, cpuTotal, memoryTotal, gpuTotal, networkId);
+            ret.add(node);
+        }
+        return ret;
+    }
+
+    public List<Task> getTasks(ClusterState state){
+        List<Task> ret = new ArrayList<ifmo.escience.dapris.common.entities.Task>();
+        int i=0;
+        for (StateStructures.Framework framework : state.getFrameworks()){
+            String typeId = framework.getName();
+            for (StateStructures.Task task : framework.getTasks()){
+
+                Random rand = new Random(i);
+                HashSet<String> parentTaskIds = null;
+
+                Hashtable<String, Double> parameters = new Hashtable<>();
+                LocalDateTime started = null;
+                LocalDateTime finished = null;
+                try {
+                    started = LocalDateTime.ofInstant(task.getStarted().toInstant(), ZoneId.systemDefault());
+                }
+                catch (Exception e){
+                    String test="123";
+                }
+                try {
+                    finished = LocalDateTime.ofInstant(task.getFinished().toInstant(), ZoneId.systemDefault());
+                }
+                catch (Exception e){
+                    String test="123";
+                }
+
+                String nodeId = task.getSlaveId();
+                TaskStatus status = null;
+                HashSet<Data> inData = new HashSet<>();
+                HashSet<Data> outData = new HashSet<>();
+
+                Task addTask = new Task(task.getId(), parentTaskIds, typeId, parameters, nodeId, status, started, finished, inData, outData);
+                ret.add(addTask);
+                i++;
+            }
+        }
+        return ret;
+    }
 
     @Override
     public Set<Data> getAllData() {
@@ -113,7 +186,7 @@ public class StatisticsRepository implements IRepository {
     }
 
     @Override
-    public Set<DataLayer> getAllDataLayers() {
+    public Set<DataLayer> getAllDataLayers(){
         return new HashSet<>(layers);
     }
 
@@ -197,7 +270,24 @@ public class StatisticsRepository implements IRepository {
     @Override
     public List<NodeState> getNodeStateForPeriod(String nodeId, LocalDateTime start, LocalDateTime finish){
         Node node = getNodeById(nodeId);
-        return metricsMonitor.getNodeStateForPeriod(node, start, finish);
+        ArrayList<NodeState> ret = new ArrayList<>();
+        String hostname = node.getIp();
+//        hostname = "node-92-16";
+//        starttime = LocalDateTime.now().minusDays(4);
+//        endtime = LocalDateTime.now();
+        TreeMap<LocalDateTime, TreeMap<String, Object>> metrics = metricsMonitor.GetMetricsFromDb(hostname, start, finish);
+        for(LocalDateTime timestamp : metrics.keySet()){
+            TreeMap<String, Object> metricsmap = metrics.get(timestamp);
+            NodeStatus status = null;
+            double cpuUsage = Double.parseDouble(metricsmap.get("cpu_user").toString());
+            double memUsage = Double.parseDouble(metricsmap.get("mem_free").toString());
+            double gpuUsage = 0.0;
+            double netInUsage = Double.parseDouble(metricsmap.get("bytes_in").toString());
+            double netOutUsage = Double.parseDouble(metricsmap.get("bytes_out").toString());
+            NodeState state = new NodeState(timestamp.toString(), node.getId(), timestamp, status, cpuUsage, memUsage, gpuUsage, netInUsage, netOutUsage);
+            ret.add(state);
+        }
+        return ret;
     }
 
 

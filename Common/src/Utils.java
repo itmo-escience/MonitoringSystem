@@ -1,26 +1,18 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.io.IOUtils;
 //import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -55,17 +47,18 @@ class Utils {
                 stream.close();
                 String res = new String(responseBody);
                 ret = new JSONObject(res);
-
             } catch (HttpException e) {
                 log.error("HttpException: ", e);
-                Sleep(1000);
+                //Sleep(1000);
             } catch (IOException e) {
                 log.error("IOException: ", e);
-                Sleep(1000);
+                //Sleep(1000);
             }
             catch (JSONException e) {
                 log.error("JSONException: ", e);
-                Sleep(1000);
+                //Sleep(1000);
+            } catch (Throwable throwable) {
+                log.error("JSONException: ", throwable);
             } finally {
                 method.releaseConnection();
             }
@@ -80,6 +73,8 @@ class Utils {
             log.error(e);
         }
     }
+
+
 
     public static HashMap<String, Object> getHashMapFromJSONObject(JSONObject object){
         HashMap<String, Object> ret = new HashMap<String, Object>();

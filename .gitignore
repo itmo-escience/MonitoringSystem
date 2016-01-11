@@ -13,3 +13,6 @@ uiDesigner.xml
 vcs.xml
 workspace.xml
 .idea
+/MetricsMonitor/nbproject/private/
+/MetricsMonitor/build/
+/MetricsMonitor/dist/

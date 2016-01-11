@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 public class MetricsMonitor {
     private static Logger log = LogManager.getLogger(MetricsMonitor.class);
     private int sleepInterval = 5000;
-    private GangliaAPIClient client;
+    private IMetricsDataProvider dataProvider;
     private CommonMongoClient mongoClient;
     public String monitoringHost = "192.168.92.11:8081"; //"192.168.13.133:8082"
     private String startedMetricsMons = "startedMetricsMons";
@@ -44,8 +44,8 @@ public class MetricsMonitor {
 
     public MetricsMonitor(CommonMongoClient mongoClient){
         this.mongoClient = mongoClient;
-        client = new GangliaAPIClient(monitoringHost, desiredMetrics);
-        clusterNames = client.GetClusterNames();
+        dataProvider = new GangliaAPIClient(monitoringHost, desiredMetrics);
+        clusterNames = dataProvider.GetClusterNames();
     }
 
     public void StartMonitoring(){
@@ -66,13 +66,14 @@ public class MetricsMonitor {
             try {
 
                 for(String clusterName : clusterNames){
-                    TreeMap<String, TreeMap<String, Object>> state = client.GetActualMetricsOfCluster(clusterName, desiredMetrics);
+                    TreeMap<String, TreeMap<String, Object>> state = dataProvider.GetData(clusterName, desiredMetrics);
                     SaveMetricsToDb(state);
+                    state = null;
                 }
                 log.trace("Sleeping " + sleepInterval + "ms");
                 Thread.sleep(sleepInterval);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }
@@ -118,7 +119,7 @@ public class MetricsMonitor {
 //        return ret;
 //    }
 
-    private TreeMap<LocalDateTime, TreeMap<String, Object>> GetMetricsFromDb(String hostname, LocalDateTime starttime, LocalDateTime endtime){
+    public TreeMap<LocalDateTime, TreeMap<String, Object>> GetMetricsFromDb(String hostname, LocalDateTime starttime, LocalDateTime endtime){
         log.debug("Getting GetMetrics from Db from DB "+hostname);
         //log.trace("Getting GetMetrics from Db from DB "+hostname);
         TreeMap<LocalDateTime, TreeMap<String, Object>> ret = new TreeMap<LocalDateTime, TreeMap<String, Object>>();
@@ -162,25 +163,6 @@ public class MetricsMonitor {
 
     }
 
-    public List<NodeState> getNodeStateForPeriod(Node node, LocalDateTime starttime, LocalDateTime endtime){
-        ArrayList<NodeState> ret = new ArrayList<>();
-        String hostname = node.getIp();
-//        hostname = "node-92-16";
-//        starttime = LocalDateTime.now().minusDays(4);
-//        endtime = LocalDateTime.now();
-        TreeMap<LocalDateTime, TreeMap<String, Object>> metrics = GetMetricsFromDb(hostname, starttime, endtime);
-        for(LocalDateTime timestamp : metrics.keySet()){
-            TreeMap<String, Object> metricsmap = metrics.get(timestamp);
-            NodeStatus status = null;
-            double cpuUsage = Double.parseDouble(metricsmap.get("cpu_user").toString());
-            double memUsage = Double.parseDouble(metricsmap.get("mem_free").toString());
-            double gpuUsage = 0.0;
-            double netInUsage = Double.parseDouble(metricsmap.get("bytes_in").toString());
-            double netOutUsage = Double.parseDouble(metricsmap.get("bytes_out").toString());
-            NodeState state = new NodeState(timestamp.toString(), node.getId(), timestamp, status, cpuUsage, memUsage, gpuUsage, netInUsage, netOutUsage);
-            ret.add(state);
-        }
-        return ret;
-    }
+
 
 }

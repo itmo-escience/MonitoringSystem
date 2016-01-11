@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Created by Pavel Smirnov
  */
-public class GangliaAPIClient {
+public class GangliaAPIClient implements IMetricsDataProvider{
 
     private static Log log = LogFactory.getLog(GangliaAPIClient.class);
     private int sleepInterval = 3000;
@@ -21,7 +21,7 @@ public class GangliaAPIClient {
     }
 
     private HashMap<String,String[]> baseparams = new HashMap<String, String[]>(){{
-        put("environment",new String[]{"servers"});
+        put("environment",new String[]{"default"});
         put("service", new String[]{"default"});
     }};
 
@@ -56,7 +56,8 @@ public class GangliaAPIClient {
                 JSONArray items =  ((JSONArray)((JSONObject) json.get("response")).get("metrics"));
                 for (int i = 0; i < items.length(); i++) {
                     JSONObject ob = items.getJSONObject(i);
-                    ret.add(ob.get(propName).toString());
+                    if(!ret.contains(ob.get(propName).toString()))
+                        ret.add(ob.get(propName).toString());
                 }
         }
         catch (Exception e){
@@ -78,7 +79,6 @@ public class GangliaAPIClient {
                 String name = metric.get("metric").toString();
                 String value = metric.get("value").toString();
 
-
                 if (requiredMetricNames==null || (requiredMetricNames!=null && requiredMetricNames.contains(name))){
                     if(!ret.keySet().contains(hostname))
                         ret.put(hostname, new TreeMap<String, Object>());
@@ -93,41 +93,41 @@ public class GangliaAPIClient {
         return ret;
     }
 
-    public TreeMap<String, Object> requestMetrics0(HashMap<String, String> params, Set<String> requiredMetricNames){
-        log.debug("requestMetrics()");
-        TreeMap<String, Object> ret = new TreeMap<String, Object>();
-//        HashMap<String,String> mergedparams = new HashMap<String,String>(baseparams);
-//        mergedparams.putAll(params);
-//        String paramString = "";
-//        for (String key : mergedparams.keySet()){
-//            if(paramString!="")paramString+="&";
-//            paramString+=key+"="+mergedparams.get(key);
-//        }
-//        String url = getbaseurl()+"?"+paramString;
-//        JSONObject json = Utils.getJsonFromUrl(url);
-//        try{
-//            JSONArray metrics =  ((JSONArray)((JSONObject) json.get("response")).get("metrics"));
-//            for (int i = 0; i < metrics.length(); i++){
-//                JSONObject metric = metrics.getJSONObject(i);
-//                String name = metric.get("metric").toString();
-//                String value = metric.get("value").toString();
-//                if (requiredMetricNames!=null){
-//                   if (requiredMetricNames.contains(name))
-//                       ret.put(name, value);
-//                }else
-//                    ret.put(name, value);
-//             }
-//        }
-//        catch (Exception e){
-//            log.error("Some error with json reading", e);
-//        }
-        return ret;
-    }
+//    public TreeMap<String, Object> requestMetrics0(HashMap<String, String> params, Set<String> requiredMetricNames){
+//        log.debug("requestMetrics()");
+//        TreeMap<String, Object> ret = new TreeMap<String, Object>();
+////        HashMap<String,String> mergedparams = new HashMap<String,String>(baseparams);
+////        mergedparams.putAll(params);
+////        String paramString = "";
+////        for (String key : mergedparams.keySet()){
+////            if(paramString!="")paramString+="&";
+////            paramString+=key+"="+mergedparams.get(key);
+////        }
+////        String url = getbaseurl()+"?"+paramString;
+////        JSONObject json = Utils.getJsonFromUrl(url);
+////        try{
+////            JSONArray metrics =  ((JSONArray)((JSONObject) json.get("response")).get("metrics"));
+////            for (int i = 0; i < metrics.length(); i++){
+////                JSONObject metric = metrics.getJSONObject(i);
+////                String name = metric.get("metric").toString();
+////                String value = metric.get("value").toString();
+////                if (requiredMetricNames!=null){
+////                   if (requiredMetricNames.contains(name))
+////                       ret.put(name, value);
+////                }else
+////                    ret.put(name, value);
+////             }
+////        }
+////        catch (Exception e){
+////            log.error("Some error with json reading", e);
+////        }
+//        return ret;
+//    }
 
     public List<String> GetClusterNames(){
         log.debug("Getting cluster names");
         HashMap<String, String[]> requestParams = new HashMap<String, String[]>(){{
-            put("metric", new String[]{"cpu_system"});  //get any
+            put("metric", new String[]{"heartbeat"});  //get any
         }};
         List<String> ret = requestItems(requestParams, "cluster");
         return ret;
@@ -143,7 +143,7 @@ public class GangliaAPIClient {
         return ret;
     }
 
-    public TreeMap<String, TreeMap<String, Object>> GetActualMetricsOfCluster(String clusterName, String[] metricNames){
+    public TreeMap<String, TreeMap<String, Object>> GetData(String clusterName, String[] metricNames){
         log.debug("Getting desirableMetrics for " + clusterName);
 
         HashMap<String, String[]> requestParams = new HashMap<String, String[]>(){{

@@ -2,7 +2,6 @@ import StateStructures.*;
 import StateStructures.Task;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
-import ifmo.escience.dapris.common.entities.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -14,10 +13,7 @@ import org.javers.core.diff.Diff;
 import org.javers.core.metamodel.object.CdoSnapshot;
 import org.javers.repository.jql.QueryBuilder;
 import org.javers.repository.mongo.MongoRepository;
-import org.json.JSONObject;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 /**
  * Created by Pavel Smirnov
@@ -28,8 +24,8 @@ public class ClusterStateMonitor {
     private Javers javers;
     private int sleepInterval = 3000;
     public boolean useVersioning = false;
-    public String masterHost;
     private CommonMongoClient mongoClient;
+    private IStateDataProvider dataProvider;
 
     public static void main(String[] args){
         ClusterStateMonitor monitor = new ClusterStateMonitor("192.168.92.11", new CommonMongoClient());
@@ -44,7 +40,7 @@ public class ClusterStateMonitor {
     }
 
     public ClusterStateMonitor(String masterHost, CommonMongoClient mongoClient){
-        this.masterHost = masterHost;
+        this.dataProvider = new MesosRestClient(masterHost);
         this.mongoClient = mongoClient;
         javers = JaversBuilder.javers().build();
         if(useVersioning){
@@ -57,8 +53,8 @@ public class ClusterStateMonitor {
         log.info("Monitoring stated");
         while(1==1){
             try {
-                ClusterState state = getActualClusterState();
-                UpdateStateInDB(state);
+                ClusterState state = dataProvider.GetData();
+                updateStateInDB(state);
                 Thread.sleep(sleepInterval);
                 log.trace("Sleeping " + sleepInterval+"ms");
             } catch (InterruptedException e){
@@ -67,109 +63,9 @@ public class ClusterStateMonitor {
         }
     }
 
-
-    public ClusterState getActualClusterState(){
-        Long operationStarted = System.currentTimeMillis();
-        String[] frameworkKeys = new String[]{"frameworks", "completed_frameworks"};
-        String[] taskKeys = new String[]{     "tasks", "completed_tasks"};
-
-        JSONObject json = Utils.getJsonFromUrl("http://" + this.masterHost + ":5050/master/state.json");
-        HashMap state = Utils.getHashMapFromJSONObject(json);
-        Double started = (Double) state.get("start_time");
-
-        ClusterState clusterState = null;
-        if (started != null){
-            clusterState = new ClusterState("Mesos@"+this.masterHost, started);
-
-            List<Slave> slaves = new ArrayList<Slave>();
-            for (HashMap slavemap : (ArrayList<HashMap>) state.get("slaves")){
-                String slid= slavemap.get("pid").toString();
-                Slave slave = new Slave(slavemap.get("id").toString(), slid, slavemap.get("hostname").toString());
-                //ArrayList<Pair> resources = (HashMap)slavemap.get("resources");
-
-                HashMap resourceMap = (HashMap)slavemap.get("resources");
-                List <Pair> resources = new ArrayList<Pair>();
-                for (String key : (Set<String>) resourceMap.keySet())
-                    if(!resourceMap.get(key).toString().equals("0"))
-                        resources.add(new Pair(key, resourceMap.get(key), slid+"-resource-"+key));
-                slave.setResources(resources);
-                slaves.add(slave);
-            }
-            clusterState.setSlaves(slaves);
-
-            List<Framework> frameworks = new ArrayList<Framework>();
-            for (String frkey : frameworkKeys){
-                int frameworkI=0;
-                ArrayList<HashMap> frameworkList = (ArrayList<HashMap>) state.get(frkey);
-                for (frameworkI=0; frameworkI<frameworkList.size() /*&& frameworkI<2*/; frameworkI++){
-                    HashMap frameworkmap = frameworkList.get(frameworkI);
-                    String status = (frkey.contains("completed") ? "Completed" : "Active");
-                    String frid = frameworkmap.get("id").toString();
-                    Framework framework = new Framework(frid,frameworkmap.get("name").toString(), clusterState.getId(),status);
-                    HashMap resourceMap = (HashMap)frameworkmap.get("resources");
-                    List <Pair> resources = new ArrayList<Pair>();
-                    for (String key : (Set<String>) resourceMap.keySet())
-                        if(!resourceMap.get(key).toString().equals("0"))
-                            resources.add(new Pair(key, resourceMap.get(key), frid+"-resource-"+key));
-                    framework.setResources(resources);
-
-                    List<Executor> executors = new ArrayList<Executor>();
-                    for (HashMap executormap : (ArrayList<HashMap>) frameworkmap.get("executors")){
-
-                        String execid = executormap.get("id").toString();
-                        String slaveId = executormap.get("slave_id").toString();
-                        HashMap command = (HashMap)executormap.get("command");
-                        //resources = (HashMap)executormap.get("resources");
-                        Executor executor = new Executor(execid, slaveId, new TreeMap<>(command), null);
-                        executors.add(executor);
-                    }
-                    framework.setExecutors(executors);
-
-                    List<Task> tasks = new ArrayList<Task>();
-                    for (String taskKey : taskKeys){
-                        int taskI=0;
-                        ArrayList<HashMap> taskList = (ArrayList<HashMap>)frameworkmap.get(taskKey);
-                        for (taskI=0; taskI<taskList.size() /*&& taskI<1*/; taskI++){
-                            HashMap taskmap = taskList.get(taskI);
-                            String slaveId = taskmap.get("slave_id").toString();
-                            String tid = frid+"."+taskmap.get("id").toString();
-                            Task task = new Task(tid, framework.getId(), slaveId);
-
-                            resourceMap = (HashMap)taskmap.get("resources");
-                            resources = new ArrayList<Pair>();
-                            for (String key : (Set<String>) resourceMap.keySet())
-                                if(!resourceMap.get(key).toString().equals("0"))
-                                    resources.add(new Pair(key, resourceMap.get(key), tid+"-resource-"+key));
-                            task.setResources(resources);
-
-                            List<StatusChange> statusChanges = new ArrayList<StatusChange>();
-                            for (HashMap statusChangeObj : (ArrayList<HashMap>) taskmap.get("statuses")){
-                                status = statusChangeObj.get("state").toString();
-                                Double timestamp = (Double) statusChangeObj.get("timestamp");
-                                //DateTime timestamp = new DateTime((long) (doublestamp * 1000));
-
-                                StatusChange statusChange = new StatusChange(tid+"-"+status, status, timestamp);
-                                statusChanges.add(statusChange);
-                            }
-                            task.setStatusChanges(statusChanges);
-                            //if(tid.equals("3"))
-                            tasks.add(task);
-                        }
-                    }
-                    framework.setTasks(tasks);
-                    frameworks.add(framework);
-                }
-            }
-            clusterState.setFrameworks(frameworks);
-
-        }
-        log.trace("GetActualClusterState took: " + (System.currentTimeMillis() - operationStarted) / 1000 + " seconds");
-        return clusterState;
-    }
-
     public ArrayList<String> getStartedClusters(){
         ArrayList<String> ret = new ArrayList<String>();
-        FindIterable<Document> res = mongoClient.getDocumentsFromDB("startedClusters", new Document("name", "Mesos"+this.masterHost));
+        FindIterable<Document> res = mongoClient.getDocumentsFromDB("clusterStates", new Document(), new Document("_id","-1"), 1);
         Iterator keysIter = res.iterator();
         while (keysIter.hasNext()){
             Document resultmap = (Document)keysIter.next();
@@ -183,7 +79,7 @@ public class ClusterStateMonitor {
         return getStateFromDB(stateIDs.get(stateIDs.size()-1));
     }
 
-    public ClusterState getStateFromDB(String id /*,time*/){
+    public ClusterState getStateFromDB(String id){
         log.trace("Getting cluster state from DB");
         Long operationStarted = System.currentTimeMillis();
         ClusterState ret = null;
@@ -198,18 +94,20 @@ public class ClusterStateMonitor {
             }
         }
         //FindIterable<Document> res = mongoClient.getDocumentsFromDB(new Document("name", "Mesos@"+this.masterHost), "clusterStates");
-        List<ClusterState> res = mongoClient.getObjectsFromDB("clusterStates", new BasicDBObject(){{ put("name", "Mesos@"+masterHost); }}, 0, ClusterState.class);
+        BasicDBObject query = new BasicDBObject(){{ put("id",id); }};
+        List<ClusterState> res = mongoClient.getObjectsFromDB("clusterStates", query , 0, ClusterState.class);
         if(res.size()>0)
             ret = res.get(0);
         log.trace("Getting cluster state from DB took: " + (System.currentTimeMillis() - operationStarted) / 1000 + " seconds");
         return ret;
     }
 
-    public void UpdateStateInDB(ClusterState state){
+    public void updateStateInDB(ClusterState state){
         log.trace("Updating state in DB");
         mongoClient.open();
+
         Long operationStarted = System.currentTimeMillis();
-        ClusterState prevState = getStateFromDB(state.getStarted().toString());
+        ClusterState prevState = getStateFromDB(state.getId());
 
         if (prevState!=null){
             log.trace("Comparing prev & curr states");
@@ -236,76 +134,24 @@ public class ClusterStateMonitor {
         log.trace("Saving state to DB");
         Long operationStarted = System.currentTimeMillis();
 
-        BasicDBObject find = new BasicDBObject(){{ put("name","Mesos@"+masterHost); put("started", state.getStartedToDate().toString());  }};
-        BasicDBObject update = new BasicDBObject(find){{ put("updated", new Date().toString()); }};
-        mongoClient.saveObjectToDB("startedClusters", find, update);
+//        BasicDBObject find = new BasicDBObject(){{
+//            put("id",state.getId());
+//            put("started", state.getStartedAsDate().toString());
+//        }};
+//        BasicDBObject update = new BasicDBObject(find){{
+//            put("updated", new Date().toString());
+//        }};
+//        mongoClient.saveObjectToDB("startedClusters", find, update);
 
-        String id = state.getId();
-        mongoClient.saveObjectToDB("clusterStates", new BasicDBObject(){{ put("id", id); }}, state);
+        mongoClient.saveObjectToDB("clusterStates", new BasicDBObject(){{ put("id", state.getId()); }}, state);
 
         //if(useVersioning)
         log.trace("Commiting to javers");
-        javers.commit(id, state);
+        //javers.commit(id, state);
         mongoClient.close();
         log.trace("Saving state to DB took: " + (System.currentTimeMillis() - operationStarted) / 1000 + " seconds");
     }
 
-    public List<ifmo.escience.dapris.common.entities.Node> getNodes(ClusterState state){
-        ArrayList<ifmo.escience.dapris.common.entities.Node> ret = new ArrayList<ifmo.escience.dapris.common.entities.Node>();
-        for(Slave slave : state.getSlaves()){
-            String id = slave.getId();
-            String name =  slave.getPid();
-            String ip = slave.getHostname();
-            String parentNodeId = null;
-            String networkId = "networkID";
-            Map<String, Object> resourceMap = slave.getResourceMap();
-            Double cpuTotal = Double.parseDouble(resourceMap.get("cpus").toString());
-            Double memoryTotal = Double.parseDouble(resourceMap.get("mem").toString());
-            Double gpuTotal = 0.0;
-            ifmo.escience.dapris.common.entities.Node node = new ifmo.escience.dapris.common.entities.Node(id, name, ip, parentNodeId, cpuTotal, memoryTotal, gpuTotal, networkId);
-            ret.add(node);
-        }
-        return ret;
-    }
-
-    public List<ifmo.escience.dapris.common.entities.Task> getTasks(ClusterState state){
-        List<ifmo.escience.dapris.common.entities.Task> ret = new ArrayList<ifmo.escience.dapris.common.entities.Task>();
-        int i=0;
-        for (StateStructures.Framework framework : state.getFrameworks()){
-            String typeId = framework.getName();
-            for (StateStructures.Task task : framework.getTasks()){
-
-                Random rand = new Random(i);
-                HashSet<String> parentTaskIds = null;
-
-                Hashtable<String, Double> parameters = new Hashtable<>();
-                LocalDateTime started = null;
-                LocalDateTime finished = null;
-                try {
-                    started = LocalDateTime.ofInstant(task.getStarted().toInstant(), ZoneId.systemDefault());
-                }
-                catch (Exception e){
-                    String test="123";
-                }
-                try {
-                    finished = LocalDateTime.ofInstant(task.getFinished().toInstant(), ZoneId.systemDefault());
-                }
-                catch (Exception e){
-                    String test="123";
-                }
-
-                String nodeId = task.getSlaveId();
-                TaskStatus status = null;
-                HashSet<Data> inData = new HashSet<>();
-                HashSet<Data> outData = new HashSet<>();
-
-                ifmo.escience.dapris.common.entities.Task addTask = new ifmo.escience.dapris.common.entities.Task(task.getId(), parentTaskIds, typeId, parameters, nodeId, status, started, finished, inData, outData);
-                ret.add(addTask);
-                i++;
-            }
-        }
-        return ret;
-    }
 
     public void TestJavers(){
 
@@ -331,8 +177,8 @@ public class ClusterStateMonitor {
 //        if (snapshots.size()>0){
 //            CdoSnapshot first = snapshots.get(0);
 //            JaversShapshotsCompiler snapCompiler = new JaversShapshotsCompiler(javers);
-//            List<Pair> ret = (List<Pair>)snapCompiler.compileEntityStateFromSnapshot(first);
-//            Diff diff = javers.compareCollections(list, ret, Pair.class);
+//            List<StateStructures.Pair> ret = (List<StateStructures.Pair>)snapCompiler.compileEntityStateFromSnapshot(first);
+//            Diff diff = javers.compareCollections(list, ret, StateStructures.Pair.class);
 //            String test ="123";
 //        }
 

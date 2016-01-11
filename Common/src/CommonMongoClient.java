@@ -165,6 +165,7 @@ public class CommonMongoClient {
             T retObj = null;
             try {
                 retObj = mapper.readValue(jsonStr, targetClass);
+
                 ret.add(retObj);
             } catch (IOException e) {
                 log.error(e);
