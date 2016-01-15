@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.springframework.boot:spring-boot-starter-data-mongodb:1.3.0.RELEASE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-data-mongodb/1.3.0.RELEASE/3a53ad4ec8dfe0e155c175093c7d1402c4e6d380/spring-boot-starter-data-mongodb-1.3.0.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-data-mongodb/1.3.0.RELEASE/ddf158ae7daf63580df6be2747298e6627170dde/spring-boot-starter-data-mongodb-1.3.0.RELEASE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
