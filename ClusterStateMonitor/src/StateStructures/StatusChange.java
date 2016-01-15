@@ -13,9 +13,9 @@ import java.util.Date;
 public class StatusChange implements java.io.Serializable {
 
     @Id
-    public String id;
-    public Double time;
-    public String status;
+    private String id;
+    private Double time;
+    private String status;
 
     public StatusChange(){}
     public StatusChange(String id, String status, Double time){
@@ -27,11 +27,11 @@ public class StatusChange implements java.io.Serializable {
     public void setId(String id){ this.id = id; }
     public String getId(){ return id; }
 
-    public void setStatus(String value){ this.status = value; }
-    public String getStatus(){ return status; }
-
     public void setTime(Double time){ this.time = time; }
     public Double getTime(){ return time; }
+
+    public void setStatus(String value){ this.status = value; }
+    public String getStatus(){ return status; }
 
     @JsonProperty("Timestamp")
     public Date getTimeStamp(){ return  new Date((long) (time * 1000)); }

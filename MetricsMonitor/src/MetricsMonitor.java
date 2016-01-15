@@ -21,11 +21,9 @@ import org.apache.logging.log4j.LogManager;
  */
 public class MetricsMonitor {
     private static Logger log = LogManager.getLogger(MetricsMonitor.class);
-    private int sleepInterval = 5000;
     private IMetricsDataProvider dataProvider;
     private CommonMongoClient mongoClient;
     public String monitoringHost = "192.168.92.11:8081"; //"192.168.13.133:8082"
-    private String startedMetricsMons = "startedMetricsMons";
     private String defaultCollection = "metrics";
     private String[] desiredMetrics = new String[]{ "bytes_in", "bytes_out", "cpu_user","mem_free", "part_max_used"};
     private List<String> clusterNames;
@@ -39,7 +37,7 @@ public class MetricsMonitor {
         if (args!=null  && args.length>0 && args[0].equals("getData"))
             metricsMonitor.GetMetricsFromDb("node-92-11", LocalDateTime.now().minusMinutes(1), LocalDateTime.now());
         else
-            metricsMonitor.StartMonitoring();
+            metricsMonitor.StartMonitoring(5000);
     }
 
     public MetricsMonitor(CommonMongoClient mongoClient){
@@ -48,7 +46,7 @@ public class MetricsMonitor {
         clusterNames = dataProvider.GetClusterNames();
     }
 
-    public void StartMonitoring(){
+    public void StartMonitoring(int sleepInterval){
 
         String startedAt = "";
         try {
@@ -61,7 +59,8 @@ public class MetricsMonitor {
         startedEntry.append("monitoringHost", monitoringHost);
         startedEntry.append("startedAt", startedAt);
         startedEntry.append("timestamp", new Date());
-        mongoClient.insertDocumentToDB(startedMetricsMons, startedEntry);
+        mongoClient.insertDocumentToDB("startedMetricsMons", startedEntry);
+
         while(1==1){
             try {
 
@@ -138,7 +137,7 @@ public class MetricsMonitor {
         res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname", hostname).append("timestamp", dateFilter));
         if(res.first()==null){ //Find monitor, started before task started
             log.debug("No metrics for range. Getting uprange");
-            FindIterable<Document> lastStartedMonitor = mongoClient.getDocumentsFromDB(startedMetricsMons, new Document("monitoringHost", monitoringHost).append("timestamp", new Document("$lte", start)), new Document("_id", -1), 1);
+            FindIterable<Document> lastStartedMonitor = mongoClient.getDocumentsFromDB("startedMetricsMons", new Document("monitoringHost", monitoringHost).append("timestamp", new Document("$lte", start)), new Document("_id", -1), 1);
             Document timespampfilter = new Document("$lte", start);
             if(lastStartedMonitor.first()!=null){
                 log.debug("Getting uprange only till "+lastStartedMonitor.first().get("timestamp"));

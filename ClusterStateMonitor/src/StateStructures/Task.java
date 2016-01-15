@@ -49,7 +49,7 @@ public class Task {
     public void setResources(List<Pair> resources){ this.resources = resources; }
 
     @JsonProperty("Status")
-    public String getStatus(){ return statusChanges.get(statusChanges.size()-1).status; }
+    public String getStatus(){ return statusChanges.get(statusChanges.size()-1).getStatus(); }
 
     @JsonProperty("Started")
     public Date getStarted(){

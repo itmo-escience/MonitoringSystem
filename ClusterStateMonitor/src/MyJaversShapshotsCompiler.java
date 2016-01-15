@@ -6,13 +6,9 @@
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import StateStructures.Pair;
 import org.javers.common.collections.Optional;
 import org.javers.core.Javers;
 import org.javers.core.commit.CommitId;
@@ -174,5 +170,60 @@ public class MyJaversShapshotsCompiler {
 
     private String getSetterNameForProperty(Property property) {
         return "set" + property.getName().substring(0, 1).toUpperCase() + property.getName().substring(1);
+    }
+
+    public void TestJavers(){
+
+//        CustomTreeMap map = new CustomTreeMap("1"){{
+//            put("mem", 4480.0);
+//            put("cpus", 10.0);
+//            put("disk", 0);
+//        }};
+
+        List<Pair> list = new ArrayList<Pair>();
+        list.add(new Pair("mem", 4480,"mem"));
+        list.add(new Pair("cpus",(double)10,"cpus"));
+        list.add(new Pair("disk",(double)0,"disk"));
+
+//            HashSet<IdentifiedObject> map = new HashSet<IdentifiedObject>(){{
+//                add(new IdentifiedObject("mem", (double) 4480));
+//                add(new IdentifiedObject("cpus",(double)10));
+//                add(new IdentifiedObject("disk",(double)0));
+//        }};
+
+//        javers.commit("1", list);
+//        List<CdoSnapshot> snapshots = javers.findSnapshots(QueryBuilder.byInstanceId("1", list.getClass()).build());
+//        if (snapshots.size()>0){
+//            CdoSnapshot first = snapshots.get(0);
+//            JaversShapshotsCompiler snapCompiler = new JaversShapshotsCompiler(javers);
+//            List<StateStructures.Pair> ret = (List<StateStructures.Pair>)snapCompiler.compileEntityStateFromSnapshot(first);
+//            Diff diff = javers.compareCollections(list, ret, StateStructures.Pair.class);
+//            String test ="123";
+//        }
+
+//        while(1==1) {
+//
+//            try {
+//                javers.commit("1", map);
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+
+    }
+
+    public void TestJavers2(){
+        //javers = JaversBuilder.javers().build();
+
+        //javers.commit("author", new Employee("bob", 31) );
+
+        //javers.commit("author", new Employee("john",25) );
+
+
+        //Diff changes = javers.findChanges( QueryBuilder.byInstanceId("bob", Employee.class).build() );
+        //Object obj =  javers.findSnapshots(QueryBuilder.byInstanceId("bob", Employee.class).build());
+        //String str = "123";
+
     }
 }

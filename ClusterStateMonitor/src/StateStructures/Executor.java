@@ -11,10 +11,10 @@ import java.util.TreeMap;
  */
 public class Executor {
     @Id
-    public String id;
+    private String id;
     private String slaveId;
-    private String status;
     private String frameworkId;
+    private String status;
     private List<Pair> command;
     private List<Pair> resources;
 

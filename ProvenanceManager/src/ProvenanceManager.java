@@ -1,6 +1,5 @@
 import StateStructures.ClusterState;
 import StateStructures.Slave;
-import com.sun.org.apache.xml.internal.security.Init;
 import ifmo.escience.dapris.common.data.IRepository;
 import ifmo.escience.dapris.common.data.Uow;
 import ifmo.escience.dapris.common.entities.*;
@@ -11,7 +10,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 
-public class StatisticsRepository implements IRepository {
+public class ProvenanceManager implements IRepository {
 
     private List<NetworkType> networkTypes = new ArrayList<NetworkType>();
     private List<Network> networks = new ArrayList<Network>();
@@ -21,15 +20,16 @@ public class StatisticsRepository implements IRepository {
     private List<Data> data = new ArrayList<Data>();
     private List<TaskType> taskTypes = new ArrayList<TaskType>();
     private List<Task> tasks = new ArrayList<Task>();
-    private int nodesNumber = 0;
+
     private CommonMongoClient mongoClient;
     private ClusterStateMonitor clusterStateMonitor;
-    private DstorageMonitor dstorageMonitor;
+    private DataLayerMonitor dataLayerMonitor;
     private MetricsMonitor metricsMonitor;
-    private ClusterState clusterState;
+    //private ClusterState clusterState;
 
     public static void main(String[] args){
-        StatisticsRepository repo = new StatisticsRepository(new CommonMongoClient());
+
+        ProvenanceManager repo = new ProvenanceManager(new CommonMongoClient());
         Uow.instance.repo = repo;
 
         List<Task> tasks = new ArrayList<Task>(repo.getAllTasks());
@@ -38,22 +38,25 @@ public class StatisticsRepository implements IRepository {
         for (Task task : tasks){
             List<NodeState> nodeStates = task.getNodeStates();
         }
-        String test = "123";
+
 
     }
 
-    public StatisticsRepository(){
+    public ProvenanceManager(){
 
     }
-    public StatisticsRepository(CommonMongoClient mongoClient){
+
+    public ProvenanceManager(CommonMongoClient mongoClient){
         this.mongoClient = mongoClient;
         this.clusterStateMonitor = new ClusterStateMonitor("192.168.92.11", mongoClient);
         this.metricsMonitor = new MetricsMonitor(mongoClient);
-        this.dstorageMonitor = new DstorageMonitor(mongoClient);
+        DataLayerMonitor dataLayerMonitor = new DataLayerMonitor(new CommonMongoClient());
+
+        //List<Request> requests = dataLayerMonitor.GetRequestsFromDB();
 
         ClusterState state = clusterStateMonitor.getClusterStateFromDB();
-        nodes = getNodes(state);
-        tasks = getTasks(state);
+        nodes = extractNodesFromState(state);
+        tasks = extractTasksFromState(state);
         InitDataLayers();
     }
 
@@ -68,11 +71,11 @@ public class StatisticsRepository implements IRepository {
         layers.add(new DataLayer("1", "SSD", nodeId, readSpeed, writeSpeed, totalSize));
         layers.add(new DataLayer("2", "RAM", nodeId, readSpeed, writeSpeed, totalSize));
 
-        //dstorageMonitor.GetLeveledRequests();
+        //dataLayerMonitor.GetLeveledRequests();
     }
 
-    public List<ifmo.escience.dapris.common.entities.Node> getNodes(ClusterState state){
-        ArrayList<ifmo.escience.dapris.common.entities.Node> ret = new ArrayList<ifmo.escience.dapris.common.entities.Node>();
+    public List<Node> extractNodesFromState(ClusterState state){
+        ArrayList<Node> ret = new ArrayList<ifmo.escience.dapris.common.entities.Node>();
         for(Slave slave : state.getSlaves()){
             String id = slave.getId();
             String name =  slave.getPid();
@@ -83,13 +86,13 @@ public class StatisticsRepository implements IRepository {
             Double cpuTotal = Double.parseDouble(resourceMap.get("cpus").toString());
             Double memoryTotal = Double.parseDouble(resourceMap.get("mem").toString());
             Double gpuTotal = 0.0;
-            ifmo.escience.dapris.common.entities.Node node = new ifmo.escience.dapris.common.entities.Node(id, name, ip, parentNodeId, cpuTotal, memoryTotal, gpuTotal, networkId);
+            Node node = new Node(id, name, ip, parentNodeId, cpuTotal, memoryTotal, gpuTotal, networkId);
             ret.add(node);
         }
         return ret;
     }
 
-    public List<Task> getTasks(ClusterState state){
+    public List<Task> extractTasksFromState(ClusterState state){
         List<Task> ret = new ArrayList<ifmo.escience.dapris.common.entities.Task>();
         int i=0;
         for (StateStructures.Framework framework : state.getFrameworks()){

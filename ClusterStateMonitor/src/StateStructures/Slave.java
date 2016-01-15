@@ -15,7 +15,6 @@ public class Slave {
     private String pid;
     private String hostname;
     private List <Pair> resources;
-    //private TreeMap<String, Object> metrics;
 
     public Slave(){
 
@@ -34,6 +33,7 @@ public class Slave {
     public void setPid(String pid){ this.pid=pid; };
     public String getHostname(){ return hostname; };
     public void setHostname(String hostname){ this.hostname=hostname; };
+
     public List <Pair> getResources(){ return resources; }
     public void setResources(List<Pair> resources){ this.resources=resources; }
 

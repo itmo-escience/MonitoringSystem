@@ -106,7 +106,7 @@ public class MesosRestClient implements IStateDataProvider {
         return clusterState;
     }
 
-    public static List<Pair> TransformToPairs(HashMap<String, Object> map, String prefix){
+    private static List<Pair> TransformToPairs(HashMap<String, Object> map, String prefix){
         ArrayList<Pair> ret = new ArrayList<Pair>();
         for (String key : map.keySet()){
             Object value = map.get(key);

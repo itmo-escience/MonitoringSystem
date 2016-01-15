@@ -16,7 +16,9 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -39,8 +41,31 @@ public class CommonMongoClient {
     private DB db;
     private Boolean isOpened=false;
     private Boolean closeAtFinish=false;
+
     public CommonMongoClient(){
 
+    }
+
+    public void ReadConfigFile(){
+        BufferedReader br = null;
+
+        try {
+
+            String sCurrentLine;
+            br = new BufferedReader(new FileReader("MongoClient.conf"));
+            while ((sCurrentLine = br.readLine()) != null) {
+                System.out.println(sCurrentLine);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null)br.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     public MongoDatabase getDefaultDB(){ return defaultDB; }
@@ -73,6 +98,7 @@ public class CommonMongoClient {
 //        Document doc = Document.parse(jsonStr);
 //        insertDocumentToDB(doc, collection);
 //    }
+
     public DBObject CreateDBObject(Object obj){
         if(!(obj instanceof String)){
             ObjectMapper mapper = new ObjectMapper();

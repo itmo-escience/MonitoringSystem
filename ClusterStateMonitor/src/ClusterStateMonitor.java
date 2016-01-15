@@ -20,10 +20,9 @@ import java.util.*;
  */
 public class ClusterStateMonitor {
 
+    public boolean useVersioning = false;
     private static Logger log = LogManager.getLogger(ClusterStateMonitor.class);
     private Javers javers;
-    private int sleepInterval = 3000;
-    public boolean useVersioning = false;
     private CommonMongoClient mongoClient;
     private IStateDataProvider dataProvider;
 
@@ -34,7 +33,7 @@ public class ClusterStateMonitor {
             String stateID = dates.get(dates.size()-1);
             monitor.getStateFromDB(stateID);
         }else{
-              monitor.startMonitoring();
+              monitor.startMonitoring(3000); //implement via sleepInterval
         }
 
     }
@@ -49,7 +48,7 @@ public class ClusterStateMonitor {
         }
     }
 
-    public void startMonitoring(){
+    public void startMonitoring(int sleepInterval){
         log.info("Monitoring stated");
         while(1==1){
             try {
@@ -133,79 +132,17 @@ public class ClusterStateMonitor {
         mongoClient.open();
         log.trace("Saving state to DB");
         Long operationStarted = System.currentTimeMillis();
-
-//        BasicDBObject find = new BasicDBObject(){{
-//            put("id",state.getId());
-//            put("started", state.getStartedAsDate().toString());
-//        }};
-//        BasicDBObject update = new BasicDBObject(find){{
-//            put("updated", new Date().toString());
-//        }};
-//        mongoClient.saveObjectToDB("startedClusters", find, update);
-
         mongoClient.saveObjectToDB("clusterStates", new BasicDBObject(){{ put("id", state.getId()); }}, state);
 
-        //if(useVersioning)
-        log.trace("Commiting to javers");
-        //javers.commit(id, state);
+        if(useVersioning){
+            log.trace("Commiting to javers");
+            javers.commit(state.getId(), state);
+        }
         mongoClient.close();
         log.trace("Saving state to DB took: " + (System.currentTimeMillis() - operationStarted) / 1000 + " seconds");
     }
 
 
-    public void TestJavers(){
 
-//        CustomTreeMap map = new CustomTreeMap("1"){{
-//            put("mem", 4480.0);
-//            put("cpus", 10.0);
-//            put("disk", 0);
-//        }};
-
-        List<Pair> list = new ArrayList<Pair>();
-        list.add(new Pair("mem", 4480,"mem"));
-        list.add(new Pair("cpus",(double)10,"cpus"));
-        list.add(new Pair("disk",(double)0,"disk"));
-
-//            HashSet<IdentifiedObject> map = new HashSet<IdentifiedObject>(){{
-//                add(new IdentifiedObject("mem", (double) 4480));
-//                add(new IdentifiedObject("cpus",(double)10));
-//                add(new IdentifiedObject("disk",(double)0));
-//        }};
-
-//        javers.commit("1", list);
-//        List<CdoSnapshot> snapshots = javers.findSnapshots(QueryBuilder.byInstanceId("1", list.getClass()).build());
-//        if (snapshots.size()>0){
-//            CdoSnapshot first = snapshots.get(0);
-//            JaversShapshotsCompiler snapCompiler = new JaversShapshotsCompiler(javers);
-//            List<StateStructures.Pair> ret = (List<StateStructures.Pair>)snapCompiler.compileEntityStateFromSnapshot(first);
-//            Diff diff = javers.compareCollections(list, ret, StateStructures.Pair.class);
-//            String test ="123";
-//        }
-
-//        while(1==1) {
-//
-//            try {
-//                javers.commit("1", map);
-//                Thread.sleep(3000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-    }
-
-    public void TestJavers2(){
-        //javers = JaversBuilder.javers().build();
-
-        //javers.commit("author", new Employee("bob", 31) );
-
-        //javers.commit("author", new Employee("john",25) );
-
-
-        //Diff changes = javers.findChanges( QueryBuilder.byInstanceId("bob", Employee.class).build() );
-        //Object obj =  javers.findSnapshots(QueryBuilder.byInstanceId("bob", Employee.class).build());
-        //String str = "123";
-
-    }
 
 }

@@ -11,14 +11,10 @@ import java.util.*;
 public class GangliaAPIClient implements IMetricsDataProvider{
 
     private static Log log = LogFactory.getLog(GangliaAPIClient.class);
-    private int sleepInterval = 3000;
-    private String[] desirableMetrics;
     private String serverurl;
     public CommonMongoClient mongoClient;
 
-    private String getbaseurl(){
-        return "http://"+serverurl+"/ganglia/api/v1/metrics";
-    }
+
 
     private HashMap<String,String[]> baseparams = new HashMap<String, String[]>(){{
         put("environment",new String[]{"default"});
@@ -27,12 +23,15 @@ public class GangliaAPIClient implements IMetricsDataProvider{
 
     public GangliaAPIClient(String ApiServerUrl, String[] desirableMetrics){
         serverurl = ApiServerUrl;
-        if(desirableMetrics !=null)
-            this.desirableMetrics = desirableMetrics;
+//        if(desirableMetrics !=null)
+//            this.desirableMetrics = desirableMetrics;
         //hostNames = GetClusterHosts(clusterName);
         //coll = db.getCollection("desirableMetrics");
     }
 
+    private String getbaseurl(){
+        return "http://"+serverurl+"/ganglia/api/v1/metrics";
+    }
     public String createUrl(HashMap<String, String[]> params){
         HashMap<String,String[]> mergedparams = new HashMap<String,String[]>(baseparams);
         mergedparams.putAll(params);
@@ -46,7 +45,7 @@ public class GangliaAPIClient implements IMetricsDataProvider{
         return url;
     }
 
-    public List<String> requestItems(HashMap<String, String[]> params, String propName){
+    private List<String> requestItems(HashMap<String, String[]> params, String propName){
         log.debug("requestItems()");
         List<String> ret = new ArrayList<String>();
 
