@@ -10,8 +10,9 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import org.apache.logging.log4j.Logger;
@@ -129,7 +130,25 @@ class Utils {
     }
     public static Date EpochToDate(Double epoch){  return new Date((long) (epoch * 1000)); }
 
-
+    public static List<String> ReadConfigFile(String configFileName){
+        List<String> ret = new ArrayList<String>();
+        String line;
+        try (
+                InputStream fis = new FileInputStream(configFileName);
+                InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+                BufferedReader br = new BufferedReader(isr);
+        ) {
+            int i=0;
+            while ((line = br.readLine()) != null) {
+               ret.add(line);
+            }
+        } catch (FileNotFoundException e) {
+            log.info("Cannot read external config. Using default values");
+        } catch (IOException e) {
+            log.info("Cannot read external config. Using default values");
+        }
+        return ret;
+    }
 }
 
 

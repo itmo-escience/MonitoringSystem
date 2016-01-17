@@ -20,8 +20,8 @@ public class MesosRestClient implements IStateDataProvider {
         String[] frameworkKeys = new String[]{"frameworks", "completed_frameworks"};
         String[] taskKeys = new String[]{     "tasks", "completed_tasks"};
 
-        String url = "http://" + this.masterHost + ":5050/master/state.json";
-        //String url = "http://192.168.1.36/state.json";
+        //String url = "http://" + this.masterHost + ":5050/master/state.json";
+        String url = "http://192.168.1.36/state.json";
 
         JSONObject json = Utils.getJsonFromUrl(url);
         HashMap state = Utils.getHashMapFromJSONObject(json);

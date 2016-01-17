@@ -4,6 +4,8 @@ import ifmo.escience.dapris.common.data.IRepository;
 import ifmo.escience.dapris.common.data.Uow;
 import ifmo.escience.dapris.common.entities.*;
 import ifmo.escience.dapris.common.helpers.NodeStateDateComparator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,6 +23,7 @@ public class ProvenanceManager implements IRepository {
     private List<TaskType> taskTypes = new ArrayList<TaskType>();
     private List<Task> tasks = new ArrayList<Task>();
 
+    private static Logger log = LogManager.getLogger(ProvenanceManager.class);
     private CommonMongoClient mongoClient;
     private ClusterStateMonitor clusterStateMonitor;
     private DataLayerMonitor dataLayerMonitor;
@@ -30,15 +33,10 @@ public class ProvenanceManager implements IRepository {
     public static void main(String[] args){
 
         ProvenanceManager repo = new ProvenanceManager(new CommonMongoClient());
-        Uow.instance.repo = repo;
+
 
         List<Task> tasks = new ArrayList<Task>(repo.getAllTasks());
         List<Node> nodes = new ArrayList<Node>(repo.getAllNodes());
-
-        for (Task task : tasks){
-            List<NodeState> nodeStates = task.getNodeStates();
-        }
-
 
     }
 
@@ -47,39 +45,32 @@ public class ProvenanceManager implements IRepository {
     }
 
     public ProvenanceManager(CommonMongoClient mongoClient){
+        Uow.instance.repo = this;
         this.mongoClient = mongoClient;
         this.clusterStateMonitor = new ClusterStateMonitor("192.168.92.11", mongoClient);
         this.metricsMonitor = new MetricsMonitor(mongoClient);
-        DataLayerMonitor dataLayerMonitor = new DataLayerMonitor(new CommonMongoClient());
+        this.dataLayerMonitor = new DataLayerMonitor(mongoClient);
 
-        //List<Request> requests = dataLayerMonitor.GetRequestsFromDB();
-
+        mongoClient.open();
         ClusterState state = clusterStateMonitor.getClusterStateFromDB();
-        nodes = extractNodesFromState(state);
-        tasks = extractTasksFromState(state);
-        InitDataLayers();
+        TreeMap<String, TreeMap<String, String>> agents = dataLayerMonitor.GetAgents();
+        List<String> fileNames = dataLayerMonitor.GetFileNames();
+        mongoClient.close();
+
+        FillNodes(state);
+        FillTasks(state);
+        FillDataLayers(agents);
+        FillData(fileNames);
+
     }
 
-    public void InitDataLayers(){
-        layers = new ArrayList<DataLayer>();
-        double readSpeed = 0;
-        double writeSpeed = 0;
-        double totalSize = 0;
-
-        String nodeId = null;
-        layers.add(new DataLayer("0", "HDD", nodeId, readSpeed, writeSpeed, totalSize));
-        layers.add(new DataLayer("1", "SSD", nodeId, readSpeed, writeSpeed, totalSize));
-        layers.add(new DataLayer("2", "RAM", nodeId, readSpeed, writeSpeed, totalSize));
-
-        //dataLayerMonitor.GetLeveledRequests();
-    }
-
-    public List<Node> extractNodesFromState(ClusterState state){
+    public void FillNodes(ClusterState state){
         ArrayList<Node> ret = new ArrayList<ifmo.escience.dapris.common.entities.Node>();
         for(Slave slave : state.getSlaves()){
             String id = slave.getId();
             String name =  slave.getPid();
-            String ip = slave.getHostname();
+            //String ip = slave.getHostname();
+            String ip = slave.getPid().split("@")[1].split(":")[0];
             String parentNodeId = null;
             String networkId = "networkID";
             Map<String, Object> resourceMap = slave.getResourceMap();
@@ -89,10 +80,16 @@ public class ProvenanceManager implements IRepository {
             Node node = new Node(id, name, ip, parentNodeId, cpuTotal, memoryTotal, gpuTotal, networkId);
             ret.add(node);
         }
-        return ret;
+        nodes = ret;
     }
 
-    public List<Task> extractTasksFromState(ClusterState state){
+    public void FillNodeStates(){
+        for (Task task : tasks){
+            task.getNodeStates();
+        }
+    }
+
+    public void FillTasks(ClusterState state){
         List<Task> ret = new ArrayList<ifmo.escience.dapris.common.entities.Task>();
         int i=0;
         for (StateStructures.Framework framework : state.getFrameworks()){
@@ -109,13 +106,13 @@ public class ProvenanceManager implements IRepository {
                     started = LocalDateTime.ofInstant(task.getStarted().toInstant(), ZoneId.systemDefault());
                 }
                 catch (Exception e){
-                    String test="123";
+                    log.error(e);
                 }
                 try {
                     finished = LocalDateTime.ofInstant(task.getFinished().toInstant(), ZoneId.systemDefault());
                 }
                 catch (Exception e){
-                    String test="123";
+                    log.error(e);
                 }
 
                 String nodeId = task.getSlaveId();
@@ -128,8 +125,56 @@ public class ProvenanceManager implements IRepository {
                 i++;
             }
         }
-        return ret;
+        tasks = ret;
     }
+
+    public void FillDataLayers(TreeMap<String, TreeMap<String, String>> agents){
+        List<String> layerNames = new ArrayList<String>(){{ add("HDD"); add("SSD"); add("RAM"); }};
+        layers = new ArrayList<DataLayer>();
+        double readSpeed = 0;
+        double writeSpeed = 0;
+        //double totalSize = 0;
+
+        for (Node node : nodes){
+            String nodeId = node.getId();
+            String nodeIp = node.getIp();
+            //String nodeIp = node.getName().split("@")[1].split(":")[0];
+            if(agents.containsKey(nodeIp)){
+                TreeMap<String, String> agent = agents.get(nodeIp);
+                for(String layerName :layerNames)
+                    if(agent.containsKey("total"+layerName)){
+                        double totalSize = Double.parseDouble(String.valueOf(agent.get("total"+layerName)));
+                        DataLayer layer = new DataLayer(layerName+"@"+node.getIp(),layerName, nodeId, readSpeed, writeSpeed, totalSize);
+
+                        layers.add(layer);
+                    }
+
+            }
+        }
+    }
+
+    public void FillData(List<String> fileNames){
+        for (String filename : fileNames){
+            HashMap<String, Object> metadata = dataLayerMonitor.GetMetadataByObjectID(filename);
+            if(metadata!=null) {
+                String test = "123";
+                String layerId = "0";
+                for (String layerPair: (List<String>) metadata.get("layers")){
+                    Data dataObject = new Data(metadata.get("id").toString(), layerPair, metadata.get("name").toString(), Double.parseDouble(String.valueOf( metadata.get("size"))));
+                    DataLayer layer = dataObject.getLayer();
+                    if(layer!=null)
+                        layer.addData(dataObject);
+                    else{
+                        log.error("Cannot find layer by id "+dataObject.getLayerId());
+                    }
+                    data.add(data.size(), dataObject);
+                }
+            }
+        }
+
+    }
+
+
 
     @Override
     public Set<Data> getAllData() {
@@ -196,7 +241,7 @@ public class ProvenanceManager implements IRepository {
     @Override
     public DataLayer getLayerById(String id) {
         for (DataLayer item : layers){
-            if(item.getId() == id){
+            if(item.getId().equals(id)){
                 return item;
             }
         }
@@ -206,9 +251,9 @@ public class ProvenanceManager implements IRepository {
     @Override
     public Set<DataLayer> getLayersByNode(String nodeId) {
         HashSet<DataLayer> result = new HashSet<>();
-        for (DataLayer item : layers){
-            if(item.getNodeId() == nodeId){
-                result.add(item);
+        for (DataLayer layer : layers){
+            if(layer.getNodeId().equals(nodeId)){
+                result.add(layer);
             }
         }
         return result;

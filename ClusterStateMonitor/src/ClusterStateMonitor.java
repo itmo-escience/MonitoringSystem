@@ -24,6 +24,8 @@ public class ClusterStateMonitor {
     private static Logger log = LogManager.getLogger(ClusterStateMonitor.class);
     private Javers javers;
     private CommonMongoClient mongoClient;
+    private String configFileName = "ClusterStateMonitor.config";
+    private String masterHost;
     private IStateDataProvider dataProvider;
 
     public static void main(String[] args){
@@ -39,6 +41,8 @@ public class ClusterStateMonitor {
     }
 
     public ClusterStateMonitor(String masterHost, CommonMongoClient mongoClient){
+        this.masterHost = masterHost;
+        readConfigFile();
         this.dataProvider = new MesosRestClient(masterHost);
         this.mongoClient = mongoClient;
         javers = JaversBuilder.javers().build();
@@ -46,6 +50,11 @@ public class ClusterStateMonitor {
             MongoRepository mongoRepo = new MongoRepository(mongoClient.getDefaultDB());
             JaversBuilder.javers().registerJaversRepository(mongoRepo).build();
         }
+    }
+
+    private void readConfigFile(){
+        List<String> lines = Utils.ReadConfigFile(configFileName);
+        masterHost = lines.get(0);
     }
 
     public void startMonitoring(int sleepInterval){
@@ -64,11 +73,11 @@ public class ClusterStateMonitor {
 
     public ArrayList<String> getStartedClusters(){
         ArrayList<String> ret = new ArrayList<String>();
-        FindIterable<Document> res = mongoClient.getDocumentsFromDB("clusterStates", new Document(), new Document("_id","-1"), 1);
-        Iterator keysIter = res.iterator();
-        while (keysIter.hasNext()){
-            Document resultmap = (Document)keysIter.next();
-            ret.add(resultmap.get("started").toString());
+        List<Document> res = mongoClient.getDocumentsFromDB("clusterStates", new Document(), new Document("_id", -1), 1);
+
+        for(Document resultmap : res){
+
+            ret.add(resultmap.get("id").toString());
         }
         return ret;
     }

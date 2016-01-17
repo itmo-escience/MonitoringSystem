@@ -9,22 +9,34 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.XMLConfiguration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.bson.Document;
 import org.json.JSONObject;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Pavel Smirnov
@@ -33,54 +45,64 @@ public class CommonMongoClient {
     private static Logger log = LogManager.getLogger(CommonMongoClient.class);
     public static String metricsCollection = "metrics";
     public static String stateCollection = "clusterStates";
-    private String serverUrl = "192.168.13.133";
+
     private String defaultDBname = "logging";
     public MongoClient mongoClient;
     private MongoDatabase defaultDB;
     private Mongo mongo;
+    private String host = "192.168.13.133";
+    private String username;
+    private String password;
+    private String configFileName = "Mongo.conf";
     private DB db;
     private Boolean isOpened=false;
     private Boolean closeAtFinish=false;
 
     public CommonMongoClient(){
-
+        ReadConfigFile();
     }
 
-    public void ReadConfigFile(){
-        BufferedReader br = null;
+    private void ReadConfigFile(){
 
-        try {
-
-            String sCurrentLine;
-            br = new BufferedReader(new FileReader("MongoClient.conf"));
-            while ((sCurrentLine = br.readLine()) != null) {
-                System.out.println(sCurrentLine);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (br != null)br.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        Configurations configs = new Configurations();
+        try
+        {
+            Configuration config = configs.properties(new File(configFileName));
+            host = config.getString("host");
+            username = config.getString("username");
+            password = config.getString("password");
+            defaultDBname = config.getString("dbname");
         }
+        catch (ConfigurationException cex)
+        {
+            log.info("Cannot read external config. Using default values");
+        }
+
     }
 
     public MongoDatabase getDefaultDB(){ return defaultDB; }
 
     public CommonMongoClient(String serverUrl, String defaultDBname){
-        this.serverUrl = serverUrl;
+        this.host = serverUrl;
         this.defaultDBname = defaultDBname;
     }
 
     public void open(){
         if(isOpened)return;
         log.trace("Mongo client open()");
-        mongoClient = new MongoClient(serverUrl, 27017 );
+
+        if(username!=null && password!=null) {
+            List<MongoCredential> credentials = new ArrayList<MongoCredential>();
+            credentials.add(
+                    MongoCredential.createMongoCRCredential(username, defaultDBname,password.toCharArray())
+            );
+            mongoClient = new MongoClient(new ServerAddress(host), credentials);
+        }else
+            mongoClient = new MongoClient(new ServerAddress(host));
+
         defaultDB = mongoClient.getDatabase(defaultDBname);
-        mongo = new Mongo(serverUrl, 27017);
+
+        mongo = new Mongo(host);
         db = mongo.getDB(defaultDBname);
         isOpened=true;
     }
@@ -153,11 +175,11 @@ public class CommonMongoClient {
         if(closeAtFinish)close();
     }
 
-    public FindIterable<Document> getDocumentsFromDB(String collection, Document condition){
-        return  getDocumentsFromDB(collection, condition, null, 0);
+    public List<Document> getDocumentsFromDB(String collection, Document condition){
+        return getDocumentsFromDB(collection, condition, null, 0);
     }
 
-    public FindIterable<Document> getDocumentsFromDB(String collection, Document condition, Document sort, int limit){
+    public List<Document> getDocumentsFromDB(String collection, Document condition, Document sort, int limit){
 
         if(sort==null)
             sort = new Document("_id",1);
@@ -172,8 +194,21 @@ public class CommonMongoClient {
        */
 
         if(!isOpened){ open(); closeAtFinish = true;}
-        MongoCollection coll = defaultDB.getCollection(collection);
-        FindIterable<Document> ret = coll.find(condition).sort(sort).projection(new Document("_id", 0)).limit(limit);
+        ArrayList<Document> ret = null;
+        try {
+            MongoCollection coll = defaultDB.getCollection(collection);
+            FindIterable<Document> res = coll.find(condition).sort(sort).projection(new Document("_id", 0)).limit(limit);
+            Iterator keysIter = res.iterator();
+            ret = new ArrayList<Document>();
+            while (keysIter.hasNext()){
+                Document doc = (Document)keysIter.next();
+                ret.add(new Document(doc));
+            }
+        }
+        catch (Exception ex){
+            throw ex;
+            //log.error(ex);
+        }
         if(closeAtFinish)close();
         return ret;
     }
@@ -181,7 +216,7 @@ public class CommonMongoClient {
     public <T> List<T> getObjectsFromDB(String collection, DBObject condition, int limit, Class<T> targetClass){
         //Example:  List<ClusterState> res = getObjectsFromDB("clusterStates", new BasicDBObject(){{ put("name", "Mesos"); }}, ClusterState.class);
         List<T> ret = new ArrayList<T>();
-
+        if(!isOpened){ open(); closeAtFinish = true;}
         DBCursor cursor = getObjectsFromDB(collection, condition, limit);
         while (cursor.hasNext()){
             BasicDBObject dbObj = (BasicDBObject)cursor.next();
@@ -198,14 +233,15 @@ public class CommonMongoClient {
             }
 
         }
+        if(closeAtFinish)close();
         return ret;
     }
 
-    public DBCursor getObjectsFromDB(String collection, DBObject condition, int limit){
-        if(!isOpened){ open(); closeAtFinish = true;}
+    private DBCursor getObjectsFromDB(String collection, DBObject condition, int limit){
+
         DBCollection dbCollection = db.getCollection(collection);
         DBCursor cursor = dbCollection.find(condition, new BasicDBObject("_id", 0)).limit(limit);
-        if(closeAtFinish)close();
+
         return cursor;
     }
 }

@@ -5,8 +5,10 @@ import ifmo.escience.dapris.common.entities.NodeStatus;
 
 import org.bson.Document;
 
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,8 +26,10 @@ public class MetricsMonitor {
     private IMetricsDataProvider dataProvider;
     private CommonMongoClient mongoClient;
     public String monitoringHost = "192.168.92.11:8081"; //"192.168.13.133:8082"
+    private String configFileName = "MetricsMonitor.config";
     private String defaultCollection = "metrics";
     private String[] desiredMetrics = new String[]{ "bytes_in", "bytes_out", "cpu_user","mem_free", "part_max_used"};
+
     private List<String> clusterNames;
     public static void main(String[] args) {
 
@@ -41,10 +45,22 @@ public class MetricsMonitor {
     }
 
     public MetricsMonitor(CommonMongoClient mongoClient){
+        readConfigFile();
         this.mongoClient = mongoClient;
         dataProvider = new GangliaAPIClient(monitoringHost, desiredMetrics);
         clusterNames = dataProvider.GetClusterNames();
     }
+
+    private void readConfigFile(){
+        List<String> lines = Utils.ReadConfigFile(configFileName);
+        for (int i=0; i<lines.size(); i++) {
+            if(i==0)monitoringHost = lines.get(i);
+            else
+                desiredMetrics = lines.get(i).split(",");;
+            i++;
+        }
+    }
+
 
     public void StartMonitoring(int sleepInterval){
 
@@ -85,15 +101,15 @@ public class MetricsMonitor {
             //metricsEntry.date = new Date();
 
             mongoClient.open();
-            FindIterable<Document> res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname",hostname), new Document("_id",-1),1);
+            List<Document> res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname",hostname), new Document("_id",-1),1);
             //mongoClient.saveObjectToDB(defaultCollection, metricsEntry);
 
-            if (res.first() == null || (res.first() != null && !res.first().get("metrics").toString().contains(hostMetrics.toString()))){
+            if (res.size()==0 || (!res.get(0).get("metrics").toString().contains(hostMetrics.toString()))){
                 Document metricsEntry2 = new Document();
                 metricsEntry2.append("timestamp", new Date());
                 metricsEntry2.append("hostname", hostname);
                 metricsEntry2.append("metrics", hostMetrics);
-                log.trace("Inserting metrics to DB: "+hostname+" "+(res.first()!=null?"Equality:"+res.first().get("metrics").toString()+"=="+hostMetrics.toString():"0 found"));
+                log.trace("Inserting metrics to DB: "+hostname+" "+(res.get(0)!=null?"Equality:"+res.get(0).get("metrics").toString()+"=="+hostMetrics.toString():"0 found"));
                 mongoClient.insertDocumentToDB(defaultCollection, metricsEntry2);
            }
         }
@@ -132,16 +148,16 @@ public class MetricsMonitor {
         catch (Exception e){
 
         }
-        FindIterable<Document> res = null;
+        List<Document> res = null;
         mongoClient.open();
         res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname", hostname).append("timestamp", dateFilter));
-        if(res.first()==null){ //Find monitor, started before task started
+        if(res.size()==0){ //Find monitor, started before task started
             log.debug("No metrics for range. Getting uprange");
-            FindIterable<Document> lastStartedMonitor = mongoClient.getDocumentsFromDB("startedMetricsMons", new Document("monitoringHost", monitoringHost).append("timestamp", new Document("$lte", start)), new Document("_id", -1), 1);
+            List<Document> lastStartedMonitor = mongoClient.getDocumentsFromDB("startedMetricsMons", new Document("monitoringHost", monitoringHost).append("timestamp", new Document("$lte", start)), new Document("_id", -1), 1);
             Document timespampfilter = new Document("$lte", start);
-            if(lastStartedMonitor.first()!=null){
-                log.debug("Getting uprange only till "+lastStartedMonitor.first().get("timestamp"));
-                timespampfilter.append("$gte", lastStartedMonitor.first().get("timestamp"));
+            if(lastStartedMonitor.size()>0){
+                log.debug("Getting uprange only till "+lastStartedMonitor.get(0).get("timestamp"));
+                timespampfilter.append("$gte", lastStartedMonitor.get(0).get("timestamp"));
             }
             //find states before task started until the started monitor (if exists)
             res = mongoClient.getDocumentsFromDB(defaultCollection, new Document("hostname", hostname).append("timestamp", timespampfilter), new Document("_id", -1), 1);
