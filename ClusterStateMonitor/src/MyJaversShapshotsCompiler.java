@@ -8,7 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import StateStructures.Pair;
 import org.javers.common.collections.Optional;
 import org.javers.core.Javers;
 import org.javers.core.commit.CommitId;
@@ -180,10 +179,10 @@ public class MyJaversShapshotsCompiler {
 //            put("disk", 0);
 //        }};
 
-        List<Pair> list = new ArrayList<Pair>();
-        list.add(new Pair("mem", 4480,"mem"));
-        list.add(new Pair("cpus",(double)10,"cpus"));
-        list.add(new Pair("disk",(double)0,"disk"));
+//        List<Pair> list = new ArrayList<Pair>();
+//        list.add(new Pair("mem", 4480,"mem"));
+//        list.add(new Pair("cpus",(double)10,"cpus"));
+//        list.add(new Pair("disk",(double)0,"disk"));
 
 //            HashSet<IdentifiedObject> map = new HashSet<IdentifiedObject>(){{
 //                add(new IdentifiedObject("mem", (double) 4480));

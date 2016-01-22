@@ -1,3 +1,4 @@
+package ifmo.escience.dapris.monitoring.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -7,6 +8,8 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 //import org.apache.http.client.HttpClient;
+import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,15 +18,15 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
 
 /**
  *
  * @author Pavel Smirnov
  */
-class Utils {
-    private static Logger log = LogManager.getLogger(Utils.class);
+public class Utils {
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger(Utils.class);
 
     public static JSONObject getJsonFromUrl(String url){
         log.trace("Requesting " + url);
@@ -130,8 +133,9 @@ class Utils {
     }
     public static Date EpochToDate(Double epoch){  return new Date((long) (epoch * 1000)); }
 
-    public static List<String> ReadConfigFile(String configFileName){
+    public static List<String> ReadConfigFile(String configFileName) throws Exception {
         List<String> ret = new ArrayList<String>();
+
         String line;
         try (
                 InputStream fis = new FileInputStream(configFileName);
@@ -143,9 +147,9 @@ class Utils {
                ret.add(line);
             }
         } catch (FileNotFoundException e) {
-            log.info("Cannot read external config. Using default values");
+            throw e;
         } catch (IOException e) {
-            log.info("Cannot read external config. Using default values");
+            throw e;
         }
         return ret;
     }

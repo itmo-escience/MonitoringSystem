@@ -1,5 +1,4 @@
-import StateStructures.ClusterState;
-import StateStructures.Slave;
+import Common.CommonMongoClient;
 import ifmo.escience.dapris.common.data.IRepository;
 import ifmo.escience.dapris.common.data.Uow;
 import ifmo.escience.dapris.common.entities.*;
@@ -47,7 +46,7 @@ public class ProvenanceManager implements IRepository {
     public ProvenanceManager(CommonMongoClient mongoClient){
         Uow.instance.repo = this;
         this.mongoClient = mongoClient;
-        this.clusterStateMonitor = new ClusterStateMonitor("192.168.92.11", mongoClient);
+        this.clusterStateMonitor = new ClusterStateMonitor(mongoClient);
         this.metricsMonitor = new MetricsMonitor(mongoClient);
         this.dataLayerMonitor = new DataLayerMonitor(mongoClient);
 

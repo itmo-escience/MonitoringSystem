@@ -1,11 +1,10 @@
-import StateStructures.*;
-import StateStructures.Task;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.FindIterable;
+package ifmo.escience.dapris.monitoring.clusterStateMonitor;
+
+import ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.*;
+import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
+import ifmo.escience.dapris.monitoring.common.Utils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import org.bson.Document;
 
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
@@ -25,23 +24,35 @@ public class ClusterStateMonitor {
     private Javers javers;
     private CommonMongoClient mongoClient;
     private String configFileName = "ClusterStateMonitor.config";
-    private String masterHost;
+    private String masterHost = "192.168.13.133";
     private IStateDataProvider dataProvider;
 
     public static void main(String[] args){
-        ClusterStateMonitor monitor = new ClusterStateMonitor("192.168.92.11", new CommonMongoClient());
-        if (args!=null  && args.length>0 && args[0].equals("getData")){
-            ArrayList<String> dates = monitor.getStartedClusters();
-            String stateID = dates.get(dates.size()-1);
-            monitor.getStateFromDB(stateID);
-        }else{
-              monitor.startMonitoring(3000); //implement via sleepInterval
-        }
+        ClusterStateMonitor monitor = new ClusterStateMonitor(new ifmo.escience.dapris.monitoring.common.CommonMongoClient());
+
+//        if (args!=null  && args.length>0 && args[0].equals("getData")){
+//            ArrayList<String> dates = monitor.getStartedClusters();
+//            String stateID = dates.get(dates.size()-1);
+//            monitor.getStateFromDB(stateID);
+//        }else{
+          int sleepInterval = 3000;
+          //if (args!=null  && args.length>2 && args[0].equals("getData"))
+          HashMap<String, String> argsList = new HashMap<String, String>();
+          for(int i=0; i<args.length; i++){
+              if(args[i].startsWith(("-"))){
+                  argsList.put(args[i], args[i+1]);
+                  i++;
+              }
+              i++;
+          }
+        if(argsList.containsKey("-sleepInterval"))
+            sleepInterval = Integer.parseInt(argsList.get("-sleepInterval"));
+        monitor.startMonitoring(sleepInterval);
+
 
     }
 
-    public ClusterStateMonitor(String masterHost, CommonMongoClient mongoClient){
-        this.masterHost = masterHost;
+    public ClusterStateMonitor(CommonMongoClient mongoClient){
         readConfigFile();
         this.dataProvider = new MesosRestClient(masterHost);
         this.mongoClient = mongoClient;
@@ -53,8 +64,13 @@ public class ClusterStateMonitor {
     }
 
     private void readConfigFile(){
-        List<String> lines = Utils.ReadConfigFile(configFileName);
-        masterHost = lines.get(0);
+        try{
+            List<String> lines = Utils.ReadConfigFile(configFileName);
+            masterHost = lines.get(0);
+        }
+        catch (Exception e){
+            log.info("Cannot read external config. Using default values");
+        }
     }
 
     public void startMonitoring(int sleepInterval){
@@ -95,8 +111,8 @@ public class ClusterStateMonitor {
             List<CdoSnapshot> snapshots = javers.findSnapshots(QueryBuilder.byInstanceId(id, ClusterState.class).build());
             if (snapshots.size() > 0){
                 CdoSnapshot first = snapshots.get(0);
-                MyJaversShapshotsCompiler snapCompiler = new MyJaversShapshotsCompiler(javers);
-                ret = (ClusterState) snapCompiler.compileEntityStateFromSnapshot(first);
+//                MyJaversShapshotsCompiler snapCompiler = new MyJaversShapshotsCompiler(javers);
+//                ret = (ClusterState) snapCompiler.compileEntityStateFromSnapshot(first);
                 log.trace("Compiling cluster state from DB took: " + (System.currentTimeMillis() - operationStarted) / 1000 + " seconds");
                 return ret;
             }

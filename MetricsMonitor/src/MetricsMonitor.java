@@ -38,10 +38,23 @@ public class MetricsMonitor {
         MetricsMonitor metricsMonitor = new MetricsMonitor(new CommonMongoClient());
 //        if(args!=null && args.length>0)
 //            ApiServerUrl = args[0];
-        if (args!=null  && args.length>0 && args[0].equals("getData"))
-            metricsMonitor.GetMetricsFromDb("node-92-11", LocalDateTime.now().minusMinutes(1), LocalDateTime.now());
-        else
-            metricsMonitor.StartMonitoring(5000);
+//        if (args!=null  && args.length>0 && args[0].equals("getData"))
+//            metricsMonitor.GetMetricsFromDb("node-92-11", LocalDateTime.now().minusMinutes(1), LocalDateTime.now());
+//        else
+        int sleepInterval = 3000;
+        //if (args!=null  && args.length>2 && args[0].equals("getData"))
+        HashMap<String, String> argsList = new HashMap<String, String>();
+        for(int i=0; i<args.length; i++){
+            if(args[i].startsWith(("-"))){
+                argsList.put(args[i], args[i+1]);
+                i++;
+            }
+            i++;
+        }
+        if(argsList.containsKey("-sleepInterval"))
+            sleepInterval = Integer.parseInt(argsList.get("-sleepInterval"));
+
+        metricsMonitor.StartMonitoring(sleepInterval);
     }
 
     public MetricsMonitor(CommonMongoClient mongoClient){
@@ -52,12 +65,18 @@ public class MetricsMonitor {
     }
 
     private void readConfigFile(){
-        List<String> lines = Utils.ReadConfigFile(configFileName);
-        for (int i=0; i<lines.size(); i++) {
-            if(i==0)monitoringHost = lines.get(i);
-            else
-                desiredMetrics = lines.get(i).split(",");;
-            i++;
+        try {
+            List<String> lines = Utils.ReadConfigFile(configFileName);
+            for (int i = 0; i < lines.size(); i++) {
+                if (i == 0) monitoringHost = lines.get(i);
+                else
+                    desiredMetrics = lines.get(i).split(",");
+                ;
+                i++;
+            }
+        }
+        catch (Exception e){
+            log.info("Cannot read external config. Using default values");
         }
     }
 

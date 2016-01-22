@@ -1,3 +1,4 @@
+package ifmo.escience.dapris.monitoring.common;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +18,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.bson.Document;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
@@ -72,6 +72,8 @@ public class CommonMongoClient {
             username = config.getString("username");
             password = config.getString("password");
             defaultDBname = config.getString("dbname");
+
+
         }
         catch (ConfigurationException cex)
         {
@@ -91,7 +93,7 @@ public class CommonMongoClient {
         if(isOpened)return;
         log.trace("Mongo client open()");
 
-        if(username!=null && password!=null) {
+        if(username!=null && password!=null && !username.equals("") && !password.equals("")){
             List<MongoCredential> credentials = new ArrayList<MongoCredential>();
             credentials.add(
                     MongoCredential.createMongoCRCredential(username, defaultDBname,password.toCharArray())

@@ -55,12 +55,17 @@ public class DataLayerMonitor {
     }
 
     private void readConfigFile(){
-        List<String> lines = Utils.ReadConfigFile(configFileName);
-        for (int i=0; i<lines.size(); i++) {
-            if(i==0)storageHost = lines.get(i);
-            else
-                storageSecID = lines.get(i);
-            i++;
+        try {
+            List<String> lines = Utils.ReadConfigFile(configFileName);
+            for (int i = 0; i < lines.size(); i++) {
+                if (i == 0) storageHost = lines.get(i);
+                else
+                    storageSecID = lines.get(i);
+                i++;
+            }
+        }
+        catch (Exception e){
+            log.info("Cannot read external config. Using default values");
         }
     }
 

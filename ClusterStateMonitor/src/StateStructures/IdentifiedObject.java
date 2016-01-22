@@ -1,4 +1,4 @@
-package StateStructures;
+package ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures;
 
 import org.javers.core.metamodel.annotation.Id;
 

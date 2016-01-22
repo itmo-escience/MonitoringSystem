@@ -1,4 +1,5 @@
-import StateStructures.ClusterState;
+package ifmo.escience.dapris.monitoring.clusterStateMonitor;
+import ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.ClusterState;
 
 import java.util.List;
 

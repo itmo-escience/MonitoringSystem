@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <File clusterName="File" fileName="MetricsMonitor.log" bufferedIO="false">
+        <File name="File" fileName="ClusterStateMonitor.log">
             <PatternLayout pattern="%d{HH:mm:ss} %-8.8p %-20.20c{2} %msg%n"/>
-                    <!--<PatternLayout pattern="%d{HH:mm:ss}    %p  [%t]    %msg%n"/>-->
+            <!--<PatternLayout pattern="%d{HH:mm:ss}    %p  [%t]    %msg%n"/>-->
         </File>
-        <Console clusterName="Console" target="SYSTEM_OUT">
+        <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss} %-8.8p %-20.20c{2} %msg%n"/>
             <!--%d %p %c{1.} [%t] %m%n-->
         </Console>
@@ -15,7 +15,7 @@
         <Root level="trace">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger level="debug" clusterName="console">
+        <Logger level="debug" name="debug">
             <AppenderRef ref="File"/>
         </Logger>
     </Loggers>
