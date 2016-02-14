@@ -31,20 +31,19 @@ import javax.print.Doc;
 public class StormMetricsMonitor {
     private static Logger log = LogManager.getLogger(StormMetricsMonitor.class);
     String baseUrl = "";
-    String topoName = "";
+
     private CommonMongoClient mongoClient;
 
     public static void main(String[] args){
         StormMetricsMonitor stormMetricsMonitor = new StormMetricsMonitor("http://192.168.92.11:8080/api/v1/topology/");
-        stormMetricsMonitor.getActualData();
+        //stormMetricsMonitor.getActualData();
         //stormMetricsMonitor.analyzeData();
-        //stormMetricsMonitor.startMonitoring(10000);
+        stormMetricsMonitor.startMonitoring(10000);
     }
 
     public StormMetricsMonitor(String baseUrl){
         this.baseUrl = baseUrl;
         String[] splitted = baseUrl.split("/");
-        this.topoName = splitted[splitted.length-1];
         mongoClient = new CommonMongoClient();
     }
 
@@ -58,8 +57,8 @@ public class StormMetricsMonitor {
         JSONObject summaryJson = Utils.getJsonFromUrl(baseUrl+"summary");
         mongoClient.open();
         for(Object topology : (JSONArray)summaryJson.get("topologies")) {
-
-            JSONObject json = Utils.getJsonFromUrl(baseUrl+((JSONObject) topology).get("id").toString());
+            String topoName = ((JSONObject) topology).get("id").toString();
+            JSONObject json = Utils.getJsonFromUrl(baseUrl+topoName);
             String uptimeStr = json.get("uptime").toString();
 
             JSONArray topologyStats = ((JSONArray) json.get("topologyStats"));
@@ -109,13 +108,12 @@ public class StormMetricsMonitor {
             topoDoc.put("components", components);
 
             mongoClient.insertDocumentToDB("storm." + topoName, topoDoc);
-
-
         }
         mongoClient.close();
     }
 
     public void analyzeData(){
+        String topoName = "";
         log.trace("Analysing data from DB");
         String[] keys = {"processLatency", "executeLatency"/*, "completeLatency"*/ };
 
