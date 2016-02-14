@@ -15,22 +15,29 @@
             <version>2.7.0</version>
             <scope>provided</scope>
         </dependency>
+
+
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-            <scope>provided</scope>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>log4j</groupId>-->
+            <!--<artifactId>log4j</artifactId>-->
+            <!--<version>1.2.17</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -46,14 +53,15 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>3.2.1</version>
+            <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/commons-configuration2-2.0-beta2.jar</systemPath>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>commons-configuration</groupId>-->
+            <!--<artifactId>commons-configuration</artifactId>-->
+            <!--<version>2</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/../lib/commons-configuration2-2.0-beta2.jar</systemPath>-->
+        <!--</dependency>-->
 
 
     </dependencies>
@@ -87,6 +95,30 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <!--<archive>-->
+                        <!--<manifest>-->
+                            <!--<mainClass>itmo.escience.Main</mainClass>-->
+                        <!--</manifest>-->
+                    <!--</archive>-->
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                        <!--<descriptorRef>jar</descriptorRef>-->
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

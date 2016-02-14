@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/DataLayerMonitor/DstorageMonitor.iml" filepath="$PROJECT_DIR$/DataLayerMonitor/DstorageMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/MetricsMonitor/MetricsMonitor.iml" filepath="$PROJECT_DIR$/MetricsMonitor/MetricsMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/ProvenanceManager/ProvenanceManager.iml" filepath="$PROJECT_DIR$/ProvenanceManager/ProvenanceManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" filepath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" />
     </modules>
   </component>
 </project>

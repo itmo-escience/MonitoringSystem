@@ -10,14 +10,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.XMLConfiguration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.commons.configuration2.Configuration;
+//import org.apache.commons.configuration2.XMLConfiguration;
+//import org.apache.commons.configuration2.builder.fluent.Configurations;
+//import org.apache.commons.configuration2.ex.ConfigurationException;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * Created by Pavel Smirnov
  */
 public class CommonMongoClient {
-    private static Logger log = LogManager.getLogger(CommonMongoClient.class);
+    //private static Logger log = LogManager.getLogger(CommonMongoClient.class);
     public static String metricsCollection = "metrics";
     public static String stateCollection = "clusterStates";
 
@@ -64,21 +64,21 @@ public class CommonMongoClient {
 
     private void ReadConfigFile(){
 
-        Configurations configs = new Configurations();
-        try
-        {
-            Configuration config = configs.properties(new File(configFileName));
-            host = config.getString("host");
-            username = config.getString("username");
-            password = config.getString("password");
-            defaultDBname = config.getString("dbname");
-
-
-        }
-        catch (ConfigurationException cex)
-        {
-            log.info("Cannot read external config. Using default values");
-        }
+//        Configurations configs = new Configurations();
+//        try
+//        {
+//            Configuration config = configs.properties(new File(configFileName));
+//            host = config.getString("host");
+//            username = config.getString("username");
+//            password = config.getString("password");
+//            defaultDBname = config.getString("dbname");
+//
+//
+//        }
+//        catch (ConfigurationException cex)
+//        {
+//            log.info("Cannot read external config. Using default values");
+//        }
 
     }
 
@@ -91,7 +91,7 @@ public class CommonMongoClient {
 
     public void open(){
         if(isOpened)return;
-        log.trace("Mongo client open()");
+        //log.trace("Mongo client open()");
 
         if(username!=null && password!=null && !username.equals("") && !password.equals("")){
             List<MongoCredential> credentials = new ArrayList<MongoCredential>();
@@ -110,7 +110,7 @@ public class CommonMongoClient {
     }
 
     public void close(){
-        log.trace("Mongo client close()");
+        //log.trace("Mongo client close()");
         mongoClient.close();
         mongo.close();
         isOpened=false;
@@ -132,10 +132,10 @@ public class CommonMongoClient {
                 mapper.writeValue(new File("tmp.json"), obj);
                 obj = mapper.writeValueAsString(obj);
             } catch (IOException e){
-                log.error(e);
+                //log.error(e);
             }
             catch (Exception e) {
-                log.error(e);
+                //log.error(e);
             }
         }
         obj = JSON.parse((String)obj);
@@ -150,7 +150,7 @@ public class CommonMongoClient {
             coll.insertOne(doc);
         }
         catch (Exception e){
-            log.error(e);
+            //log.error(e);
         }
         if(closeAtFinish)close();
     }
@@ -231,7 +231,7 @@ public class CommonMongoClient {
 
                 ret.add(retObj);
             } catch (IOException e) {
-                log.error(e);
+                //log.error(e);
             }
 
         }

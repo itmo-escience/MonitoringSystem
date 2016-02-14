@@ -1,8 +1,12 @@
-import Common.CommonMongoClient;
 import ifmo.escience.dapris.common.data.IRepository;
 import ifmo.escience.dapris.common.data.Uow;
 import ifmo.escience.dapris.common.entities.*;
+import ifmo.escience.dapris.common.entities.Task;
 import ifmo.escience.dapris.common.helpers.NodeStateDateComparator;
+import ifmo.escience.dapris.monitoring.clusterStateMonitor.ClusterStateMonitor;
+import ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.*;
+//import ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.Task;
+import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -91,9 +95,9 @@ public class ProvenanceManager implements IRepository {
     public void FillTasks(ClusterState state){
         List<Task> ret = new ArrayList<ifmo.escience.dapris.common.entities.Task>();
         int i=0;
-        for (StateStructures.Framework framework : state.getFrameworks()){
+        for (Framework framework : state.getFrameworks()){
             String typeId = framework.getName();
-            for (StateStructures.Task task : framework.getTasks()){
+            for (ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.Task task : framework.getTasks()){
 
                 Random rand = new Random(i);
                 HashSet<String> parentTaskIds = null;

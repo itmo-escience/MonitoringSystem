@@ -26,6 +26,7 @@
       <list>
         <option value="$PROJECT_DIR$/ClusterStateMonitor/pom.xml" />
         <option value="$PROJECT_DIR$/Common/pom.xml" />
+        <option value="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" />
       </list>
     </option>
   </component>

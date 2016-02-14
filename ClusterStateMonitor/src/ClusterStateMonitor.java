@@ -1,11 +1,15 @@
 package ifmo.escience.dapris.monitoring.clusterStateMonitor;
 
+import com.mongodb.BasicDBObject;
 import ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.*;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
 import ifmo.escience.dapris.monitoring.common.Utils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import org.bson.Document;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -28,6 +32,7 @@ public class ClusterStateMonitor {
     private IStateDataProvider dataProvider;
 
     public static void main(String[] args){
+        Log log2 = LogFactory.getLog(ClusterStateMonitor.class);
         ClusterStateMonitor monitor = new ClusterStateMonitor(new ifmo.escience.dapris.monitoring.common.CommonMongoClient());
 
 //        if (args!=null  && args.length>0 && args[0].equals("getData")){
@@ -74,7 +79,7 @@ public class ClusterStateMonitor {
     }
 
     public void startMonitoring(int sleepInterval){
-        log.info("Monitoring stated");
+        log.info("Monitoring starting");
         while(1==1){
             try {
                 ClusterState state = dataProvider.GetData();

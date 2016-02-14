@@ -8,8 +8,8 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 //import org.apache.http.client.HttpClient;
-import org.apache.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+//import org.apache.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,8 +18,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 
-//import org.apache.logging.log4j.Logger;
-//import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -29,6 +28,7 @@ public class Utils {
     private static org.apache.logging.log4j.Logger log = LogManager.getLogger(Utils.class);
 
     public static JSONObject getJsonFromUrl(String url){
+        //System.out.print("Requesting " + url);
         log.trace("Requesting " + url);
 
         JSONObject ret = null;
@@ -74,7 +74,7 @@ public class Utils {
         try {
             Thread.sleep(interval);
         } catch (InterruptedException e) {
-            log.error(e);
+            //log.error(e);
         }
     }
 
@@ -101,7 +101,7 @@ public class Utils {
             try {
                 value = jsonList.getJSONObject(i);
             } catch (JSONException e) {
-                log.error("Error getting ElementFromJSONArray("+i+"):", e);
+                //log.error("Error getting ElementFromJSONArray("+i+"):", e);
             }
             value = ConvertUnknownJSON(value);
             ret.add(value);

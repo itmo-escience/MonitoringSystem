@@ -31,10 +31,18 @@
         <processorPath useClasspath="true" />
         <module name="Common" />
       </profile>
+      <profile default="false" name="Annotation profile for StormMetricsMonitor" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="StormMetricsMonitor" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ClusterStateMonitor" target="1.8" />
       <module name="Common" target="1.8" />
+      <module name="StormMetricsMonitor" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
