@@ -18,6 +18,16 @@
           </set>
         </option>
         <option name="useAutoImport" value="true" />
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$/../javers1" />
+            <option value="$PROJECT_DIR$/../javers1/javers-core" />
+            <option value="$PROJECT_DIR$/../javers1/javers-persistence-mongo" />
+            <option value="$PROJECT_DIR$/../javers1/javers-persistence-sql" />
+            <option value="$PROJECT_DIR$/../javers1/javers-spring" />
+            <option value="$PROJECT_DIR$/../javers1/javers-spring-boot-starter-mongo" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
