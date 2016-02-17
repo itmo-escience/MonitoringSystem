@@ -182,6 +182,8 @@ public class CommonMongoClient {
     }
 
     public List<Document> getDocumentsFromDB(String collection, Document condition, Document sort, int limit){
+        if(condition==null)
+            condition=new Document();
 
         if(sort==null)
             sort = new Document("_id",1);

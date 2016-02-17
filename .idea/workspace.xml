@@ -4,17 +4,13 @@
     <option name="SCOPE_TYPE" value="4" />
   </component>
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java" description="if(closeAtFinish)close();" line="251" />
+    <bookmark url="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java" description="if(closeAtFinish)close();" line="253" />
     <bookmark url="file://$PROJECT_DIR$/ClusterStateMonitor/src/ClusterStateMonitor.java" description="if(res.size()&gt;0)" line="152" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="766c99c1-5c95-4eab-8aba-104c5b00a422" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ClusterStateMonitor/ClusterStateMonitor.iml" afterPath="$PROJECT_DIR$/ClusterStateMonitor/ClusterStateMonitor.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/Common.iml" afterPath="$PROJECT_DIR$/Common/Common.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" afterPath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/src/CommonMongoClient.java" afterPath="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" afterPath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/build.gradle" afterPath="$PROJECT_DIR$/../javers1/build.gradle" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/../javers1/gradle/wrapper/gradle-wrapper.properties" />
@@ -141,7 +137,7 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
+            <state vertical-scroll-proportion="-0.65384614">
               <caret line="25" column="51" selection-start-line="25" selection-start-column="51" selection-end-line="25" selection-end-column="51" />
               <folding>
                 <element signature="n#plugin#2;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
@@ -153,7 +149,7 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Common/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.65384614">
               <caret line="45" column="21" selection-start-line="45" selection-start-column="21" selection-end-line="45" selection-end-column="21" />
               <folding>
                 <element signature="n#plugin#0;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
@@ -167,10 +163,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-              <folding>
-                <element signature="e#4647#4648#0" expanded="false" />
-                <element signature="e#4721#4722#0" expanded="false" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -178,26 +171,26 @@
       <file leaf-file-name="StormMetricsMonitor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2">
-              <caret line="124" column="8" selection-start-line="124" selection-start-column="8" selection-end-line="124" selection-end-column="8" />
+            <state vertical-scroll-proportion="0.2966805">
+              <caret line="47" column="3" selection-start-line="47" selection-start-column="3" selection-end-line="117" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#5821#5845#0" expanded="true" />
-                <element signature="e#7065#7094#0" expanded="true" />
-                <element signature="e#10079#10108#0" expanded="true" />
+                <element signature="e#3090#3100#0" expanded="true" />
+                <element signature="method#analyzeData#0;class#StormMetricsMonitor#0" expanded="false" />
+                <element signature="method#averageLatency#0;class#StormMetricsMonitor#0" expanded="false" />
+                <element signature="method#startMonitoring#0;class#StormMetricsMonitor#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GNUPlot.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/StormMetricsMonitor/lib/JavaPlot.jar!/com/panayotis/gnuplot/GNUPlot.class">
+      <file leaf-file-name="CommonMongoClient.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.0">
-              <caret line="77" column="21" selection-start-line="77" selection-start-column="21" selection-end-line="77" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
               <folding>
-                <element signature="e#2622#2623#0" expanded="true" />
-                <element signature="e#2664#2665#0" expanded="true" />
+                <element signature="method#CommonMongoClient#1;class#CommonMongoClient#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -734,8 +727,8 @@
         <option value="$PROJECT_DIR$/ClusterStateMonitor/src/ClusterStateMonitor.java" />
         <option value="$PROJECT_DIR$/Common/pom.xml" />
         <option value="$PROJECT_DIR$/Common/src/Utils.java" />
-        <option value="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" />
+        <option value="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
       </list>
     </option>
@@ -822,7 +815,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -869,6 +861,7 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -902,19 +895,19 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Projects\MonitoringSystem\Common" />
-      <recent name="D:\Projects\MonitoringSystem\MetricsMonitor\Resources" />
-      <recent name="D:\Projects\MonitoringSystem\MetricsMonitor" />
-      <recent name="D:\Projects\MonitoringSystem\MetricsMonitor\target" />
-      <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor\Resources" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Projects\MonitoringSystem\StormMetricsMonitor\Resources" />
       <recent name="D:\Projects\MonitoringSystem\StormMetricsMonitor" />
       <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor\Resources" />
       <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor" />
       <recent name="D:\Projects\MonitoringSystem\MetricsMonitor" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\MonitoringSystem\Common" />
+      <recent name="D:\Projects\MonitoringSystem\MetricsMonitor\Resources" />
+      <recent name="D:\Projects\MonitoringSystem\MetricsMonitor" />
+      <recent name="D:\Projects\MonitoringSystem\MetricsMonitor\target" />
+      <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor\Resources" />
     </key>
   </component>
   <component name="RunManager" selected="Application.StormMetricsMonitor">
@@ -1642,10 +1635,10 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31584948" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38952163" sideWeight="0.502445" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12958436" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13080685" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="REPL" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294621" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32915717" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1927024" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.327252" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Leiningen" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1656,7 +1649,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38654503" sideWeight="0.49755502" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3854048" sideWeight="0.49755502" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1968,9 +1961,21 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
-          <line>147</line>
+          <line>283</line>
           <properties />
-          <option name="timeStamp" value="1317" />
+          <option name="timeStamp" value="1320" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
+          <line>227</line>
+          <properties />
+          <option name="timeStamp" value="1325" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
+          <line>75</line>
+          <properties />
+          <option name="timeStamp" value="1332" />
         </line-breakpoint>
         <line-breakpoint type="java-method">
           <url>jar://$PROJECT_DIR$/lib/log4j-api-2.5.jar!/org/apache/logging/log4j/spi/LoggerContext.class</url>
@@ -1982,7 +1987,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="1318" />
+      <option name="time" value="1333" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -2282,43 +2287,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Common/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="21" selection-start-line="45" selection-start-column="21" selection-end-line="45" selection-end-column="21" />
-          <folding>
-            <element signature="n#plugin#0;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/ClusterStateMonitor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.22902495">
           <caret line="81" column="8" selection-start-line="81" selection-start-column="8" selection-end-line="81" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="179" column="11" selection-start-line="179" selection-start-column="11" selection-end-line="179" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="method#CommonMongoClient#1;class#CommonMongoClient#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="25" column="51" selection-start-line="25" selection-start-column="51" selection-end-line="25" selection-end-column="51" />
-          <folding>
-            <element signature="n#plugin#2;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -2344,17 +2318,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Common/src/Utils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-          <folding>
-            <element signature="e#4647#4648#0" expanded="false" />
-            <element signature="e#4721#4722#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/StormMetricsMonitor/lib/JavaPlot.jar!/com/panayotis/gnuplot/plot/AbstractPlot.class">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.35579515">
@@ -2366,7 +2329,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.13016845">
           <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2374,10 +2336,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.770291">
           <caret line="26" column="16" selection-start-line="26" selection-start-column="16" selection-end-line="26" selection-end-column="16" />
-          <folding>
-            <element signature="e#649#650#0" expanded="true" />
-            <element signature="e#682#683#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2385,7 +2343,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.14088821">
           <caret line="25" column="16" selection-start-line="25" selection-start-column="16" selection-end-line="25" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2393,22 +2350,57 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-9.0">
           <caret line="77" column="21" selection-start-line="77" selection-start-column="21" selection-end-line="77" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="45" column="21" selection-start-line="45" selection-start-column="21" selection-end-line="45" selection-end-column="21" />
           <folding>
-            <element signature="e#2622#2623#0" expanded="true" />
-            <element signature="e#2664#2665#0" expanded="true" />
+            <element signature="n#plugin#0;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/src/Utils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+          <folding>
+            <element signature="method#CommonMongoClient#1;class#CommonMongoClient#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="25" column="51" selection-start-line="25" selection-start-column="51" selection-end-line="25" selection-end-column="51" />
+          <folding>
+            <element signature="n#plugin#2;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2">
-          <caret line="124" column="8" selection-start-line="124" selection-start-column="8" selection-end-line="124" selection-end-column="8" />
+        <state vertical-scroll-proportion="0.2966805">
+          <caret line="47" column="3" selection-start-line="47" selection-start-column="3" selection-end-line="117" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#5821#5845#0" expanded="true" />
-            <element signature="e#7065#7094#0" expanded="true" />
-            <element signature="e#10079#10108#0" expanded="true" />
+            <element signature="e#3090#3100#0" expanded="true" />
+            <element signature="method#analyzeData#0;class#StormMetricsMonitor#0" expanded="false" />
+            <element signature="method#averageLatency#0;class#StormMetricsMonitor#0" expanded="false" />
+            <element signature="method#startMonitoring#0;class#StormMetricsMonitor#0" expanded="false" />
           </folding>
         </state>
       </provider>
