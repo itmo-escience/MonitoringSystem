@@ -33,8 +33,8 @@ public class StormMetricsMonitor {
 
     public static void main(String[] args){
         StormMetricsMonitor stormMetricsMonitor = new StormMetricsMonitor("http://192.168.92.11:8080/api/v1/topology/");
-        stormMetricsMonitor.getActualData();
-        //stormMetricsMonitor.analyzeData();
+        //stormMetricsMonitor.getActualData();
+        stormMetricsMonitor.analyzeData();
         //stormMetricsMonitor.startMonitoring(10000);
         //stormMetricsMonitor.InsertDataToDb();
     }
@@ -47,10 +47,6 @@ public class StormMetricsMonitor {
 
     public void getActualData(){
         log.trace("Getting actual data");
-        Date timestamp = new Date();
-        String[] keys0 = {"emitted","transferred", "completeLatency"};
-        String[] keys1 = {"spoutId", "emitted","transferred","acked", "completeLatency"};
-        String[] keys2 = {"boltId", "emitted","executed","transferred","acked", "completeLatency", "processLatency", "executeLatency", "capacity"};
 
         JSONObject summaryJson = Utils.getJsonFromUrl(baseUrl+"summary");
         mongoClient.open();
@@ -60,61 +56,53 @@ public class StormMetricsMonitor {
             String uptimeStr = json.get("uptime").toString();
 
             JSONArray topologyStats = ((JSONArray) json.get("topologyStats"));
-
             JSONObject topologyStatsAlltime = (JSONObject) topologyStats.get(topologyStats.length() - 1);
-            Document topoDoc = new Document();
-            topoDoc.put("timestamp", timestamp);
-            topoDoc.put("name", "Topology");
-            topoDoc.put("uptime", uptimeStr);
-            for (String key : keys0) {
-                Object value = ((JSONObject) topologyStatsAlltime).get(key);
-                if(value!=null && !value.toString().equals("null"))
-                    topoDoc.put(key, value);
-            }
-
-            log.trace("Opening client");
-            List<Document> components = new ArrayList<Document>();
-            for (Object component : (JSONArray) json.get("spouts")) {
-                Document ins = new Document();
-                ins.put("timestamp", timestamp);
-                for (String key2 : keys1)
-                    if(((JSONObject) component).keySet().contains(key2)){
-                        String key = key2;
-                        Object value = ((JSONObject) component).get(key);
-                        if (key == "spoutId") key = "name";
-                        if(value!=null)
-                            ins.put(key, value);
+            Document topoStats = ReturnValuesByKeys(topologyStatsAlltime);
+            if(!topoStats.isEmpty()){
+                List<Document> components = new ArrayList<Document>();
+                for (String compType : new String[]{"spouts", "bolts"})
+                    for (Object component : (JSONArray) json.get(compType)){
+                        Document compStat = ReturnValuesByKeys(component);
+                        if(!compStat.isEmpty())
+                            components.add(compStat);
                     }
-                components.add(ins);
-                //mongoClient.insertDocumentToDB("storm."+topoName, ins);
-            }
+                if(!components.isEmpty()){
+                    topoStats.put("name", "Topology");
+                    topoStats.put("uptime", uptimeStr);
+                    topoStats.put("components", components);
 
-            for (Object component : (JSONArray) json.get("bolts")) {
-                Document ins = new Document();
-                ins.put("timestamp", timestamp);
-                Double processLatency = Double.parseDouble(((JSONObject) component).get("processLatency").toString());
-                Double executeLatency = Double.parseDouble(((JSONObject) component).get("executeLatency").toString());
-                for (String key2 : keys2) {
-                    String key = key2;
-                    if (key == "completeLatency") {
-                        ins.put(key, processLatency + executeLatency);
-                    } else if(((JSONObject) component).keySet().contains(key)) {
-                        Object val = ((JSONObject) component).get(key);
-                        if (key == "boltId") key = "name";
-                        if (key == "processLatency") val = processLatency;
-                        if (key == "executeLatency") val = executeLatency;
-                        if(val!=null)
-                            ins.put(key, val);
-                    }
+                    String collectionName = "storm." + topoName;
+                    mongoClient.insertDocumentToDB(collectionName, topoStats);
                 }
-                components.add(ins);
-                //mongoClient.insertDocumentToDB("storm."+topoName, ins);
             }
-            topoDoc.put("components", components);
-            String collectionName = "storm." + topoName;
-            mongoClient.insertDocumentToDB(collectionName, topoDoc);
         }
         mongoClient.close();
+    }
+
+    public Document ReturnValuesByKeys(Object item){
+        String[] keysTransfer = {"emitted","executed","transferred","acked"};
+        String[] keysOther = {"boltId","spoutId", "completeLatency", "processLatency", "executeLatency", "capacity"};
+
+        Date timestamp = new Date();
+        Document comp = new Document();
+        for (String key : keysTransfer)
+            if (((JSONObject) item).keySet().contains(key)) {
+                Object value = ((JSONObject) item).get(key);
+                if (value != null && !value.toString().equals("null"))
+                    comp.put(key, value);
+            }
+        if(comp.keySet().size()>0){
+            for (String key2 : keysOther)
+                if (((JSONObject) item).keySet().contains(key2)) {
+                    String key = key2;
+                    Object value = ((JSONObject) item).get(key);
+                    if (key == "spoutId") key = "name";
+                    if (value != null)
+                        comp.put(key, value);
+                }
+            comp.put("timestamp", timestamp);
+        }
+        return comp;
     }
 
     public void analyzeData() {
@@ -130,11 +118,11 @@ public class StormMetricsMonitor {
 
         //String[] experiment = {"patient_default_5242880_3_1_3-1-1455528852", "patient_our_5242880_3_1_3-1-1455526957"};
         //String[] experiment = {"patient_default_5242880_10_3_9-2-1455531141", "patient_our_5242880_10_3_9-1-1455532448"};
-        String[] experiment = {"patient_default_5242880_5_1_3-1-1455556218", "patient_our_5_5_1_3-1-1455636684"};
+        String[] experiment = {"patient_default_5242880_5_1_3-1-1455556218", "patient_our_1048576_6_1_3-1-1455800252"};
 
 
 
-        String[] metrics = {"emitted" /*, "transferred", "executed" */};
+        String[] metrics = {"emitted" , "transferred", "executed" };
         Boolean average = true;
 
         HashMap<String, List<Document>> topoStates = new HashMap<String, List<Document>>();

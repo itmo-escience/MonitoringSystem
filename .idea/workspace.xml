@@ -9,8 +9,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="766c99c1-5c95-4eab-8aba-104c5b00a422" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/src/CommonMongoClient.java" afterPath="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" afterPath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/build.gradle" afterPath="$PROJECT_DIR$/../javers1/build.gradle" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/../javers1/gradle/wrapper/gradle-wrapper.properties" />
@@ -171,14 +169,14 @@
       <file leaf-file-name="StormMetricsMonitor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2966805">
-              <caret line="47" column="3" selection-start-line="47" selection-start-column="3" selection-end-line="117" selection-end-column="5" />
+            <state vertical-scroll-proportion="-0.1163227">
+              <caret line="81" column="52" selection-start-line="81" selection-start-column="52" selection-end-line="81" selection-end-column="52" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3090#3100#0" expanded="true" />
-                <element signature="method#analyzeData#0;class#StormMetricsMonitor#0" expanded="false" />
-                <element signature="method#averageLatency#0;class#StormMetricsMonitor#0" expanded="false" />
-                <element signature="method#startMonitoring#0;class#StormMetricsMonitor#0" expanded="false" />
+                <element signature="e#2388#2398#0" expanded="true" />
+                <element signature="e#5363#5387#0" expanded="true" />
+                <element signature="e#7274#7303#0" expanded="true" />
+                <element signature="e#10739#10768#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1638,7 +1636,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13080685" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="REPL" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294621" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32915717" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.327252" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.327252" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Leiningen" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1649,7 +1647,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3854048" sideWeight="0.49755502" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3854048" sideWeight="0.49755502" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1961,21 +1959,15 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
-          <line>283</line>
+          <line>270</line>
           <properties />
           <option name="timeStamp" value="1320" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
-          <line>227</line>
+          <line>182</line>
           <properties />
           <option name="timeStamp" value="1325" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
-          <line>75</line>
-          <properties />
-          <option name="timeStamp" value="1332" />
         </line-breakpoint>
         <line-breakpoint type="java-method">
           <url>jar://$PROJECT_DIR$/lib/log4j-api-2.5.jar!/org/apache/logging/log4j/spi/LoggerContext.class</url>
@@ -2393,14 +2385,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2966805">
-          <caret line="47" column="3" selection-start-line="47" selection-start-column="3" selection-end-line="117" selection-end-column="5" />
+        <state vertical-scroll-proportion="-0.1163227">
+          <caret line="81" column="52" selection-start-line="81" selection-start-column="52" selection-end-line="81" selection-end-column="52" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3090#3100#0" expanded="true" />
-            <element signature="method#analyzeData#0;class#StormMetricsMonitor#0" expanded="false" />
-            <element signature="method#averageLatency#0;class#StormMetricsMonitor#0" expanded="false" />
-            <element signature="method#startMonitoring#0;class#StormMetricsMonitor#0" expanded="false" />
+            <element signature="e#2388#2398#0" expanded="true" />
+            <element signature="e#5363#5387#0" expanded="true" />
+            <element signature="e#7274#7303#0" expanded="true" />
+            <element signature="e#10739#10768#0" expanded="true" />
           </folding>
         </state>
       </provider>
