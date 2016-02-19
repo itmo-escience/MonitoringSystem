@@ -51,8 +51,8 @@ public class StormMetricsMonitor {
         JSONObject summaryJson = Utils.getJsonFromUrl(baseUrl+"summary");
         mongoClient.open();
         for(Object topology : (JSONArray)summaryJson.get("topologies")) {
-            String topoName = ((JSONObject) topology).get("id").toString();
-            JSONObject json = Utils.getJsonFromUrl(baseUrl + topoName);
+            String topoID = ((JSONObject) topology).get("id").toString();
+            JSONObject json = Utils.getJsonFromUrl(baseUrl + topoID);
             String uptimeStr = json.get("uptime").toString();
 
             JSONArray topologyStats = ((JSONArray) json.get("topologyStats"));
@@ -68,10 +68,12 @@ public class StormMetricsMonitor {
                     }
                 if(!components.isEmpty()){
                     topoStats.put("name", "Topology");
+                    topoStats.put("topoID", topoID);
                     topoStats.put("uptime", uptimeStr);
                     topoStats.put("components", components);
 
-                    String collectionName = "storm." + topoName;
+                    //String collectionName = "storm." + topoName;
+                    String collectionName = "storm.statistics" + topoID;
                     mongoClient.insertDocumentToDB(collectionName, topoStats);
                 }
             }
