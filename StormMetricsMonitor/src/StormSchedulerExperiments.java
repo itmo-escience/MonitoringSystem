@@ -92,10 +92,9 @@ public class StormSchedulerExperiments {
             }
             experiment.put("finished", new Date());
             mongoClient.updateDocumentInDB(collectionName, find, experiment);
-            //killTopology(startsWith);
-            //killAllProcesses();
         }
-
+        killTopologies();
+        killAllProcesses();
     }
 
 

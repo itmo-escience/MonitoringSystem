@@ -9,7 +9,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="766c99c1-5c95-4eab-8aba-104c5b00a422" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" afterPath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/pom.xml" afterPath="$PROJECT_DIR$/Common/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" afterPath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" afterPath="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java" afterPath="$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/build.gradle" afterPath="$PROJECT_DIR$/../javers1/build.gradle" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/../javers1/gradle/wrapper/gradle-wrapper.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/javers-core/build.gradle" afterPath="$PROJECT_DIR$/../javers1/javers-core/build.gradle" />
@@ -132,14 +136,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="35" column="21" selection-start-line="31" selection-start-column="7" selection-end-line="35" selection-end-column="21" />
-              <folding>
-                <element signature="n#plugin#2;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
-              </folding>
+            <state vertical-scroll-proportion="2.0017574">
+              <caret line="142" column="91" selection-start-line="142" selection-start-column="91" selection-end-line="142" selection-end-column="91" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -147,8 +149,8 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Common/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="16" column="21" selection-start-line="11" selection-start-column="7" selection-end-line="16" selection-end-column="21" />
+            <state vertical-scroll-proportion="11.769231">
+              <caret line="12" column="57" selection-start-line="12" selection-start-column="57" selection-end-line="12" selection-end-column="57" />
               <folding />
             </state>
           </provider>
@@ -170,7 +172,7 @@
         <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
+              <caret line="76" column="26" selection-start-line="76" selection-start-column="26" selection-end-line="76" selection-end-column="26" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#ReadSShKey#0;class#StormSchedulerExperiments#0" expanded="false" />
@@ -181,10 +183,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StormMetricsMonitor.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="StormMetricsMonitor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7255595">
+            <state vertical-scroll-proportion="0.0">
               <caret line="75" column="35" selection-start-line="75" selection-start-column="35" selection-end-line="75" selection-end-column="35" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -205,12 +207,10 @@
         <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="164" column="49" selection-start-line="164" selection-start-column="49" selection-end-line="164" selection-end-column="49" />
+              <caret line="169" column="33" selection-start-line="160" selection-start-column="6" selection-end-line="169" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#CommonMongoClient#1;class#CommonMongoClient#0" expanded="false" />
-                <element signature="e#5911#5912#0" expanded="true" />
-                <element signature="e#5967#5968#0" expanded="true" />
                 <element signature="method#saveObjectToDB#1;class#CommonMongoClient#0" expanded="false" />
                 <element signature="method#getDocumentsFromDB#1;class#CommonMongoClient#0" expanded="false" />
                 <element signature="method#getObjectsFromDB#0;class#CommonMongoClient#0" expanded="false" />
@@ -747,13 +747,13 @@
         <option value="$PROJECT_DIR$/ClusterStateMonitor/src/MesosRestClient.java" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/Resources/log4j2.xml" />
         <option value="$PROJECT_DIR$/ClusterStateMonitor/src/ClusterStateMonitor.java" />
+        <option value="$PROJECT_DIR$/StormMetricsMonitor/resources/log4j2.xml" />
+        <option value="$PROJECT_DIR$/Common/src/Utils.java" />
+        <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
+        <option value="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
+        <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java" />
         <option value="$PROJECT_DIR$/Common/pom.xml" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" />
-        <option value="$PROJECT_DIR$/StormMetricsMonitor/resources/log4j2.xml" />
-        <option value="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
-        <option value="$PROJECT_DIR$/Common/src/Utils.java" />
-        <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java" />
-        <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
       </list>
     </option>
   </component>
@@ -785,10 +785,6 @@
           <option name="myItemId" value="storm-metrics-monitor" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
         </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Dependencies" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$DependenciesNode" />
-        </PATH_ELEMENT>
       </PATH>
       <PATH>
         <PATH_ELEMENT>
@@ -798,6 +794,34 @@
         <PATH_ELEMENT>
           <option name="myItemId" value="storm-metrics-monitor" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="common" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="common" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
         </PATH_ELEMENT>
       </PATH>
       <PATH>
@@ -921,7 +945,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.10708535" />
     <property name="project.structure.side.proportion" value="0.30477908" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/StormMetricsMonitor/lib/commons-ssh-1.4.1.jar!/" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/StormMetricsMonitor" />
     <property name="dynamic.classpath" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
     <property name="settings.editor.selected.configurable" value="MavenSettings" />
@@ -962,25 +986,7 @@
       <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor\Resources" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.StormSchedulerExperiments">
-    <configuration default="false" name="javers1:javers-core [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/../javers1/javers-core" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="build" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Maven.install StormMetricsMonitor">
     <configuration default="false" name="StormMetricsMonitor" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -1004,9 +1010,9 @@
     <configuration default="false" name="StormSchedulerExperiments" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" value="StormSchedulerExperiments" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
@@ -1014,6 +1020,24 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="StormMetricsMonitor" />
       <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="javers1:javers-core [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../javers1/javers-core" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
       <method />
     </configuration>
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
@@ -1535,6 +1559,33 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="false" name="install StormMetricsMonitor" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="install" />
+                <option value="-DskipTests=True" />
+                <option value="-X" />
+                <option value="-U" />
+              </list>
+            </option>
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/StormMetricsMonitor" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method />
+    </configuration>
     <configuration default="false" name="exec StormMetricsMonitor" type="MavenRunConfiguration" factoryName="Maven">
       <MavenSettings>
         <option name="myGeneralSettings" />
@@ -1637,20 +1688,21 @@
       </MavenSettings>
       <method />
     </configuration>
-    <list size="13">
+    <list size="14">
       <item index="0" class="java.lang.String" itemvalue="Application.DataLayerMonitor" />
       <item index="1" class="java.lang.String" itemvalue="Application.MetricsMonitor.getData()" />
       <item index="2" class="java.lang.String" itemvalue="Application.MetricsMonitor.startMonitoring()" />
       <item index="3" class="java.lang.String" itemvalue="Application.ProvenanceManager" />
       <item index="4" class="java.lang.String" itemvalue="Application.ClusterStateMonitor.getStateFromDb()" />
       <item index="5" class="java.lang.String" itemvalue="Application.ClusterStateMonitor.startMonitoring()" />
-      <item index="6" class="java.lang.String" itemvalue="Maven.exec StormMetricsMonitor" />
-      <item index="7" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor exec" />
-      <item index="8" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor install " />
-      <item index="9" class="java.lang.String" itemvalue="Maven.Common install" />
-      <item index="10" class="java.lang.String" itemvalue="Gradle.javers1:javers-core [build]" />
-      <item index="11" class="java.lang.String" itemvalue="Application.StormMetricsMonitor" />
-      <item index="12" class="java.lang.String" itemvalue="Application.StormSchedulerExperiments" />
+      <item index="6" class="java.lang.String" itemvalue="Application.StormMetricsMonitor" />
+      <item index="7" class="java.lang.String" itemvalue="Application.StormSchedulerExperiments" />
+      <item index="8" class="java.lang.String" itemvalue="Gradle.javers1:javers-core [build]" />
+      <item index="9" class="java.lang.String" itemvalue="Maven.install StormMetricsMonitor" />
+      <item index="10" class="java.lang.String" itemvalue="Maven.exec StormMetricsMonitor" />
+      <item index="11" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor exec" />
+      <item index="12" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor install " />
+      <item index="13" class="java.lang.String" itemvalue="Maven.Common install" />
     </list>
     <recent_temporary>
       <list size="3">
@@ -1707,7 +1759,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13202934" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="REPL" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294621" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32915717" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45496008" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2896237" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Leiningen" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -2349,24 +2401,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="35" column="21" selection-start-line="31" selection-start-column="7" selection-end-line="35" selection-end-column="21" />
-          <folding>
-            <element signature="n#plugin#2;n#plugins#0;n#build#0;n#project#0;n#!!top" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Common/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="21" selection-start-line="11" selection-start-column="7" selection-end-line="16" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/jcabi/jcabi-ssh/2.0-SNAPSHOT/jcabi-ssh-2.0-20160126.105022-7.jar!/com/jcabi/ssh/Shell.class">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.23404256">
@@ -2411,15 +2445,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="75" column="35" selection-start-line="75" selection-start-column="35" selection-end-line="75" selection-end-column="35" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2384#2394#0" expanded="true" />
+            <element signature="method#analyzeData#0;class#StormMetricsMonitor#0" expanded="false" />
+            <element signature="e#6019#6043#0" expanded="true" />
+            <element signature="method#tuplesPerSecond#0;class#StormMetricsMonitor#0" expanded="false" />
+            <element signature="e#7122#7151#0" expanded="true" />
+            <element signature="method#averageLatency#0;class#StormMetricsMonitor#0" expanded="false" />
+            <element signature="e#12377#12406#0" expanded="true" />
+            <element signature="method#startMonitoring#0;class#StormMetricsMonitor#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="164" column="49" selection-start-line="164" selection-start-column="49" selection-end-line="164" selection-end-column="49" />
+          <caret line="169" column="33" selection-start-line="160" selection-start-column="6" selection-end-line="169" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#CommonMongoClient#1;class#CommonMongoClient#0" expanded="false" />
-            <element signature="e#5911#5912#0" expanded="true" />
-            <element signature="e#5967#5968#0" expanded="true" />
             <element signature="method#saveObjectToDB#1;class#CommonMongoClient#0" expanded="false" />
             <element signature="method#getDocumentsFromDB#1;class#CommonMongoClient#0" expanded="false" />
             <element signature="method#getObjectsFromDB#0;class#CommonMongoClient#0" expanded="false" />
@@ -2441,7 +2491,7 @@
     <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
+          <caret line="76" column="26" selection-start-line="76" selection-start-column="26" selection-end-line="76" selection-end-column="26" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#ReadSShKey#0;class#StormSchedulerExperiments#0" expanded="false" />
@@ -2451,21 +2501,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
+    <entry file="file://$PROJECT_DIR$/Common/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7255595">
-          <caret line="75" column="35" selection-start-line="75" selection-start-column="35" selection-end-line="75" selection-end-column="35" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2384#2394#0" expanded="true" />
-            <element signature="method#analyzeData#0;class#StormMetricsMonitor#0" expanded="false" />
-            <element signature="e#6019#6043#0" expanded="true" />
-            <element signature="method#tuplesPerSecond#0;class#StormMetricsMonitor#0" expanded="false" />
-            <element signature="e#7122#7151#0" expanded="true" />
-            <element signature="method#averageLatency#0;class#StormMetricsMonitor#0" expanded="false" />
-            <element signature="e#12377#12406#0" expanded="true" />
-            <element signature="method#startMonitoring#0;class#StormMetricsMonitor#0" expanded="false" />
-          </folding>
+        <state vertical-scroll-proportion="11.769231">
+          <caret line="12" column="57" selection-start-line="12" selection-start-column="57" selection-end-line="12" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.0017574">
+          <caret line="142" column="91" selection-start-line="142" selection-start-column="91" selection-end-line="142" selection-end-column="91" />
+          <folding />
         </state>
       </provider>
     </entry>

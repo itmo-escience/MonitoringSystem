@@ -9,10 +9,9 @@
     <version>1.0</version>
 
 
-
     <repositories>
         <repository>
-            <id>Common</id>
+            <id>my</id>
             <url>file://${basedir}/lib</url>
         </repository>
         <repository>
@@ -26,9 +25,8 @@
             <groupId>JavaPlot</groupId>
             <artifactId>JavaPlot</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/JavaPlot.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>ifmo.escience.dapris.monitoring.common</groupId>
             <artifactId>Common</artifactId>
@@ -65,6 +63,7 @@
                 <directory>Resources</directory>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -75,29 +74,54 @@
                 </configuration>
             </plugin>
 
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-shade-plugin</artifactId>-->
+                <!--<version>2.2</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>shade</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>-->
+                    <!--<promoteTransitiveDependencies>false</promoteTransitiveDependencies>-->
+                    <!--&lt;!&ndash;<createDependencyReducedPom>true</createDependencyReducedPom>&ndash;&gt;-->
+                    <!--<minimizeJar>false</minimizeJar>-->
+                    <!--<artifactSet>-->
+                        <!--<includes>-->
+                            <!--<include>org.apache.commons:http-client</include>-->
+                            <!--<include>JavaPlot:JavaPlot</include>-->
+                            <!--<include>ifmo.escience.dapris.monitoring.common:Common</include>-->
+
+                        <!--</includes>-->
+                    <!--</artifactSet>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.2</version>
+                <artifactId>maven-install-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>hack-binary</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <file>${basedir}/lib/JavaPlot.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>JavaPlot</groupId>
+                            <artifactId>JavaPlot</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>install-file</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
-                    <promoteTransitiveDependencies>false</promoteTransitiveDependencies>
-                    <!--<createDependencyReducedPom>true</createDependencyReducedPom>-->
-                    <minimizeJar>false</minimizeJar>
-                    <artifactSet>
-                        <includes>
-                            <include>org.apache.commons:http-client</include>
-                        </includes>
-                    </artifactSet>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -123,7 +147,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+             </plugin>
         </plugins>
     </build>
 </project>

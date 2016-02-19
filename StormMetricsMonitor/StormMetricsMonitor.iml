@@ -10,15 +10,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="Maven: JavaPlot:JavaPlot:1.0">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/JavaPlot.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="Maven: JavaPlot:JavaPlot:1.0" level="project" />
     <orderEntry type="module" module-name="Common" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20151123" level="project" />
