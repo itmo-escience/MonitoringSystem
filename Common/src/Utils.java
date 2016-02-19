@@ -55,13 +55,14 @@ public class Utils {
                 log.error("HttpException: ", e);
                 //Sleep(1000);
             } catch (IOException e) {
-                log.error("IOException: ", e);
+                //log.error("IOException: ", e.getMessage());
                 //Sleep(1000);
             }
             catch (JSONException e) {
                 log.error("JSONException: ", e);
                 //Sleep(1000);
-            } catch (Throwable throwable) {
+            }
+            catch (Throwable throwable) {
                 log.error("JSONException: ", throwable);
             } finally {
                 method.releaseConnection();

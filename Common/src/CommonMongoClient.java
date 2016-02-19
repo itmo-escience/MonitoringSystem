@@ -18,6 +18,8 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 //import org.apache.commons.logging.LogFactory;
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
@@ -42,7 +44,7 @@ import java.util.regex.Pattern;
  * Created by Pavel Smirnov
  */
 public class CommonMongoClient {
-    //private static Logger log = LogManager.getLogger(CommonMongoClient.class);
+    private static Logger log = LogManager.getLogger(CommonMongoClient.class);
     public static String metricsCollection = "metrics";
     public static String stateCollection = "clusterStates";
 
@@ -150,7 +152,20 @@ public class CommonMongoClient {
             coll.insertOne(doc);
         }
         catch (Exception e){
-            //log.error(e);
+            log.error(e);
+        }
+        if(closeAtFinish)close();
+    }
+
+    public void updateDocumentInDB(String collection, Document find, Document update){
+        if(!isOpened){ open(); closeAtFinish = true;}
+        MongoCollection coll = defaultDB.getCollection(collection);
+        try {
+            //coll.findOneAndUpdate(find, update);
+            coll.findOneAndReplace(find, update);
+        }
+        catch (Exception e){
+            log.error(e);
         }
         if(closeAtFinish)close();
     }
@@ -158,7 +173,6 @@ public class CommonMongoClient {
     public void saveObjectToDB(String collection, Object insert){
         saveObjectToDB(collection, null, insert);
     }
-
 
 
     public void saveObjectToDB(String collection, Object find, Object update){
@@ -248,6 +262,8 @@ public class CommonMongoClient {
 
         return cursor;
     }
+
+
 }
 
 
