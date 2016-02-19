@@ -96,7 +96,7 @@ public class StormMetricsMonitor {
                 if (((JSONObject) item).keySet().contains(key2)) {
                     String key = key2;
                     Object value = ((JSONObject) item).get(key);
-                    if (key == "spoutId") key = "name";
+                    if (key == "spoutId" || key == "boltId" ) key = "name";
                     if (value != null)
                         comp.put(key, value);
                 }
@@ -118,20 +118,120 @@ public class StormMetricsMonitor {
 
         //String[] experiment = {"patient_default_5242880_3_1_3-1-1455528852", "patient_our_5242880_3_1_3-1-1455526957"};
         //String[] experiment = {"patient_default_5242880_10_3_9-2-1455531141", "patient_our_5242880_10_3_9-1-1455532448"};
-        String[] experiment = {"patient_default_5242880_5_1_3-1-1455556218", "patient_our_1048576_6_1_3-1-1455800252"};
-
+        //String[] experiment = {"patient_default_5242880_5_1_3-1-1455556218", "patient_our_1048576_6_1_3-2-1455803874"};
+        //String[] experiment = {"patient_default_5242880_5_1_3-1-1455556218", "patient_our_1048576_10_1_3-3-1455804269"};
+        //String[] experiment = {"patient_default_1048576_10_1_3-2-1455806915" , "patient_resource_1048576_10_1_3-1-1455810282" };
+        //String[] experiment = {"patient_default_1048576_10_1_3-2-1455806915" , "patient_resource_5242880_10_1_3-2-1455811482" };
+        String[] experiment = { "patient_default_1048576_5_1_3-1-1455815137", "patient_resource_1048576_5_1_3-1-1455813782"};
 
 
         String[] metrics = {"emitted" , "transferred", "executed" };
         Boolean average = true;
 
         HashMap<String, List<Document>> topoStates = new HashMap<String, List<Document>>();
-        topoStates.put("Default", mongoClient.getDocumentsFromDB("storm." + experiment[0].replace("storm.", ""), null, null, 100));
-        topoStates.put("Annealing", mongoClient.getDocumentsFromDB("storm." + experiment[1].replace("storm.", ""), null, null, 100));
+        for(String exp : experiment)
+            topoStates.put(exp.split("_")[1], mongoClient.getDocumentsFromDB("storm." + exp.replace("storm.", ""), null, null, 100));
 
 
-        tuplesPerSecond(topoStates, 6, "("+experiment[0].split("-")[0].split("default_")[1]+")");
+        //topoStates.put("Annealing", mongoClient.getDocumentsFromDB("storm." + experiment[1].replace("storm.", ""), null, null, 100));
+
+        tuplesPerSecond(topoStates, 1, "("+String.join(" vs ", topoStates.keySet())+")");
         //averageLatency(topoStates);
+    }
+
+
+    public void tuplesPerSecond(HashMap<String, List<Document>> topoStates, int averagePeriod, String additionalTitle) {
+
+        String[] metricNames = {/* "emitted" , "transferred",*/ "executed" };
+
+        log.trace("Analysing data from DB");
+        JavaPlot p = new JavaPlot();
+        p.setTitle("Tuples per second "+additionalTitle);
+        p.getAxis("x").setLabel("Processing time, s");
+        p.getAxis("y").setLabel("Tuples per second");
+
+        int topoCount=0;
+        for (String schedulerName : topoStates.keySet()){
+            topoCount++;
+            HashMap<String, ArrayList<double[]>> dataSet = new HashMap<String, ArrayList<double[]>>();
+            Double prevValue = 0.0;
+            for (String metricName : metricNames){
+                int i = 0;
+                int j = 0;
+                if (!dataSet.containsKey(metricName))
+                    dataSet.put(metricName, new ArrayList<double[]>());
+                Double oneMinuteDelta = 0.0;
+                for (Document topoState : topoStates.get(schedulerName)){
+                    Double tenSecondsDelta = 0.0;
+                    //"completeLatency", new Document("$gt", 0)
+                    String[] uptime = topoState.get("uptime").toString().split(" ");
+                    Integer seconds = Integer.parseInt(uptime[uptime.length - 1].replace("s", ""));
+                    if (uptime.length > 1)
+                        seconds += 60 * Integer.parseInt(uptime[uptime.length - 2].replace("m", ""));
+                    if (uptime.length > 2)
+                        seconds += 3600 * Integer.parseInt(uptime[uptime.length - 3].replace("h", ""));
+
+                    Double totalKeyValue = 0.0;
+                    for (Document compDoc : ((ArrayList<Document>) topoState.get("components"))){
+                        if(compDoc.containsKey(metricName)){
+                            if (compDoc.containsKey("name") && compDoc.get("name").toString().contains("evaluate"))
+                                totalKeyValue += Double.parseDouble(compDoc.get(metricName).toString());
+                            if (compDoc.containsKey("boltId") && compDoc.get("boltId").toString().contains("evaluate"))
+                                totalKeyValue += Double.parseDouble(compDoc.get(metricName).toString());
+                        }
+
+                    }
+                    if(totalKeyValue>0) {
+                        tenSecondsDelta = (totalKeyValue - prevValue);
+                        oneMinuteDelta += (totalKeyValue - prevValue);
+                    }
+                    //if (average)
+                    //totalKeyValue/= i*10.0;
+                    dataSet.get(metricName).add(new double[]{i*10.0, tenSecondsDelta/10});
+//                    if(i%5==i/5){
+//                        dataSet.get(metricName).add(new double[]{j, oneMinuteDelta});
+//                        oneMinuteDelta = 0.0;
+//                        j++;
+//                    }
+                    prevValue = totalKeyValue;
+                    i++;
+                }
+
+                ArrayList<double[]> setToDisplay = dataSet.get(metricName);
+                if(setToDisplay.size()>0) {
+                    if (averagePeriod > 1) {
+                        ArrayList<double[]> averigedDataSet = new ArrayList<double[]>();
+                        int k = 1;
+                        int period = 3;
+                        Double valueToAverage = 0.0;
+                        for (double[] pair : dataSet.get(metricName)) {
+                            valueToAverage += pair[1];
+                            if (k == period) {
+                                averigedDataSet.add(new double[]{pair[0], valueToAverage / period});
+                                valueToAverage = 0.0;
+                                k = 1;
+                            }
+
+                            k++;
+                        }
+                        setToDisplay = averigedDataSet;
+
+                    }
+
+                    DataSetPlot plot = new DataSetPlot(setToDisplay.toArray(new double[0][]));
+                    plot.setTitle(schedulerName + "_" + metricName);
+                    PlotStyle plotStyle = plot.getPlotStyle();
+                    plotStyle.setStyle(Style.LINES);
+                    plotStyle.setLineWidth(topoCount*2);
+                    p.addPlot(plot);
+                }
+            }
+    }
+
+        //stl.setPointType(5);
+        //stl.setPointSize(5);
+        //p.addPlot("sin(x)");
+        p.plot();
     }
 
     public void InsertDataToDb(){
@@ -158,82 +258,6 @@ public class StormMetricsMonitor {
                 i++;
         }
         mongoClient.close();
-    }
-
-    public void tuplesPerSecond(HashMap<String, List<Document>> topoStates, int averagePeriod, String additionalTitle) {
-
-        String[] metricNames = {"emitted", "transferred", "executed"};
-
-        log.trace("Analysing data from DB");
-        JavaPlot p = new JavaPlot();
-        p.setTitle("Tuples per second "+additionalTitle);
-        p.getAxis("x").setLabel("Processing time, s");
-        p.getAxis("y").setLabel("Tuples per second");
-
-        for (String schedulerName : topoStates.keySet()){
-            HashMap<String, ArrayList<double[]>> dataSet = new HashMap<String, ArrayList<double[]>>();
-            for (String metricName : metricNames){
-                int i = 0;
-                if (!dataSet.containsKey(metricName))
-                    dataSet.put(metricName, new ArrayList<double[]>());
-                for (Document topoState : topoStates.get(schedulerName)){
-                    //"completeLatency", new Document("$gt", 0)
-                    String[] uptime = topoState.get("uptime").toString().split(" ");
-                    Integer seconds = Integer.parseInt(uptime[uptime.length - 1].replace("s", ""));
-                    if (uptime.length > 1)
-                        seconds += 60 * Integer.parseInt(uptime[uptime.length - 2].replace("m", ""));
-                    if (uptime.length > 2)
-                        seconds += 3600 * Integer.parseInt(uptime[uptime.length - 3].replace("h", ""));
-
-                    Double totalKeyValue = 0.0;
-                    for (Document compDoc : ((ArrayList<Document>) topoState.get("components"))) {
-                        if (compDoc.containsKey(metricName))
-                            totalKeyValue += Double.parseDouble(compDoc.get(metricName).toString());
-                    }
-                    //if (average)
-                    totalKeyValue /= seconds;
-                    dataSet.get(metricName).add(new double[]{i*10.0, totalKeyValue});
-                    i++;
-                }
-
-                ArrayList<double[]> setToDisplay = dataSet.get(metricName);
-                if(setToDisplay.size()>0) {
-                    if (averagePeriod > 1) {
-                        ArrayList<double[]> averigedDataSet = new ArrayList<double[]>();
-                        int j = 1;
-                        int period = 3;
-                        Double valueToAverage = 0.0;
-                        for (double[] pair : dataSet.get(metricName)) {
-                            valueToAverage += pair[1];
-                            if (j == period) {
-                                averigedDataSet.add(new double[]{pair[0], valueToAverage / period});
-                                valueToAverage = 0.0;
-                                j = 1;
-                            }
-
-                            j++;
-                        }
-                        setToDisplay = averigedDataSet;
-
-                    }
-
-                    DataSetPlot plot = new DataSetPlot(setToDisplay.toArray(new double[0][]));
-                    plot.setTitle(schedulerName + "_" + metricName);
-                    PlotStyle plotStyle = plot.getPlotStyle();
-                    plotStyle.setStyle(Style.LINES);
-                    if (schedulerName == "Annealing")
-                        plotStyle.setLineWidth(4);
-                    else
-                        plotStyle.setLineWidth(2);
-                    p.addPlot(plot);
-                }
-            }
-    }
-
-        //stl.setPointType(5);
-        //stl.setPointSize(5);
-        //p.addPlot("sin(x)");
-        p.plot();
     }
 
     public void averageLatency(HashMap<String, List<Document>> topoStates){
@@ -285,7 +309,6 @@ public class StormMetricsMonitor {
         p.plot();
     }
 
-
     public void startMonitoring(int sleepInterval){
         log.info("Monitoring starting");
         while(1==1){
@@ -298,6 +321,7 @@ public class StormMetricsMonitor {
             }
         }
     }
+
 
 
 }
