@@ -43,16 +43,16 @@ public class Utils {
         while (ret==null){
             try {
                 int statusCode = client.executeMethod(method);
-                if (statusCode != HttpStatus.SC_OK)
+                if (statusCode != HttpStatus.SC_OK){
                     throw new HttpException("Method failed: " + method.getStatusLine());
-
+                }
                 InputStream stream = method.getResponseBodyAsStream();
                 byte[] responseBody = IOUtils.toByteArray(stream);
                 stream.close();
                 String res = new String(responseBody);
                 ret = new JSONObject(res);
             } catch (HttpException e) {
-                log.error("HttpException: ", e);
+                //log.error("HttpException: ", e);
                 //Sleep(1000);
             } catch (IOException e) {
                 //log.error("IOException: ", e.getMessage());

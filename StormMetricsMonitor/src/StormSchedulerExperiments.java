@@ -34,7 +34,7 @@ public class StormSchedulerExperiments {
     public static void main(String[] args){
         StormSchedulerExperiments stormMetricsMonitor = new StormSchedulerExperiments("http://192.168.92.11:8080/api/v1/topology/");
         //stormMetricsMonitor.killAllProcesses();
-        stormMetricsMonitor.startExperiments(60);
+        stormMetricsMonitor.startExperiments(180);
      }
 
     public StormSchedulerExperiments (String baseUrl){
@@ -50,34 +50,50 @@ public class StormSchedulerExperiments {
     public void startExperiments(int seconds){
 
         killTopologies();
-        killAllProcesses();
+        //killAllProcesses();
         log.info("Starting experiments");
 
         for(int megabyte: new int[]{ 1 /*, 5, 10*/ }){
-            String startsWith = submitTopology(1024, 5, 1, 3);
+            Date expStarted = new Date();
             Document experiment = new Document();
             experiment.put("started", new Date());
             //String startsWith = "patient_default_5242880_1024_1_3";
-            String topoId = getTopoId(startsWith);
-            Document find = new Document(){{ put("topoId", topoId); }};
-            experiment.put("topoId", topoId);
+            List<Document> runs = new ArrayList<Document>();
+            experiment.put("started",expStarted);
             experiment.put("kbSize", 1024);
             experiment.put("workers", 5);
             experiment.put("emitters", 1);
             experiment.put("processors", 1);
+            experiment.put("runs", runs);
             mongoClient.insertDocumentToDB(collectionName, experiment);
 
+            Document find = new Document(){{ put("started",expStarted); }};
             for(String scheduler : schedulers.keySet()){
+
+                Document run = new Document();
+                runs.add(run);
+                run.put("started", new Date() );
+                run.put("scheduler", scheduler);
+                mongoClient.updateDocumentInDB(collectionName, find , experiment);
+
                 switchScheduler(scheduler);
-                experiment.put(scheduler+"Started", new Date());
-                log.info("Doing experiment with "+" scheduler ("+String.valueOf(seconds)+") seconds");
-                mongoClient.updateDocumentInDB(collectionName, find, experiment);
+
+                String topoName = submitTopology(1024, 5, 1, 3);
+                experiment.put("name", topoName);
+                String topoId = getTopoId(topoName);
+                run.put("topoID", topoId);
+                mongoClient.updateDocumentInDB(collectionName, find , experiment);
+
+                log.info("Doing run with "+scheduler+" scheduler ("+String.valueOf(seconds)+") seconds");
                 Wait(seconds * 1000);
+
+                run.put("finished", new Date());
+                mongoClient.updateDocumentInDB(collectionName, find , experiment);
             }
             experiment.put("finished", new Date());
             mongoClient.updateDocumentInDB(collectionName, find, experiment);
-            killTopology(startsWith);
-            killAllProcesses();
+            //killTopology(startsWith);
+            //killAllProcesses();
         }
 
     }
@@ -90,9 +106,9 @@ public class StormSchedulerExperiments {
         while(topoId==null){
             try{
 
-                List<String> topoIDs = GetTopologyIDs();
+                List<String> topoIDs = getTopologyIDs();
                 for (String id : topoIDs){
-                        topoId = id.split("-")[0];
+                        topoId = id;
                         wait=1;
                         break;
                 }
@@ -180,7 +196,7 @@ public class StormSchedulerExperiments {
             }
         executeCommand(masterHost,"sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
         killAllProcesses();
-        WaitForJSON(baseUrl + "topology/summary", "topologies");
+        getSupervisorIDs();
 
     }
 
@@ -191,7 +207,7 @@ public class StormSchedulerExperiments {
         return topoName.replace(" ","_");
     }
 
-    public List<String> GetTopologyIDs(){
+    public List<String> getTopologyIDs(){
         List<String> ret = new ArrayList<String>();
         log.trace("Waiting for topologies list");
         JSONArray topologies = WaitForJSON(baseUrl + "topology/summary", "topologies");
@@ -202,9 +218,20 @@ public class StormSchedulerExperiments {
         return ret;
     }
 
+    public List<String> getSupervisorIDs(){
+        List<String> ret = new ArrayList<String>();
+        log.trace("Waiting for supervisors list");
+        JSONArray topologies = WaitForJSON(baseUrl + "supervisor/summary", "supervisors");
+        for(Object topology : topologies){
+            String id = ((JSONObject) topology).get("id").toString();
+            ret.add(id);
+        }
+        return ret;
+    }
+
     public void killTopologies(){
         log.info("Killing existing topologies");
-        for(String topoID : GetTopologyIDs()){
+        for(String topoID : getTopologyIDs()){
             killTopology(topoID.split("-")[0]);
         }
     }
