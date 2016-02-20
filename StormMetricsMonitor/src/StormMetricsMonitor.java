@@ -11,6 +11,7 @@ import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
 import com.panayotis.gnuplot.terminal.ImageTerminal;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
 import ifmo.escience.dapris.monitoring.common.Utils;
+import org.apache.logging.log4j.core.config.Scheduled;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -124,39 +125,92 @@ public class StormMetricsMonitor {
         String path = "d:/Projects/MonitoringSystem/StormMetricsMonitor/target/";
         StringBuilder output = new StringBuilder();
         mongoClient.open();
-        List<Document> experiments = mongoClient.getDocumentsFromDB("storm.experiments", null, new Document(){{ put("_id", -1); }}, 100);
+        List<Document> experiments = mongoClient.getDocumentsFromDB("storm.experiments", /*new Document(){{ put("_id", "patient_3072_5_1_3"); }}*/ null, null, 100);
         for(Document experiment : experiments){
 
-            String name = experiment.get("name").toString();
-            List<Document> runs = (List<Document>)experiment.get("runs");
-            if(runs.size()>1){
-                //output.append("<H1>"+experiment.getString("name")+"</H1>\n");
+            String expId = experiment.get("_id").toString();
+            //List<Document> runs = (List<Document>)experiment.get("runs");
+            List<Document> runs = mongoClient.getDocumentsFromDB("storm.runs", new Document(){{
+                put("expID", expId);
+                put("Finished", new Document(){{ put( "$exists:", true); }} ); }}, new Document(){{ put("started", -1); }}, 100);
+
+            if(runs.size()>0){
+                output.append("<H1>"+experiment.getString("_id")+"</H1>\n");
+                StringBuilder runsTable = new StringBuilder();
                 HashMap<String, List<Document>> topoStates = new HashMap<String, List<Document>>();
+                int runI=0;
+
                 for(Document run : runs){
                     String scheduler = run.get("scheduler").toString();
-                    if(run.containsKey("topoID")){
-                        String topoID = run.get("topoID").toString();
-                        Document find = new Document() {{   put("topoID", topoID);  }};
-                        List<Document> runStats = mongoClient.getDocumentsFromDB("storm.statistics", find);
-                        List<Document> factAssignments = mongoClient.getDocumentsFromDB("storm.FactAssignments", find);
-                        //output.append("Fact assignments:"+factAssignments+"</H1>");
-                        Document structure = mongoClient.getDocumentFromDB("storm.Structure", find);
-                        //output.append("Structure:"+structure+"<br>");
-                        List<Document> schedules = mongoClient.getDocumentsFromDB("storm.Schedules", find);
-                        if(runStats.size()>0)
-                            topoStates.put(scheduler, runStats);
-                        else{
-                           // String abc = topoStates.toString();
+                    String topoID = run.get("_id").toString();
+                    Document find = new Document() {{   put("topoID", topoID);  }};
+                    List<Document> runStats = mongoClient.getDocumentsFromDB("storm.statistics", find);
+                    List<Document> factAssignments = mongoClient.getDocumentsFromDB("storm.FactAssignments", find);
+                    Document structure = mongoClient.getDocumentFromDB("storm.Structure", find);
+                    Document schedule = mongoClient.getDocumentFromDB("storm.Schedules", find);
+
+                    String scheduleStr = "";
+                    if(schedule!=null)
+                        if(schedule.containsKey("nodes")) {
+                            for (Document node : (List<Document>) schedule.get("nodes")) {
+                                scheduleStr += node.get("nodeId") + " => [";
+                                if (node.get("tasks") != null)
+                                    for (Object task : (List<Object>) node.get("tasks")){
+                                        scheduleStr += ", "+((ArrayList<Object>) task).get(0);
+                                    }
+                                scheduleStr += "]<br>";
+                            }
+                        }
+
+
+                    String factAssignmentsStr = "";
+                    for (Document factAssignment : factAssignments){
+                        if(factAssignment.get("assignment")!=null) {
+                            for (Document assignment : (List<Document>) factAssignment.get("assignment")) {
+                                factAssignmentsStr += assignment.get("nodeId") + " => [";
+                                if (assignment.get("tasks") != null)
+                                    for (Object task : (List<Document>) assignment.get("tasks")) {
+                                        factAssignmentsStr += ", " + ((ArrayList<String>) task).get(0);
+                                    }
+                                factAssignmentsStr += "]<br>";
+                            }
+                            factAssignmentsStr += "<hr>";
                         }
                     }
+
+                    if(runStats.size()>0){
+                        String key= scheduler;
+                        if(topoStates.containsKey(key)){
+                            key+="_"+String.valueOf(runI);
+                            runI++;
+                        }
+                        topoStates.put(key, runStats);
+                    }
+
+                    String th="";
+                    String td="";
+                    for(String key : run.keySet()){
+                        th+="<th>"+key+"</th>";
+                        td+="<td>" + run.get(key) + "</td>";
+                    }
+
+                    runsTable.append("<tr>"+th+"</tr>");
+                    runsTable.append("<tr>"+td+"</tr>");
+                    //runsTable.append("<td>"+String.valueOf(runStats.size())+"</td>");
+                    //runsTable.append("</tr>");
+                    runsTable.append("<tr><td>Schedule:</td><td colspan="+String.valueOf(run.keySet())+">"+ scheduleStr+"</td></tr>");
+                    runsTable.append("<tr><td>Fact assignment:</td><td colspan="+String.valueOf(run.keySet())+">"+factAssignmentsStr+"</td></tr>");
                 }
+                output.append("<h3>Runs</h3>");
+                output.append("<table cellpadding=3 cellspacing=3>"+runsTable+"</table>");
 
                 if(topoStates.size()>0){
-                    String relPath = Paths.get("img",experiment.get("name").toString().toString()+".png").toString();
+                    String relPath = Paths.get("img", expId.toString()+".png").toString();
                     String absPath =  Paths.get(path,relPath).toString();
-                    tuplesPerSecond(topoStates, 1, "("+ name +")",absPath);
+                    tuplesPerSecond(topoStates, 1, "("+ expId +")",absPath);
                     output.append("<img src='"+relPath+"'>\n");
                 }
+                output.append("<hr>\n");
             }
 
         }

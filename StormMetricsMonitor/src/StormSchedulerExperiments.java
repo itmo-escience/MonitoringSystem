@@ -4,6 +4,7 @@ import com.jcabi.ssh.SSH;
 import ifmo.escience.dapris.monitoring.common.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ObjectArrayMessage;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,13 +32,14 @@ public class StormSchedulerExperiments {
     String masterHost = "192.168.92.11";
     String baseUrl = "http://192.168.92.11:8080/api/v1/";
     String[] slaveHosts = new String[]{"192.168.92.13", "192.168.92.14", "192.168.92.15", "192.168.92.16"};
+    private String[] runStatKeys = new String[]{"tasksTotal","workersTotal", "executorsTotal", "requestedMemOffHeap" ,"requestedCpu", "requestedTotalMem", "assignedCpu","assignedMemOffHeap", "assignedTotalMem","schedulerInfo" };
     private HashMap<String, Shell.Plain> shellPlains = new HashMap<String, Shell.Plain>();
     private HashMap<String, String> schedulers = new HashMap<String, String>();
 
     public static void main(String[] args){
         StormSchedulerExperiments stormMetricsMonitor = new StormSchedulerExperiments("http://192.168.92.11:8080/api/v1/topology/");
         //stormMetricsMonitor.killAllProcesses();
-        stormMetricsMonitor.startExperiments(2);
+        stormMetricsMonitor.startExperiments(180);
      }
 
     public StormSchedulerExperiments (String baseUrl){
@@ -52,61 +54,129 @@ public class StormSchedulerExperiments {
 
     public void startExperiments(int seconds){
 
-        killTopologies();
+        String debugTopoID = null;//
+        if(debugTopoID==null)
+            killTopologies();
 
         log.info("Starting experiments");
         int i=0;
         Document experiment;
-        Document expFind;
 
-        for(String scheduler : new String[]{ /*"default", "resource", */ "annealing"}){
-            switchScheduler(scheduler);
-            for(int megabytes: new int[]{ 3, 5, 10 })
-                for(int workers: new int[]{ 5 , 10, 15  })
-                    for(int emitters: new int[]{ 1 })
-                        for(int processors: new int[]{ 3, 5, 8 }){
+
+        for(String scheduler : new String[]{  "resource" /*, "default", "annealing"*/})
+            for(Double onheapMB: new Double[]{ 64.0 })
+                for(Double offheapMB: new Double[]{ 5.0 })
+                    for(int cpuPerComp: new int[]{ 10 , 20, 30 })
+                        for(int maxHeapSizeMb: new int[]{ 128 , 256, 512 }){
+
+            HashMap<String, Object> configParams = new HashMap<String, Object>();
+            configParams.put("storm.scheduler", schedulers.get(scheduler));
+            configParams.put("topology.component.resources.onheap.memory.mb", onheapMB.toString());
+            configParams.put("topology.component.resources.offheap.memory.mb",  offheapMB.toString());
+            configParams.put("topology.component.cpu.pcore.percent", cpuPerComp);
+            configParams.put("topology.worker.max.heap.size.mb", maxHeapSizeMb);
+            SetConfigParams(configParams);
+
+            for(int workers: new int[]{ 5 , 10, 15  })
+                for(int emitters: new int[]{ 1 })
+                    for(int processors: new int[]{ 1 /*, 3, 5, 8*/ })
+                        for(int megabytes: new int[]{ 3 /*, 5, 10 */}){
+
                             Integer kbsize = 1024*megabytes;
-                            String topoName = "patient";
                             String paramString = kbsize+" "+workers+" "+emitters+" "+processors;
-                            String expId = "patient_"+paramString.replace(" ","_");
-                            expFind = new Document(){{ put("_id", expId); }};
+
+                            String originalTopoName = "patient";
+
+                            String topoName = originalTopoName+ String.valueOf(i) +"_"+paramString.replace(" ","_")+"_"+processors;//+"-"+ String.format("%.0f", onheapMB) +"_"+String.format("%.0f", offheapMB)+"_"+ String.valueOf(cpuPerComp)+"_"+String.valueOf(maxHeapSizeMb);
+                            String expId = topoName+"-"+String.format("%.0f", onheapMB)+"_"+String.format("%.0f", offheapMB)+"_"+cpuPerComp+"_"+maxHeapSizeMb;
+                            Document expFind = new Document(){{put("_id", topoName);}};
+
                             experiment = mongoClient.getDocumentFromDB(experimentsCollection, expFind);
 
                             if(experiment==null){
                                 experiment = new Document();
-                                experiment.put("_id",expId);
+                                experiment.put("_id", expId);
                                 experiment.put("kbSize", kbsize);
                                 experiment.put("workers", workers);
                                 experiment.put("emitters", emitters);
                                 experiment.put("processors", processors);
+                                experiment.put("onheapMb", String.format("%.1f", onheapMB));
+                                experiment.put("offheapMb", String.format("%.1f", offheapMB));
+                                experiment.put("corePercent", cpuPerComp);
+                                experiment.put("maxHeapSizeMb", maxHeapSizeMb);
+                                experiment.put("updated", new Date());
+                                experiment.putAll(expFind);
                                 experiment.put("runs", new ArrayList<Document>());
                                 mongoClient.insertDocumentToDB(experimentsCollection, experiment);
                             }
 
+                            ArrayList<Document> expRuns = ((ArrayList<Document>)experiment.get("runs"));
+
                             Document run = new Document();
+                            expRuns.add(run);
 
                             Date runStarted = new Date();
+                            experiment.put("updated",runStarted);
                             run.put("started", runStarted);
-                            run.put("expID",expId);
+                            run.put("expID", expId);
+                            run.put("topoName", topoName);
                             run.put("scheduler", scheduler);
 
-                            submitTopology(topoName, paramString);
-                            String topoId = getTopoId(expId);
+                            String topoId;
 
-                            run.put("_id",topoId);
+                            if(debugTopoID==null)
+                                submitTopology(topoName, paramString);
+
+                            log.info("Waiting for topology info");
+                            JSONObject topologyInfo = getTopologyById(topoName);
+                            if(debugTopoID!=null)
+                                topoId = debugTopoID;
+                            else
+                                topoId = topologyInfo.get("id").toString();
+
+                            run.put("_id", topoId);
+
                             mongoClient.insertDocumentToDB(runsCollection, run);
-                            Document runFind = new Document(){{ put("_id", topoId); }};
-
-                            //((ArrayList<String>)experiment.get("runs")).add(topoId);
-                            ((ArrayList<Document>)experiment.get("runs")).add(run);
                             mongoClient.updateDocumentInDB(experimentsCollection, expFind , experiment);
 
-                            mongoClient.updateDocumentInDB(runsCollection, runFind , run);
+                            Document runFind = new Document(){{ put("_id", topoId); }};
 
-                            log.info("Doing run with "+scheduler+" scheduler ("+String.valueOf(seconds)+") seconds");
-                            Wait(seconds * 1000);
+                            log.info("Exp("+String.valueOf(i)+"): running "+topoId+" with "+scheduler+" scheduler for "+String.valueOf(seconds)+" seconds");
 
-                            run.put("finished", new Date());
+                            String schedInfo="";
+                            int wait=5000;
+                            while(new Date().getTime()-runStarted.getTime()<seconds*1000){
+
+                                topologyInfo = getTopologyById(topoName);
+                                int changes=0;
+                                for (String statKey : runStatKeys){
+                                    Object newValue = topologyInfo.get(statKey);
+                                    if(newValue!=null && !newValue.toString().toString().equals("null")) {
+
+                                        Object runValue = null;
+                                        if(run.containsKey(statKey))
+                                            runValue = run.get(statKey);
+                                        if (runValue==null || !runValue.toString().equals(newValue.toString())) {
+                                            run.put(statKey, newValue);
+                                            changes++;
+                                        }
+                                    }
+                                }
+                                if(changes>0)
+                                    mongoClient.updateDocumentInDB(runsCollection, runFind , run);
+
+                                if (topologyInfo.get("schedulerInfo").toString().contains("Not enough resources")){
+                                    log.info(schedInfo);
+                                    wait=1;
+                                    break;
+                                }
+                                Wait(wait);
+                            }
+
+                            Date runFinished = new Date();
+                            run.put("finished", runFinished);
+
+                            experiment.put("updated", runFinished);
                             mongoClient.updateDocumentInDB(runsCollection, runFind, run);
                             killTopology(topoName);
                             killAllProcesses();
@@ -117,22 +187,21 @@ public class StormSchedulerExperiments {
 
         }
         killTopologies();
-
+        log.info(String.valueOf(i)+" experiments finished");
     }
 
 
-    public String getTopoId(String topoName){
-        log.info("Waiting for submitted topology ID");
-        String topoId=null;
+    public JSONObject getTopologyById(String topoName){
+        log.trace("Getting topology by name");
+        JSONObject ret=null;
         Integer wait = 5000;
-        while(topoId==null){
+        while(ret==null){
             try{
 
                 JSONArray topologies = getTopologies();
                 for (Object topology : topologies){
-                    String name = ((JSONObject)topology).get("name").toString();
-                    if(name.equals(topoName)){
-                        topoId =  ((JSONObject)topology).get("id").toString();
+                    if(((JSONObject)topology).get("name").toString().equals(topoName) && ((JSONObject)topology).get("status").toString().equals("ACTIVE")){
+                        ret =  (JSONObject)topology;
                         wait=1;
                         break;
                     }
@@ -144,7 +213,7 @@ public class StormSchedulerExperiments {
             }
             Wait(wait);
         }
-        return topoId;
+        return ret;
     }
 
 
@@ -226,7 +295,33 @@ public class StormSchedulerExperiments {
             executeCommand(masterHost,"sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
         //executeCommand(masterHost,"sudo service supervisor restart`");
         getSupervisorIDs();
+    }
 
+    public void SetConfigParams (HashMap<String, Object> newParams){
+        log.info("Setting config parameters");
+        String[] oldConfig = executeCommand(masterHost,"sudo cat /opt/storm/defaults.yaml").split("\r\n");
+
+        HashMap<String, String> linesToReplace = new HashMap<String, String>();
+        for(String line : oldConfig){
+            for(String param : newParams.keySet()) {
+                String value = newParams.get(param).toString();
+                if(line.contains("\""))
+                    value = "\""+value+"\"";
+                String newline=param + ": " + value;
+                if (line.startsWith(param+":") && !line.equals(newline))
+                    linesToReplace.put(line, newline);
+            }
+        }
+
+        if(linesToReplace.size()>0){
+            for(String lineToReplace : linesToReplace.keySet()){
+                String command = "sudo sed -i \'s/"+lineToReplace+"/"+linesToReplace.get(lineToReplace)+"/g\' /opt/storm/defaults.yaml";
+                executeCommand(masterHost, command);
+            }
+            executeCommand(masterHost,"sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
+        }
+        //executeCommand(masterHost,"sudo service supervisor restart`");
+        getSupervisorIDs();
     }
 
     public void submitTopology(String topoName, String paramString){
@@ -272,11 +367,19 @@ public class StormSchedulerExperiments {
 
     public void killTopologies(){
         log.info("Killing existing topologies");
+        int i=0;
         for(Object topology : getTopologies()){
-            if(!((JSONObject)topology).get("status").toString().equals("KILLED"))
+            if(!((JSONObject)topology).get("status").toString().equals("KILLED")){
                 killTopology(((JSONObject)topology).get("name").toString());
+                i++;
+            }
         }
-        killAllProcesses();
+        if(i>0){
+            killAllProcesses();
+            log.info("Waiting for empty topologies list");
+            while (getTopologies().length()>0)
+                Wait(5000);
+        }
     }
     public void killTopology(String topologyName){
         log.info("Killing topology "+topologyName);
@@ -309,6 +412,7 @@ public class StormSchedulerExperiments {
         //log.trace("Waiting for "+property);
         int i=0;
         int wait=1000;
+        Boolean restartExecuted = false;
         JSONArray topologies = null;
         while(topologies==null) {
             try{
@@ -321,8 +425,12 @@ public class StormSchedulerExperiments {
             catch (Exception e){
 
             }
-            if(i>0 && i%2==i/2)
-                executeCommand(masterHost,"cd - && sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
+            if(i>0 && i%10==i/10 && wait>1 && !restartExecuted){
+                log.info("Trying to restart nimbus");
+                executeCommand(masterHost,"sudo service supervisor restart");
+                restartExecuted = true;
+            }
+                //executeCommand(masterHost,"cd - && sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
             i++;
             Wait(wait);
         }
