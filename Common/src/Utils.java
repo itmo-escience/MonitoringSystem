@@ -38,9 +38,9 @@ public class Utils {
 
         HttpClient client = new HttpClient();
         GetMethod method = new GetMethod(url);
-        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(1, false));
         method.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 3000);
-        while (ret==null){
+        //while (ret==null){
             try {
                 int statusCode = client.executeMethod(method);
                 if (statusCode != HttpStatus.SC_OK){
@@ -67,7 +67,7 @@ public class Utils {
             } finally {
                 method.releaseConnection();
             }
-        }
+        //}
         return ret;
     }
 
@@ -79,7 +79,16 @@ public class Utils {
         }
     }
 
+    public static void WriteToFile(String filename, String str){
+        try {
+            FileWriter fw = new FileWriter(filename, true); //the true will append the new data
+            fw.write(str + "\n");
+            fw.close();
 
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
 
     public static HashMap<String, Object> getHashMapFromJSONObject(JSONObject object){
         HashMap<String, Object> ret = new HashMap<String, Object>();

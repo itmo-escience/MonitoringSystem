@@ -8,10 +8,12 @@ import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,7 +26,8 @@ public class StormSchedulerExperiments {
     private static Logger log = LogManager.getLogger(StormSchedulerExperiments.class);
     private CommonMongoClient mongoClient;
     private String sshKey = "";
-    String collectionName = "storm.experiments";
+    String experimentsCollection = "storm.experiments";
+    String runsCollection = "storm.runs";
     String masterHost = "192.168.92.11";
     String baseUrl = "http://192.168.92.11:8080/api/v1/";
     String[] slaveHosts = new String[]{"192.168.92.13", "192.168.92.14", "192.168.92.15", "192.168.92.16"};
@@ -34,7 +37,7 @@ public class StormSchedulerExperiments {
     public static void main(String[] args){
         StormSchedulerExperiments stormMetricsMonitor = new StormSchedulerExperiments("http://192.168.92.11:8080/api/v1/topology/");
         //stormMetricsMonitor.killAllProcesses();
-        stormMetricsMonitor.startExperiments(180);
+        stormMetricsMonitor.startExperiments(2);
      }
 
     public StormSchedulerExperiments (String baseUrl){
@@ -50,66 +53,89 @@ public class StormSchedulerExperiments {
     public void startExperiments(int seconds){
 
         killTopologies();
-        //killAllProcesses();
+
         log.info("Starting experiments");
+        int i=0;
+        Document experiment;
+        Document expFind;
 
-        for(int megabyte: new int[]{ 1 /*, 5, 10*/ }){
-            Date expStarted = new Date();
-            Document experiment = new Document();
-            experiment.put("started", new Date());
-            //String startsWith = "patient_default_5242880_1024_1_3";
-            List<Document> runs = new ArrayList<Document>();
-            experiment.put("started",expStarted);
-            experiment.put("kbSize", 1024);
-            experiment.put("workers", 5);
-            experiment.put("emitters", 1);
-            experiment.put("processors", 1);
-            experiment.put("runs", runs);
-            mongoClient.insertDocumentToDB(collectionName, experiment);
+        for(String scheduler : new String[]{ /*"default", "resource", */ "annealing"}){
+            switchScheduler(scheduler);
+            for(int megabytes: new int[]{ 3, 5, 10 })
+                for(int workers: new int[]{ 5 , 10, 15  })
+                    for(int emitters: new int[]{ 1 })
+                        for(int processors: new int[]{ 3, 5, 8 }){
+                            Integer kbsize = 1024*megabytes;
+                            String topoName = "patient";
+                            String paramString = kbsize+" "+workers+" "+emitters+" "+processors;
+                            String expId = "patient_"+paramString.replace(" ","_");
+                            expFind = new Document(){{ put("_id", expId); }};
+                            experiment = mongoClient.getDocumentFromDB(experimentsCollection, expFind);
 
-            Document find = new Document(){{ put("started",expStarted); }};
-            for(String scheduler : schedulers.keySet()){
+                            if(experiment==null){
+                                experiment = new Document();
+                                experiment.put("_id",expId);
+                                experiment.put("kbSize", kbsize);
+                                experiment.put("workers", workers);
+                                experiment.put("emitters", emitters);
+                                experiment.put("processors", processors);
+                                experiment.put("runs", new ArrayList<Document>());
+                                mongoClient.insertDocumentToDB(experimentsCollection, experiment);
+                            }
 
-                Document run = new Document();
-                runs.add(run);
-                run.put("started", new Date() );
-                run.put("scheduler", scheduler);
-                mongoClient.updateDocumentInDB(collectionName, find , experiment);
+                            Document run = new Document();
 
-                switchScheduler(scheduler);
+                            Date runStarted = new Date();
+                            run.put("started", runStarted);
+                            run.put("expID",expId);
+                            run.put("scheduler", scheduler);
 
-                String topoName = submitTopology(1024, 5, 1, 3);
-                experiment.put("name", topoName);
-                String topoId = getTopoId(topoName);
-                run.put("topoID", topoId);
-                mongoClient.updateDocumentInDB(collectionName, find , experiment);
+                            submitTopology(topoName, paramString);
+                            String topoId = getTopoId(expId);
 
-                log.info("Doing run with "+scheduler+" scheduler ("+String.valueOf(seconds)+") seconds");
-                Wait(seconds * 1000);
+                            run.put("_id",topoId);
+                            mongoClient.insertDocumentToDB(runsCollection, run);
+                            Document runFind = new Document(){{ put("_id", topoId); }};
 
-                run.put("finished", new Date());
-                mongoClient.updateDocumentInDB(collectionName, find , experiment);
-            }
-            experiment.put("finished", new Date());
-            mongoClient.updateDocumentInDB(collectionName, find, experiment);
+                            //((ArrayList<String>)experiment.get("runs")).add(topoId);
+                            ((ArrayList<Document>)experiment.get("runs")).add(run);
+                            mongoClient.updateDocumentInDB(experimentsCollection, expFind , experiment);
+
+                            mongoClient.updateDocumentInDB(runsCollection, runFind , run);
+
+                            log.info("Doing run with "+scheduler+" scheduler ("+String.valueOf(seconds)+") seconds");
+                            Wait(seconds * 1000);
+
+                            run.put("finished", new Date());
+                            mongoClient.updateDocumentInDB(runsCollection, runFind, run);
+                            killTopology(topoName);
+                            killAllProcesses();
+                            capturePicture(topoId);
+                            i++;
+                        }
+
+
         }
         killTopologies();
-        killAllProcesses();
+
     }
 
 
-    public String getTopoId(String startsWith){
+    public String getTopoId(String topoName){
         log.info("Waiting for submitted topology ID");
         String topoId=null;
         Integer wait = 5000;
         while(topoId==null){
             try{
 
-                List<String> topoIDs = getTopologyIDs();
-                for (String id : topoIDs){
-                        topoId = id;
+                JSONArray topologies = getTopologies();
+                for (Object topology : topologies){
+                    String name = ((JSONObject)topology).get("name").toString();
+                    if(name.equals(topoName)){
+                        topoId =  ((JSONObject)topology).get("id").toString();
                         wait=1;
                         break;
+                    }
                 }
 
             }
@@ -147,7 +173,8 @@ public class StormSchedulerExperiments {
         return ret;
     }
 
-    public void executeCommand(String host, String command){
+    public String executeCommand(String host, String command){
+        String ret = "";
         log.trace(host+" -> "+command);
 
         Shell.Plain shellPlain=null;
@@ -174,7 +201,7 @@ public class StormSchedulerExperiments {
         wait = 2000;
         while(!executed) {
             try {
-                String stdout = shellPlain.exec(command);
+                ret = shellPlain.exec(command);
                 executed = true;
                 wait = 1;
             } catch (IOException e) {
@@ -182,39 +209,38 @@ public class StormSchedulerExperiments {
             }
             Wait(wait);
         }
-
+        return ret;
     }
 
     public void switchScheduler(String name){
         log.info("Switching scheduler to "+name);
-        String newString = "\""+ schedulers.get(name)+"\"";
+
+        String oldConfig = executeCommand(masterHost,"sudo cat /opt/storm/defaults.yaml");
         for (String schedName: schedulers.keySet())
             if(!schedName.equals(name)){
-                String oldString = "\""+ schedulers.get(schedName)+"\"";
-                executeCommand(masterHost, "sudo sed -i \"s/"+oldString+"/"+newString+"/g\" /opt/storm/defaults.yaml");
+                executeCommand(masterHost, "sudo sed -i \"s/"+schedulers.get(schedName)+"/"+schedulers.get(name)+"/g\" /opt/storm/defaults.yaml");
             }
-        executeCommand(masterHost,"sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
-        killAllProcesses();
+        //Wait(1000);
+        String newConfig = executeCommand(masterHost,"sudo cat /opt/storm/defaults.yaml");
+        if(!newConfig.equals(oldConfig))
+            executeCommand(masterHost,"sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
+        //executeCommand(masterHost,"sudo service supervisor restart`");
         getSupervisorIDs();
 
     }
 
-    public String submitTopology(int kbsize, int workers, int emitters, int processors  ){
-        String topoName = "patient "+workers+" "+kbsize+" "+emitters+" "+processors;
+    public void submitTopology(String topoName, String paramString){
         log.info("Submitting topology "+topoName);
-        executeCommand(masterHost,"/opt/storm/bin/storm jar /opt/storm-examples/seizure-light-2.0.0-SNAPSHOT-jar-with-dependencies.jar seizurelight.SeizurePredictionTopology "+topoName);
-        return topoName.replace(" ","_");
+        String command = "/opt/storm/bin/storm jar /opt/storm-examples/seizure-light-2.0.0-SNAPSHOT-jar-with-dependencies.jar seizurelight.SeizurePredictionTopology "+ topoName+" "+paramString;
+        executeCommand(masterHost, command);
+
     }
 
-    public List<String> getTopologyIDs(){
-        List<String> ret = new ArrayList<String>();
+    public JSONArray getTopologies(){
         log.trace("Waiting for topologies list");
         JSONArray topologies = WaitForJSON(baseUrl + "topology/summary", "topologies");
-        for(Object topology : topologies){
-            String id = ((JSONObject) topology).get("id").toString();
-            ret.add(id);
-        }
-        return ret;
+
+        return topologies;
     }
 
     public List<String> getSupervisorIDs(){
@@ -228,20 +254,37 @@ public class StormSchedulerExperiments {
         return ret;
     }
 
+    public void capturePicture(String topoId){
+        String path = "d:/Projects/MonitoringSystem/StormMetricsMonitor/target/img/load";
+        try {
+            URL website = new URL("http://192.168.92.11/ganglia/stacked.php?m=load_one&c=ds1&r=hour&st=1455921590");
+            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+            FileOutputStream fos = new FileOutputStream(path+"/"+topoId+".png");
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void killTopologies(){
         log.info("Killing existing topologies");
-        for(String topoID : getTopologyIDs()){
-            killTopology(topoID.split("-")[0]);
+        for(Object topology : getTopologies()){
+            if(!((JSONObject)topology).get("status").toString().equals("KILLED"))
+                killTopology(((JSONObject)topology).get("name").toString());
         }
+        killAllProcesses();
     }
     public void killTopology(String topologyName){
         log.info("Killing topology "+topologyName);
         executeCommand(masterHost,"/opt/storm/bin/storm kill "+topologyName);
     }
 
-
     public void killAllProcesses(){
-        log.info("Killing unkilled storm processes");
+        log.info("Killing worker processes");
         for (String slaveHost: slaveHosts) {
             executeCommand(slaveHost, "sudo killall java && sudo rm -rf /opt/storm/storm-local");
             //executeCommand(slaveHost,"sudo rm -rf /opt/storm/storm-local");
@@ -261,17 +304,27 @@ public class StormSchedulerExperiments {
 //        }
     }
 
+
     public JSONArray WaitForJSON(String url, String property){
         //log.trace("Waiting for "+property);
+        int i=0;
+        int wait=1000;
         JSONArray topologies = null;
         while(topologies==null) {
             try{
-                JSONObject summary = Utils.getJsonFromUrl(url);
-                topologies = (JSONArray) summary.get(property);
+                JSONObject json = Utils.getJsonFromUrl(url);
+                if(json!=null){
+                    topologies = (JSONArray) json.get(property);
+                    wait = 1;
+                }
             }
             catch (Exception e){
-                Wait(5000);
+
             }
+            if(i>0 && i%2==i/2)
+                executeCommand(masterHost,"cd - && sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
+            i++;
+            Wait(wait);
         }
         return topologies;
     }

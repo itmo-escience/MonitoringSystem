@@ -144,17 +144,20 @@ public class CommonMongoClient {
         return (DBObject)obj;
     }
 
-    public void insertDocumentToDB(String collection, Document doc){
+    public String insertDocumentToDB(String collection, Document doc){
+        String ret = "";
         if(!isOpened){ open(); closeAtFinish = true;}
         //log.trace("Inserting document to DB: "+collection);
         try {
             MongoCollection coll = defaultDB.getCollection(collection);
             coll.insertOne(doc);
+            ret = getDocumentFromDB(collection, doc).get("_id").toString();
         }
         catch (Exception e){
             log.error(e);
         }
         if(closeAtFinish)close();
+        return ret;
     }
 
     public void updateDocumentInDB(String collection, Document find, Document update){
@@ -191,6 +194,13 @@ public class CommonMongoClient {
         if(closeAtFinish)close();
     }
 
+    public Document getDocumentFromDB(String collection, Document condition){
+        List<Document> list = getDocumentsFromDB(collection, condition);
+        if(list.size()>0)
+            return list.get(0);
+        return null;
+    }
+
     public List<Document> getDocumentsFromDB(String collection, Document condition){
         return getDocumentsFromDB(collection, condition, null, 0);
     }
@@ -215,7 +225,7 @@ public class CommonMongoClient {
         ArrayList<Document> ret = null;
         try {
             MongoCollection coll = defaultDB.getCollection(collection);
-            FindIterable<Document> res = coll.find(condition).sort(sort).projection(new Document("_id", 0)).limit(limit);
+            FindIterable<Document> res = coll.find(condition).sort(sort)/*.projection(new Document("_id", 0))*/.limit(limit);
             Iterator keysIter = res.iterator();
             ret = new ArrayList<Document>();
             while (keysIter.hasNext()){

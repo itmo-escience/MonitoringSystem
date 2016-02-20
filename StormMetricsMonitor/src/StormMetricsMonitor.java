@@ -1,4 +1,4 @@
-package ifmo.escience.dapris.monitoring;
+//package ifmo.escience.dapris.monitoring;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSONCallback;
 import com.panayotis.gnuplot.JavaPlot;
@@ -7,12 +7,21 @@ import com.panayotis.gnuplot.plot.DataSetPlot;
 import com.panayotis.gnuplot.style.NamedPlotColor;
 import com.panayotis.gnuplot.style.PlotStyle;
 import com.panayotis.gnuplot.style.Style;
+import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
+import com.panayotis.gnuplot.terminal.ImageTerminal;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
 import ifmo.escience.dapris.monitoring.common.Utils;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import javax.imageio.ImageIO;
 import javax.print.Doc;
 
 /**
@@ -34,8 +44,11 @@ public class StormMetricsMonitor {
     public static void main(String[] args){
         StormMetricsMonitor stormMetricsMonitor = new StormMetricsMonitor("http://192.168.92.11:8080/api/v1/topology/");
         //stormMetricsMonitor.getActualData();
-        stormMetricsMonitor.analyzeData();
-        //stormMetricsMonitor.startMonitoring(10000);
+        //stormMetricsMonitor.analyzeData();
+        if(args.length>0 && args[0].equals("aggregate"))
+            stormMetricsMonitor.getExperimentsData();
+        else
+            stormMetricsMonitor.startMonitoring(10000);
         //stormMetricsMonitor.InsertDataToDb();
     }
 
@@ -72,8 +85,8 @@ public class StormMetricsMonitor {
                     topoStats.put("uptime", uptimeStr);
                     topoStats.put("components", components);
 
-                    //String collectionName = "storm." + topoName;
-                    String collectionName = "storm.statistics" + topoID;
+                    //String experimentsCollection = "storm." + topoName;
+                    String collectionName = "storm.statistics";
                     mongoClient.insertDocumentToDB(collectionName, topoStats);
                 }
             }
@@ -107,6 +120,67 @@ public class StormMetricsMonitor {
         return comp;
     }
 
+    public void getExperimentsData(){
+        String path = "d:/Projects/MonitoringSystem/StormMetricsMonitor/target/";
+        StringBuilder output = new StringBuilder();
+        mongoClient.open();
+        List<Document> experiments = mongoClient.getDocumentsFromDB("storm.experiments", null, new Document(){{ put("_id", -1); }}, 100);
+        for(Document experiment : experiments){
+
+            String name = experiment.get("name").toString();
+            List<Document> runs = (List<Document>)experiment.get("runs");
+            if(runs.size()>1){
+                //output.append("<H1>"+experiment.getString("name")+"</H1>\n");
+                HashMap<String, List<Document>> topoStates = new HashMap<String, List<Document>>();
+                for(Document run : runs){
+                    String scheduler = run.get("scheduler").toString();
+                    if(run.containsKey("topoID")){
+                        String topoID = run.get("topoID").toString();
+                        Document find = new Document() {{   put("topoID", topoID);  }};
+                        List<Document> runStats = mongoClient.getDocumentsFromDB("storm.statistics", find);
+                        List<Document> factAssignments = mongoClient.getDocumentsFromDB("storm.FactAssignments", find);
+                        //output.append("Fact assignments:"+factAssignments+"</H1>");
+                        Document structure = mongoClient.getDocumentFromDB("storm.Structure", find);
+                        //output.append("Structure:"+structure+"<br>");
+                        List<Document> schedules = mongoClient.getDocumentsFromDB("storm.Schedules", find);
+                        if(runStats.size()>0)
+                            topoStates.put(scheduler, runStats);
+                        else{
+                           // String abc = topoStates.toString();
+                        }
+                    }
+                }
+
+                if(topoStates.size()>0){
+                    String relPath = Paths.get("img",experiment.get("name").toString().toString()+".png").toString();
+                    String absPath =  Paths.get(path,relPath).toString();
+                    tuplesPerSecond(topoStates, 1, "("+ name +")",absPath);
+                    output.append("<img src='"+relPath+"'>\n");
+                }
+            }
+
+        }
+        mongoClient.close();
+        String filename = Paths.get(path,"results.html").toString();
+
+        try {
+            Files.delete(Paths.get(filename));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Utils.WriteToFile(filename, output.toString());
+//        HashMap<String, List<Document>> topoStates = new HashMap<String, List<Document>>();
+//        for(String exp : experiment)
+//            topoStates.put(exp.split("_")[1], mongoClient.getDocumentsFromDB("storm." + exp.replace("storm.", ""), null, null, 100));
+//
+//
+//        //topoStates.put("Annealing", mongoClient.getDocumentsFromDB("storm." + experiment[1].replace("storm.", ""), null, null, 100));
+//
+//        tuplesPerSecond(topoStates, 1, "("+String.join(" vs ", topoStates.keySet())+")");
+
+    }
+
     public void analyzeData() {
         String defaultTopoName = "patient_1-6-1455438719";
         String annealingTopoName ="";
@@ -137,12 +211,11 @@ public class StormMetricsMonitor {
 
         //topoStates.put("Annealing", mongoClient.getDocumentsFromDB("storm." + experiment[1].replace("storm.", ""), null, null, 100));
 
-        tuplesPerSecond(topoStates, 1, "("+String.join(" vs ", topoStates.keySet())+")");
+        tuplesPerSecond(topoStates, 1, "("+String.join(" vs ", topoStates.keySet())+")", "1.png");
         //averageLatency(topoStates);
     }
 
-
-    public void tuplesPerSecond(HashMap<String, List<Document>> topoStates, int averagePeriod, String additionalTitle) {
+    public void tuplesPerSecond(HashMap<String, List<Document>> topoStates, int averagePeriod, String additionalTitle, String filename) {
 
         String[] metricNames = {/* "emitted" , "transferred",*/ "executed" };
 
@@ -233,7 +306,26 @@ public class StormMetricsMonitor {
         //stl.setPointType(5);
         //stl.setPointSize(5);
         //p.addPlot("sin(x)");
+        ImageTerminal png = new ImageTerminal();
+        File file = new File(filename);
+        try {
+            file.createNewFile();
+            png.processOutput(new FileInputStream(file));
+        } catch (FileNotFoundException ex) {
+            System.err.print(ex);
+        } catch (IOException ex) {
+            System.err.print(ex);
+        }
+
+        p.setTerminal(png);
+        p.setPersist(false);
         p.plot();
+
+        try {
+            ImageIO.write(png.getImage(), "png", file);
+        } catch (IOException ex) {
+            System.err.print(ex);
+        }
     }
 
     public void InsertDataToDb(){
