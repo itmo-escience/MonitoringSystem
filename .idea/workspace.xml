@@ -4,18 +4,20 @@
     <option name="SCOPE_TYPE" value="4" />
   </component>
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java" description="if(closeAtFinish)close();" line="279" />
+    <bookmark url="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java" description="if(closeAtFinish)close();" line="265" />
     <bookmark url="file://$PROJECT_DIR$/ClusterStateMonitor/src/ClusterStateMonitor.java" description="if(res.size()&gt;0)" line="152" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="766c99c1-5c95-4eab-8aba-104c5b00a422" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Common/Resources/log4j2.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsAnalyzer.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ClusterStateMonitor/ClusterStateMonitor.iml" afterPath="$PROJECT_DIR$/ClusterStateMonitor/ClusterStateMonitor.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/Common.iml" afterPath="$PROJECT_DIR$/Common/Common.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/Resources/log4j2.xml" afterPath="$PROJECT_DIR$/Common/Resources/log4j2.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/pom.xml" afterPath="$PROJECT_DIR$/Common/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MetricsMonitor/Resources/log4j2.xml" afterPath="$PROJECT_DIR$/MetricsMonitor/Resources/log4j2.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" afterPath="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/src/CommonMongoClient.java" afterPath="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Common/src/Utils.java" afterPath="$PROJECT_DIR$/Common/src/Utils.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" afterPath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" afterPath="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java" afterPath="$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../javers1/build.gradle" afterPath="$PROJECT_DIR$/../javers1/build.gradle" />
@@ -144,58 +146,52 @@
         <entry file="file://$PROJECT_DIR$/Common/src/Utils.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="43" column="17" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="17" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StormSchedulerExperiments.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Common/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.9454546">
+              <caret line="35" column="32" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="32" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StormSchedulerExperiments.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.54336286">
-              <caret line="169" column="0" selection-start-line="169" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
+            <state vertical-scroll-proportion="-6.275862">
+              <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1535#1556#0" expanded="true" />
-                <element signature="e#1620#1636#0" expanded="true" />
-                <element signature="e#3089#3105#0" expanded="true" />
-                <element signature="e#13352#13368#0" expanded="true" />
-                <element signature="e#14999#15007#0" expanded="true" />
+                <element signature="e#1566#1587#0" expanded="true" />
+                <element signature="e#1651#1667#0" expanded="true" />
+                <element signature="e#3845#3861#0" expanded="true" />
+                <element signature="e#15054#15070#0" expanded="true" />
+                <element signature="e#16794#16802#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StormMetricsMonitor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
+      <file leaf-file-name="StormMetricsAnalyzer.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsAnalyzer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="133" column="30" selection-start-line="133" selection-start-column="30" selection-end-line="133" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.26459143">
+              <caret line="95" column="103" selection-start-line="95" selection-start-column="103" selection-end-line="95" selection-end-column="103" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="method#getActualData#0;class#StormMetricsMonitor#0" expanded="false" />
-                <element signature="e#2909#2919#0" expanded="true" />
-                <element signature="e#6022#6046#0" expanded="true" />
-                <element signature="e#12473#12497#0" expanded="true" />
-                <element signature="e#13601#13630#0" expanded="true" />
-                <element signature="e#19417#19446#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CommonMongoClient.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="228" column="0" selection-start-line="228" selection-start-column="0" selection-end-line="228" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="method#CommonMongoClient#1;class#CommonMongoClient#0" expanded="false" />
-                <element signature="method#saveObjectToDB#1;class#CommonMongoClient#0" expanded="false" />
+                <element signature="e#2962#2986#0" expanded="true" />
+                <element signature="e#3076#3084#0" expanded="true" />
+                <element signature="method#analyzeData#0;class#StormMetricsAnalyzer#0" expanded="false" />
+                <element signature="e#12102#12126#0" expanded="true" />
+                <element signature="e#12909#12938#0" expanded="true" />
+                <element signature="e#19915#19944#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -684,8 +680,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/MetricsMonitor/src/GangliaAPIMonitor.java" />
-        <option value="$PROJECT_DIR$/MetricsMonitor/src/log4.properties" />
         <option value="$PROJECT_DIR$/MetricsMonitor/Resources/log4.properties" />
         <option value="$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/Data.java" />
         <option value="$PROJECT_DIR$/MetricsMonitor/src/MetricsEntry.java" />
@@ -726,15 +720,17 @@
         <option value="$PROJECT_DIR$/ClusterStateMonitor/src/MesosRestClient.java" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/Resources/log4j2.xml" />
         <option value="$PROJECT_DIR$/ClusterStateMonitor/src/ClusterStateMonitor.java" />
-        <option value="$PROJECT_DIR$/StormMetricsMonitor/resources/log4j2.xml" />
-        <option value="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
-        <option value="$PROJECT_DIR$/Common/src/Utils.java" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/pom.xml" />
-        <option value="$PROJECT_DIR$/Common/pom.xml" />
         <option value="$PROJECT_DIR$/MetricsMonitor/Resources/log4j2.xml" />
-        <option value="$PROJECT_DIR$/Common/Resources/log4j2.xml" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java" />
+        <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsAnalyzer.java" />
+        <option value="$PROJECT_DIR$/Common/src/Utils.java" />
+        <option value="$PROJECT_DIR$/StormMetricsMonitor/resources/log4j.xml" />
+        <option value="$PROJECT_DIR$/Common/pom.xml" />
         <option value="$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java" />
+        <option value="$PROJECT_DIR$/Common/src/CommonMongoClient.java" />
+        <option value="$PROJECT_DIR$/Common/Resources/log4j2.xml" />
+        <option value="$PROJECT_DIR$/StormMetricsMonitor/resources/log4j2.xml" />
       </list>
     </option>
   </component>
@@ -896,30 +892,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="MetricsMonitor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MonitoringSystem" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MetricsMonitor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Resources" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MonitoringSystem" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="Common" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -984,11 +956,11 @@
       <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor\Resources" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Projects\MonitoringSystem\StormMetricsMonitor\resources" />
       <recent name="D:\Projects\MonitoringSystem\Common" />
       <recent name="D:\Projects\MonitoringSystem\StormMetricsMonitor\Resources" />
       <recent name="D:\Projects\MonitoringSystem\StormMetricsMonitor" />
       <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor\Resources" />
-      <recent name="D:\Projects\MonitoringSystem\ClusterStateMonitor" />
     </key>
   </component>
   <component name="RunManager" selected="Application.StormSchedulerExperiments">
@@ -1017,6 +989,21 @@
       <option name="MAIN_CLASS_NAME" value="StormSchedulerExperiments" />
       <option name="VM_PARAMETERS" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="StormMetricsMonitor" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="StormMetricsAnalyzer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" value="StormMetricsAnalyzer" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="test" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -1718,7 +1705,7 @@
       </MavenSettings>
       <method />
     </configuration>
-    <list size="15">
+    <list size="16">
       <item index="0" class="java.lang.String" itemvalue="Application.DataLayerMonitor" />
       <item index="1" class="java.lang.String" itemvalue="Application.MetricsMonitor.getData()" />
       <item index="2" class="java.lang.String" itemvalue="Application.MetricsMonitor.startMonitoring()" />
@@ -1727,19 +1714,21 @@
       <item index="5" class="java.lang.String" itemvalue="Application.ClusterStateMonitor.startMonitoring()" />
       <item index="6" class="java.lang.String" itemvalue="Application.StormMetricsMonitor" />
       <item index="7" class="java.lang.String" itemvalue="Application.StormSchedulerExperiments" />
-      <item index="8" class="java.lang.String" itemvalue="Gradle.javers1:javers-core [build]" />
-      <item index="9" class="java.lang.String" itemvalue="Maven.install StormMetricsMonitor" />
-      <item index="10" class="java.lang.String" itemvalue="Maven.exec StormMetricsMonitor" />
-      <item index="11" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor exec" />
-      <item index="12" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor install " />
-      <item index="13" class="java.lang.String" itemvalue="Maven.Common install" />
-      <item index="14" class="java.lang.String" itemvalue="Maven.storm-metrics-monitor [package]" />
+      <item index="8" class="java.lang.String" itemvalue="Application.StormMetricsAnalyzer" />
+      <item index="9" class="java.lang.String" itemvalue="Gradle.javers1:javers-core [build]" />
+      <item index="10" class="java.lang.String" itemvalue="Maven.install StormMetricsMonitor" />
+      <item index="11" class="java.lang.String" itemvalue="Maven.exec StormMetricsMonitor" />
+      <item index="12" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor exec" />
+      <item index="13" class="java.lang.String" itemvalue="Maven.ClusterStateMonitor install " />
+      <item index="14" class="java.lang.String" itemvalue="Maven.Common install" />
+      <item index="15" class="java.lang.String" itemvalue="Maven.storm-metrics-monitor [package]" />
     </list>
     <recent_temporary>
-      <list size="3">
+      <list size="4">
         <item index="0" class="java.lang.String" itemvalue="Application.StormSchedulerExperiments" />
-        <item index="1" class="java.lang.String" itemvalue="Application.StormMetricsMonitor" />
-        <item index="2" class="java.lang.String" itemvalue="Gradle.javers1:javers-core [build]" />
+        <item index="1" class="java.lang.String" itemvalue="Application.StormMetricsAnalyzer" />
+        <item index="2" class="java.lang.String" itemvalue="Application.StormMetricsMonitor" />
+        <item index="3" class="java.lang.String" itemvalue="Gradle.javers1:javers-core [build]" />
       </list>
     </recent_temporary>
   </component>
@@ -1750,7 +1739,7 @@
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="StructureViewFactory">
-    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR,SHOW_FIELDS" />
+    <option name="ACTIVE_ACTIONS" value=",SHOW_FIELDS,ALPHA_COMPARATOR" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -1780,29 +1769,29 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1696" height="1036" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914287" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31242874" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38952163" sideWeight="0.502445" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13202934" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10207824" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="REPL" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294621" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32915717" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29076397" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40935007" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Leiningen" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19376528" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19376528" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295325" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1995439" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294621" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14547677" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14547677" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3945268" sideWeight="0.49755502" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34891677" sideWeight="0.49755502" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -2094,22 +2083,10 @@
           <option name="timeStamp" value="1267" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
-          <line>442</line>
+          <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsAnalyzer.java</url>
+          <line>298</line>
           <properties />
-          <option name="timeStamp" value="1320" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
-          <line>136</line>
-          <properties />
-          <option name="timeStamp" value="1702" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java</url>
-          <line>133</line>
-          <properties />
-          <option name="timeStamp" value="1706" />
+          <option name="timeStamp" value="1742" />
         </line-breakpoint>
         <line-breakpoint type="java-method">
           <url>jar://$PROJECT_DIR$/lib/log4j-api-2.5.jar!/org/apache/logging/log4j/spi/LoggerContext.class</url>
@@ -2121,7 +2098,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="1726" />
+      <option name="time" value="1754" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -2130,55 +2107,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/Executor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="76" selection-start-line="0" selection-start-column="76" selection-end-line="0" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/Status.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="76" selection-start-line="0" selection-start-column="76" selection-end-line="0" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/StatusChange.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="76" selection-start-line="0" selection-start-column="76" selection-end-line="0" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/Task.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="24" selection-start-line="0" selection-start-column="24" selection-end-line="0" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/IdentifiedObject.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="76" selection-start-line="0" selection-start-column="76" selection-end-line="0" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/Pair.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="76" selection-start-line="0" selection-start-column="76" selection-end-line="0" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/Slave.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="76" selection-start-line="0" selection-start-column="76" selection-end-line="0" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/StateStructures/Framework.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2286,13 +2214,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/log4j-api-2.5.jar!/org/apache/logging/log4j/Logger.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.27868852">
-          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ClusterStateMonitor/src/ClusterStateMonitor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.22902495">
@@ -2394,14 +2315,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/resources/log4j2.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4811321">
-          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-api/2.5/log4j-api-2.5.jar!/org/apache/logging/log4j/Logger.class">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.19883041">
@@ -2478,37 +2391,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Common/Resources/log4j2.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5509259">
-          <caret line="21" column="17" selection-start-line="21" selection-start-column="17" selection-end-line="21" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2552504">
           <caret line="67" column="20" selection-start-line="63" selection-start-column="8" selection-end-line="67" selection-end-column="20" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Common/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39256865">
-          <caret line="54" column="24" selection-start-line="54" selection-start-column="24" selection-end-line="54" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Common/src/Utils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="43" column="17" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="17" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2520,45 +2407,152 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
+    <entry file="jar://$PROJECT_DIR$/lib/log4j-api-2.5.jar!/org/apache/logging/log4j/LogManager.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.34428224">
+          <caret line="115" column="25" selection-start-line="115" selection-start-column="25" selection-end-line="115" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/log4j-api-2.5.jar!/org/apache/logging/log4j/Logger.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.34428224">
+          <caret line="229" column="12" selection-start-line="229" selection-start-column="12" selection-end-line="229" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.16/slf4j-api-1.7.16.jar!/org/slf4j/Logger.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.17056856">
+          <caret line="9" column="17" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/DataLayerMonitor/lib/log4j-1.2.16.jar!/org/apache/log4j/Level.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.065891474">
+          <caret line="5" column="8" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/DataLayerMonitor/lib/log4j-1.2.16.jar!/org/apache/log4j/Category.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35077518">
+          <caret line="414" column="27" selection-start-line="414" selection-start-column="27" selection-end-line="414" selection-end-column="27" />
+          <folding>
+            <element signature="e#12072#12073#0" expanded="true" />
+            <element signature="e#12106#12107#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/mongo-java-driver-3.2.0-rc0.jar!/com/mongodb/Mongo.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33264887">
+          <caret line="279" column="19" selection-start-line="279" selection-start-column="17" selection-end-line="279" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/mongo-java-driver-3.2.0-rc0.jar!/com/mongodb/MongoClient.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3449692">
+          <caret line="37" column="35" selection-start-line="37" selection-start-column="35" selection-end-line="37" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#4731#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/src/Utils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="228" column="0" selection-start-line="228" selection-start-column="0" selection-end-line="228" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#CommonMongoClient#1;class#CommonMongoClient#0" expanded="false" />
-            <element signature="method#saveObjectToDB#1;class#CommonMongoClient#0" expanded="false" />
-          </folding>
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsMonitor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="133" column="30" selection-start-line="133" selection-start-column="30" selection-end-line="133" selection-end-column="30" />
+        <state vertical-scroll-proportion="1.1687243">
+          <caret line="49" column="48" selection-start-line="49" selection-start-column="48" selection-end-line="49" selection-end-column="48" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#getActualData#0;class#StormMetricsMonitor#0" expanded="false" />
-            <element signature="e#2909#2919#0" expanded="true" />
-            <element signature="e#6022#6046#0" expanded="true" />
-            <element signature="e#12473#12497#0" expanded="true" />
-            <element signature="e#13601#13630#0" expanded="true" />
-            <element signature="e#19417#19446#0" expanded="true" />
+            <element signature="e#2904#2914#0" expanded="true" />
+            <element signature="method#ReturnValuesByKeys#0;class#StormMetricsMonitor#0" expanded="false" />
+            <element signature="method#InsertDataToDb#0;class#StormMetricsMonitor#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.9454546">
+          <caret line="35" column="32" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="32" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormSchedulerExperiments.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.54336286">
-          <caret line="169" column="0" selection-start-line="169" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
+        <state vertical-scroll-proportion="-6.275862">
+          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1535#1556#0" expanded="true" />
-            <element signature="e#1620#1636#0" expanded="true" />
-            <element signature="e#3089#3105#0" expanded="true" />
-            <element signature="e#13352#13368#0" expanded="true" />
-            <element signature="e#14999#15007#0" expanded="true" />
+            <element signature="e#1566#1587#0" expanded="true" />
+            <element signature="e#1651#1667#0" expanded="true" />
+            <element signature="e#3845#3861#0" expanded="true" />
+            <element signature="e#15054#15070#0" expanded="true" />
+            <element signature="e#16794#16802#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/Resources/log4j2.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3617021">
+          <caret line="11" column="23" selection-start-line="11" selection-start-column="23" selection-end-line="11" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/resources/log4j2.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5589942">
+          <caret line="17" column="28" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/src/CommonMongoClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49805447">
+          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#saveObjectToDB#1;class#CommonMongoClient#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/StormMetricsMonitor/src/StormMetricsAnalyzer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.26459143">
+          <caret line="95" column="103" selection-start-line="95" selection-start-column="103" selection-end-line="95" selection-end-column="103" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2962#2986#0" expanded="true" />
+            <element signature="e#3076#3084#0" expanded="true" />
+            <element signature="method#analyzeData#0;class#StormMetricsAnalyzer#0" expanded="false" />
+            <element signature="e#12102#12126#0" expanded="true" />
+            <element signature="e#12909#12938#0" expanded="true" />
+            <element signature="e#19915#19944#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -1,50 +1,30 @@
 package ifmo.escience.dapris.monitoring.common;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.*;
-import com.mongodb.bulk.*;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-//import org.apache.commons.configuration2.Configuration;
-//import org.apache.commons.configuration2.XMLConfiguration;
-//import org.apache.commons.configuration2.builder.fluent.Configurations;
-//import org.apache.commons.configuration2.ex.ConfigurationException;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.json.JSONObject;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * Created by Pavel Smirnov
  */
 public class CommonMongoClient {
-    private static Logger log = LogManager.getLogger(CommonMongoClient.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger(CommonMongoClient.class);
+    //private static Logger log = LoggerFactory.getLogger(CommonMongoClient.class);
     public static String metricsCollection = "metrics";
     public static String stateCollection = "clusterStates";
 
@@ -62,6 +42,7 @@ public class CommonMongoClient {
 
     public CommonMongoClient(){
         ReadConfigFile();
+
     }
 
     private void ReadConfigFile(){
@@ -89,11 +70,15 @@ public class CommonMongoClient {
     public CommonMongoClient(String serverUrl, String defaultDBname){
         this.host = serverUrl;
         this.defaultDBname = defaultDBname;
+
     }
 
     public void open(){
+        Logger mongoLogger = Logger.getLogger("com.mongodb.diagnostics.logging.JULLogger");
+        mongoLogger.setLevel(Level.OFF);
+
         if(isOpened)return;
-        //log.trace("Mongo client open()");
+        log.trace("Mongo client open()");
 
         if(username!=null && password!=null && !username.equals("") && !password.equals("")){
             List<MongoCredential> credentials = new ArrayList<MongoCredential>();
@@ -103,6 +88,7 @@ public class CommonMongoClient {
             mongoClient = new MongoClient(new ServerAddress(host), credentials);
         }else
             mongoClient = new MongoClient(new ServerAddress(host));
+
 
         defaultDB = mongoClient.getDatabase(defaultDBname);
 
@@ -134,10 +120,10 @@ public class CommonMongoClient {
                 mapper.writeValue(new File("tmp.json"), obj);
                 obj = mapper.writeValueAsString(obj);
             } catch (IOException e){
-                //log.error(e);
+                log.error(e);
             }
             catch (Exception e) {
-                //log.error(e);
+                log.error(e);
             }
         }
         obj = JSON.parse((String)obj);
@@ -151,7 +137,7 @@ public class CommonMongoClient {
         try {
             MongoCollection coll = defaultDB.getCollection(collection);
             coll.insertOne(doc);
-            ret = getDocumentFromDB(collection, doc).get("_id").toString();
+            ret = getDocumentFromDB(collection, doc).getString("_id");
         }
         catch (Exception e){
             log.error(e);
@@ -225,7 +211,7 @@ public class CommonMongoClient {
         ArrayList<Document> ret = null;
         try {
             MongoCollection coll = defaultDB.getCollection(collection);
-            FindIterable<Document> res = coll.find(condition).sort(sort)/*.projection(new Document("_id", 0))*/.limit(limit);
+            FindIterable<Document> res = coll.find(condition).sort(sort).projection(new Document("_id", 0)).limit(limit);
             Iterator keysIter = res.iterator();
             ret = new ArrayList<Document>();
             while (keysIter.hasNext()){

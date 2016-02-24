@@ -18,15 +18,16 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Smirnov
  */
 public class Utils {
-    private static org.apache.logging.log4j.Logger log = LogManager.getLogger(Utils.class);
-
+    //private static Logger log = LogManager.getLogger(Utils.class);
+    private static Logger log = LoggerFactory.getLogger(Utils.class);
     public static JSONObject getJsonFromUrl(String url){
         //System.out.print("Requesting " + url);
         log.trace("Requesting " + url);
