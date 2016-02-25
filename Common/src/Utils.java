@@ -72,7 +72,38 @@ public class Utils {
         return ret;
     }
 
-    public static void Sleep(int interval){
+    public static JSONArray WaitForJSON(String url, String property){
+        //log.trace("Waiting for "+property);
+        int i=0;
+        int wait=1000;
+        Boolean restartExecuted = false;
+        JSONArray ret = null;
+        while(ret==null){
+            try{
+                JSONObject json = Utils.getJsonFromUrl(url);
+                if(json!=null){
+                    ret = (JSONArray) json.get(property);
+                    wait = 1;
+                }
+            }
+            catch (Exception e){
+
+            }
+
+//            if(i>0 && i%60==i/60 && wait>1 && !restartExecuted){
+//                log.info("Trying to restart nimbus");
+//                executeCommand(masterHost,"sudo service supervisor restart");
+//                restartExecuted = true;
+//            }
+            //executeCommand(masterHost,"cd - && sudo kill `ps -aux | grep nimbus | awk '{print $2}'`");
+            i++;
+            Wait(wait);
+        }
+        return ret;
+    }
+
+
+    public static void Wait(int interval){
         try {
             Thread.sleep(interval);
         } catch (InterruptedException e) {

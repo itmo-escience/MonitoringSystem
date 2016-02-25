@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>ifmo.escience.dapris.monitoring.common</groupId>
-            <artifactId>Common</artifactId>
+            <artifactId>StormAPIClient</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>

@@ -96,11 +96,11 @@
 
     <build>
         <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>Resources</directory>
-            </resource>
-        </resources>
+        <!--<resources>-->
+            <!--<resource>-->
+                <!--<directory>Resources</directory>-->
+            <!--</resource>-->
+        <!--</resources>-->
 
         <plugins>
             <plugin>

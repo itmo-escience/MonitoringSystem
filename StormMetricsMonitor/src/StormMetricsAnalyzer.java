@@ -47,14 +47,16 @@ public class StormMetricsAnalyzer {
     }
 
     public void getExperimentsData(){
+        Document experiment0 = new Document();
+        String abs = experiment0.toJson();
         String path = "d:/Projects/MonitoringSystem/StormMetricsMonitor/target/";
         StringBuilder output = new StringBuilder();
         output.append("<style>\n");
         output.append("table {background: silver; cellspacing:1px; cellpadding:1px;}\n");
-        output.append("td {background: white; white-space:nowrap;}\n");
+        output.append("td {background: white; white-space:nowrap; vertical-align:top;}\n");
         output.append("</style>\n");
         mongoClient.open();
-        List<Document> experiments = mongoClient.getDocumentsFromDB("storm.experiments", new Document(){{ /*put("_id", "patient_3072_5_1_1");*/ }}, null, 100);
+        List<Document> experiments = mongoClient.getDocumentsFromDB("storm.experiments", new Document(){{ /*put("_id", "patient_3072_5_1_1");*/ }},new Document(){{ put("updated", -1); }}, 100);
         for(Document experiment : experiments){
             StringBuilder tuplesPerSecond = new StringBuilder();
             String expId = experiment.get("_id").toString();
@@ -89,6 +91,11 @@ public class StormMetricsAnalyzer {
 
                 for(Document run : runs){
                     i++;
+                    for(String key : run.keySet()){
+                        if(!runKeys.contains(key))
+                            runKeys.add(key);
+                    }
+
                     String scheduler = run.get("scheduler").toString();
                     String runID = run.get("_id").toString();
                     Document find = new Document() {{   put("topoID", runID);  }};
@@ -99,8 +106,8 @@ public class StormMetricsAnalyzer {
                         String relPath = Paths.get("img", runID+".png").toString();
                         String absPath =  Paths.get(path,relPath).toString();
                         HashMap<String, ArrayList<double[]>> dataSets = prepareTuplesPerSecond(runStats, true);
-                        CreatePlot(dataSets, absPath, "(# "+String.valueOf(i)+")");
-                        tuplesPerSecond.append("<td><img src='"+relPath+"' style='display:inline; float:left;'></td>\n");
+                        CreatePlot(dataSets, absPath, "# "+String.valueOf(i)+" ("+scheduler+")");
+                        run.put("image", relPath);
                     }
 
                     List<Document> factAssignments = mongoClient.getDocumentsFromDB("storm.FactAssignments", find);
@@ -108,18 +115,19 @@ public class StormMetricsAnalyzer {
                     Document schedule = mongoClient.getDocumentFromDB("storm.Schedules", find);
 
                     String scheduleStr = "";
-                    if(schedule!=null)
-                        if(schedule.containsKey("nodes")){
+                    if(schedule!=null) {
+                        if (schedule.containsKey("nodes")) {
                             for (Document node : (List<Document>) schedule.get("nodes")) {
                                 scheduleStr += node.get("nodeId") + " => [";
                                 if (node.get("tasks") != null)
-                                    for (Object task : (List<Object>) node.get("tasks")){
-                                        scheduleStr += ", "+((ArrayList<Object>) task).get(0);
+                                    for (Object task : (List<Object>) node.get("tasks")) {
+                                        scheduleStr += ", " + ((ArrayList<Object>) task).get(0);
                                     }
                                 scheduleStr += "]<br>";
                             }
                         }
-
+                        run.put("schedule", scheduleStr);
+                    }
 
                     String factAssignmentsStr = "";
                     for (Document factAssignment : factAssignments){
@@ -132,8 +140,9 @@ public class StormMetricsAnalyzer {
                                     }
                                 factAssignmentsStr += "]<br>";
                             }
-                            factAssignmentsStr += "<hr>";
+                            //factAssignmentsStr += "<hr>";
                         }
+                        run.put("factAssignment", factAssignmentsStr);
                     }
 
 //                    if(runStats.size()>0){
@@ -149,11 +158,6 @@ public class StormMetricsAnalyzer {
                     String th="";
                     String td="";
 
-                    for(String key : run.keySet()){
-                        if(!runKeys.contains(key))
-                            runKeys.add(key);
-                    }
-
                     //runsTable.append("<tr>"+th+"</tr>");
                     //runsTable.append("<tr>"+td+"</tr>");
                     //runsTable.append("<td>"+String.valueOf(runStats.size())+"</td>");
@@ -166,6 +170,9 @@ public class StormMetricsAnalyzer {
                 StringBuilder runsTable = new StringBuilder();
                 runsTable.append("<table cellpadding=3 cellspacing=3>");
                 runsTable.append("<th>#</th>");
+
+                StringBuilder runsDetailsTable = new StringBuilder();
+                runsDetailsTable.append("<table><tr>");
                 for(String key : runKeys)
                     runsTable.append("<th>"+key+"</th>");
                 runsTable.append("</tr>");
@@ -177,14 +184,28 @@ public class StormMetricsAnalyzer {
                     for(String key : runKeys)
                         runsTable.append("<td>"+ (run.containsKey(key)?run.get(key):"")+"</td>");
                     runsTable.append("</tr>");
-                }
-                runsTable.append("</table>");
 
-                output.append(runsTable);
-                if(tuplesPerSecond.length()>0){
-                    output.append("<h3>Tuples per second</h3>");
-                    output.append("<table><tr>"+tuplesPerSecond+"</tr></table>");
+                    if(run.containsKey("image") || run.containsKey("schedule")){
+                        runsDetailsTable.append("<td><p align=center><h3>#"+String.valueOf(i)+"("+run.get("scheduler")+")</h3></p>");
+                        if(run.containsKey("image"))
+                            runsDetailsTable.append("<img src='"+run.get("image")+"'><br>");
+                        if(run.containsKey("schedule")){
+                            runsDetailsTable.append("<h3>Schedule</h3>");
+                            runsDetailsTable.append(run.get("schedule"));
+                        }
+//                        if(run.containsKey("factAssignment"))
+//                            runsDetailsTable.append(run.get("factAssignment"));
+                        runsDetailsTable.append("</td>");
+                    }
                 }
+                runsDetailsTable.append("</tr></table>");
+                runsTable.append("</table>");
+                output.append(runsTable);
+                output.append(runsDetailsTable);
+//                if(tuplesPerSecond.length()>0){
+//                    output.append("<h3>Tuples per second</h3>");
+//                    output.append("<table><tr>"+tuplesPerSecond+"</tr></table>");
+//                }
 
 
 
@@ -204,7 +225,7 @@ public class StormMetricsAnalyzer {
 //                output.append("</table>");
 
 
-                output.append("<hr>\n");
+                //output.append("<hr>\n");
             }
 
         }
@@ -270,7 +291,7 @@ public class StormMetricsAnalyzer {
         log.trace("Analysing data from DB");
 
         HashMap<String, ArrayList<double[]>> dataSets = new HashMap<String, ArrayList<double[]>>();
-
+        HashMap<String, ArrayList<Double>> prevValuesSet = new HashMap<String, ArrayList<Double>>();
         for (String metricName : metricNames){
             String dataSetKey = null;
             Double prevValue = 0.0;
@@ -316,7 +337,7 @@ public class StormMetricsAnalyzer {
 
                     dataSet.add(new double[]{i*10.0, tenSecondsDelta/10});
                 }else{  // per component
-                    Double totalKeyValue = 0.0;
+
                     for (Document component : ((ArrayList<Document>) runState.get("components"))){
                         String name = component.get("name").toString();
                         if(name.contains("_")){
@@ -328,12 +349,21 @@ public class StormMetricsAnalyzer {
                             dataSetKey = name+ "_"+metricName;
                             if (!dataSets.containsKey(dataSetKey))
                                 dataSets.put(dataSetKey, new ArrayList<double[]>());
+                            if(!prevValuesSet.containsKey(dataSetKey))
+                                prevValuesSet.put(dataSetKey, new ArrayList<Double>());
+
                             ArrayList<double[]> dataSet = dataSets.get(dataSetKey);
-                            if(dataSet.size()>0)
-                                prevValue = dataSet.get(dataSet.size()-1)[1];
-                            totalKeyValue = Double.parseDouble(component.get(metricName).toString());
-                            tenSecondsDelta = (totalKeyValue - prevValue);
+                            ArrayList<Double> prevValues = prevValuesSet.get(dataSetKey);
+                            if(prevValues.size()>0)
+                                prevValue = prevValues.get(prevValues.size()-1);
+
+                            Double actualValue = Double.parseDouble(component.get(metricName).toString());
+                            tenSecondsDelta = actualValue - prevValue;
+                                if(tenSecondsDelta<0)
+                                    tenSecondsDelta=0.0;
                             dataSet.add(new double[]{i*10.0, tenSecondsDelta/10});
+                            //dataSet.add(new double[]{i*10.0, actualValue});
+                            prevValues.add(actualValue);
                       }
                     }
 

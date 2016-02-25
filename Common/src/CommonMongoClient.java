@@ -42,6 +42,8 @@ public class CommonMongoClient {
 
     public CommonMongoClient(){
         ReadConfigFile();
+        Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
+        mongoLogger.setLevel(Level.OFF);
 
     }
 
@@ -74,9 +76,6 @@ public class CommonMongoClient {
     }
 
     public void open(){
-        Logger mongoLogger = Logger.getLogger("com.mongodb.diagnostics.logging.JULLogger");
-        mongoLogger.setLevel(Level.OFF);
-
         if(isOpened)return;
         log.trace("Mongo client open()");
 
@@ -207,11 +206,14 @@ public class CommonMongoClient {
         }
        */
 
+//        if (projection==null)
+//            projection = new Document("_id", 0);
+
         if(!isOpened){ open(); closeAtFinish = true;}
         ArrayList<Document> ret = null;
         try {
             MongoCollection coll = defaultDB.getCollection(collection);
-            FindIterable<Document> res = coll.find(condition).sort(sort).projection(new Document("_id", 0)).limit(limit);
+            FindIterable<Document> res = coll.find(condition).sort(sort).limit(limit);
             Iterator keysIter = res.iterator();
             ret = new ArrayList<Document>();
             while (keysIter.hasNext()){

@@ -98,7 +98,7 @@
                         <!--<includes>-->
                             <!--<include>org.apache.commons:http-client</include>-->
                             <!--<include>JavaPlot:JavaPlot</include>-->
-                            <!--<include>ifmo.escience.dapris.monitoring.common:Common</include>-->
+                            <!--<include>ifmo.escience.dapris.monitoring.common:StormAPIClient</include>-->
 
                         <!--</includes>-->
                     <!--</artifactSet>-->
@@ -131,7 +131,7 @@
                             <file>${basedir}/lib/Common-1.0-jar-with-dependencies.jar</file>
                             <repositoryLayout>default</repositoryLayout>
                             <groupId>ifmo.escience.dapris.monitoring.common</groupId>
-                            <artifactId>Common</artifactId>
+                            <artifactId>StormAPIClient</artifactId>
                             <version>1.0</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>

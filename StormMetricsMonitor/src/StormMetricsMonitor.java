@@ -1,49 +1,24 @@
 //package ifmo.escience.dapris.monitoring;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSONCallback;
-import com.panayotis.gnuplot.JavaPlot;
-import com.panayotis.gnuplot.plot.AbstractPlot;
-import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.panayotis.gnuplot.style.NamedPlotColor;
-import com.panayotis.gnuplot.style.PlotStyle;
-import com.panayotis.gnuplot.style.Style;
-import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
-import com.panayotis.gnuplot.terminal.ImageTerminal;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
-import ifmo.escience.dapris.monitoring.common.Utils;
-import org.apache.logging.log4j.core.config.Scheduled;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import javax.imageio.ImageIO;
-import javax.print.Doc;
 
 /**
  * Created by Pavel Smirnov
  */
 public class StormMetricsMonitor {
     private static Logger log = LogManager.getLogger(StormMetricsMonitor.class);
-    String baseUrl = "";
-
     private CommonMongoClient mongoClient;
+    private StormAPIClient stormAPIClient;
 
     public static void main(String[] args){
-        StormMetricsMonitor stormMetricsMonitor = new StormMetricsMonitor("http://192.168.92.11:8080/api/v1/topology/");
+        StormMetricsMonitor stormMetricsMonitor = new StormMetricsMonitor("http://192.168.92.11:8080");
         //stormMetricsMonitor.getActualData();
         //stormMetricsMonitor.analyzeData();
         if(args.length>0 && args[0].equals("aggregate"))
@@ -53,49 +28,80 @@ public class StormMetricsMonitor {
         //stormMetricsMonitor.InsertDataToDb();
     }
 
-    public StormMetricsMonitor(String baseUrl){
-        this.baseUrl = baseUrl;
-        String[] splitted = baseUrl.split("/");
+    public StormMetricsMonitor(String base_Url){
         mongoClient = new CommonMongoClient();
+        stormAPIClient = new StormAPIClient(base_Url);
     }
 
-    public void getActualData(){
+    public List<Document> getActualData(){
         log.trace("Getting actual data");
+        List<Document> ret = new ArrayList<Document>();
 
-        JSONObject summaryJson = Utils.getJsonFromUrl(baseUrl+"summary");
-        mongoClient.open();
-        for(Object topology : (JSONArray)summaryJson.get("topologies")) {
+        JSONArray topologies = stormAPIClient.getTopologies();
+        for(Object topology : topologies){
             String topoID = ((JSONObject) topology).get("id").toString();
-            JSONObject json = Utils.getJsonFromUrl(baseUrl + topoID);
-            String uptimeStr = json.get("uptime").toString();
-
-            JSONArray topologyStats = ((JSONArray) json.get("topologyStats"));
-            JSONObject topologyStatsAlltime = (JSONObject) topologyStats.get(topologyStats.length() - 1);
-            Document topoStats = ReturnValuesByKeys(topologyStatsAlltime);
-            if(!topoStats.isEmpty()){
-                List<Document> components = new ArrayList<Document>();
-                for (String compType : new String[]{"spouts", "bolts"})
-                    for (Object component : (JSONArray) json.get(compType)){
-                        Document compStat = ReturnValuesByKeys(component);
-                        if(!compStat.isEmpty())
-                            components.add(compStat);
+            Document doc = mongoClient.getDocumentFromDB("storm.Supervisors", new Document(){{ put("topoID", topoID); }});
+            if (doc==null){
+                JSONArray supervisors = stormAPIClient.getSupervisors();
+                if(supervisors.length()>0){
+                    ArrayList<Document> supervisorsDocs = new ArrayList<Document>();
+                    for(Object supervisor : supervisors){
+                        Document  supervisorsDoc = new Document();
+                        for(String key : ((JSONObject)supervisor).keySet()){
+                            supervisorsDoc.put(key,((JSONObject)supervisor).get(key));
+                        }
+                        supervisorsDocs.add(supervisorsDoc);
                     }
-                if(!components.isEmpty()){
-                    topoStats.put("name", "Topology");
-                    topoStats.put("topoID", topoID);
-                    topoStats.put("uptime", uptimeStr);
-                    topoStats.put("components", components);
-
-                    //String experimentsCollection = "storm." + topoName;
-                    String collectionName = "storm.statistics";
-                    mongoClient.insertDocumentToDB(collectionName, topoStats);
+                    Document insert = new Document();
+                    insert.put("topoID", topoID);
+                    insert.put("supervisors", supervisorsDocs);
+                    mongoClient.insertDocumentToDB("storm.Supervisors", insert);
                 }
+
             }
+            Document topostat = GetTopoStatsByID(topoID);
+            if(topostat!=null)
+                ret.add(topostat);
         }
+        return ret;
+    }
+
+    public Document GetTopoStatsByID(String topoID){
+
+        JSONObject json = stormAPIClient.getTopologyStats(topoID);
+        String uptimeStr = json.get("uptime").toString();
+
+        JSONArray topologyStats = ((JSONArray) json.get("topologyStats"));
+        JSONObject topologyStatsAlltime = (JSONObject) topologyStats.get(topologyStats.length() - 1);
+        Document topoStats = ReturnValuesByKeys(topologyStatsAlltime);
+        if(!topoStats.isEmpty()){
+            List<Document> components = new ArrayList<Document>();
+            for (String compType : new String[]{"spouts", "bolts"})
+                for (Object component : (JSONArray) json.get(compType)){
+                    Document compStat = ReturnValuesByKeys(component);
+                    if(!compStat.isEmpty())
+                        components.add(compStat);
+                }
+            if(!components.isEmpty()){
+                topoStats.put("name", "Topology");
+                topoStats.put("topoID", topoID);
+                topoStats.put("uptime", uptimeStr);
+                topoStats.put("components", components);
+            }
+            return topoStats;
+        }
+        return null;
+    }
+
+    public void InsertStatsIntoDb(List<Document> topoStats){
+        String collectionName = "storm.statistics";
+        mongoClient.open();
+        for(Document topoStat : topoStats)
+            mongoClient.insertDocumentToDB(collectionName, topoStat);
         mongoClient.close();
     }
 
-    public Document ReturnValuesByKeys(Object item){
+    public static Document ReturnValuesByKeys(Object item){
         String[] keysTransfer = {"emitted","executed","transferred","acked"};
         String[] keysOther = {"boltId","spoutId", "completeLatency", "processLatency", "executeLatency", "capacity"};
 

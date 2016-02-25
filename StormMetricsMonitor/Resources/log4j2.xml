@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration>
     <Appenders>
         <File name="File" fileName="StormMetricsMonitor.log">
             <PatternLayout pattern="%d{HH:mm:ss} %-8.8p %-20.20c{2} %msg%n"/>
@@ -12,14 +12,16 @@
     </Appenders>
 
     <Loggers>
+        <Logger level="off" name="org.mongodb.driver">
+            <AppenderRef ref="File"/>
+        </Logger>
+
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
         <Logger level="trace" name="debug">
             <AppenderRef ref="File"/>
         </Logger>
-        <Logger level="off" name="org.mongodb.driver">
-            <AppenderRef ref="File"/>
-        </Logger>
+
     </Loggers>
 </Configuration>
