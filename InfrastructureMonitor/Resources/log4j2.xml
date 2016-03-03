@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<Configuration status="WARN">
     <Appenders>
-        <File name="File" fileName="MonitoringCommon.log">
+        <File name="File" fileName="InfrastructureMonitor.log">
             <PatternLayout pattern="%d{HH:mm:ss} %-8.8p %-20.20c{2} %msg%n"/>
             <!--<PatternLayout pattern="%d{HH:mm:ss}    %p  [%t]    %msg%n"/>-->
         </File>
@@ -10,18 +10,15 @@
             <!--%d %p %c{1.} [%t] %m%n-->
         </Console>
     </Appenders>
-
+    <category name="com.mongodb">
+        <priority value="off"/>
+    </category>
     <Loggers>
-        <Logger level="off" name="org.mongodb.driver">
-            <AppenderRef ref="File"/>
-        </Logger>
-
-        <Root level="info">
+        <Root level="trace">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger level="trace" name="debug">
+        <Logger level="debug" name="debug">
             <AppenderRef ref="File"/>
         </Logger>
-
     </Loggers>
 </Configuration>

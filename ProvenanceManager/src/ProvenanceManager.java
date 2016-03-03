@@ -3,10 +3,10 @@ import ifmo.escience.dapris.common.data.Uow;
 import ifmo.escience.dapris.common.entities.*;
 import ifmo.escience.dapris.common.entities.Task;
 import ifmo.escience.dapris.common.helpers.NodeStateDateComparator;
-import ifmo.escience.dapris.monitoring.clusterStateMonitor.ClusterStateMonitor;
-import ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.*;
-//import ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.Task;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
+import ifmo.escience.dapris.monitoring.computationsMonitor.*;
+import ifmo.escience.dapris.monitoring.computationsMonitor.ComputationsMonitor;
+import ifmo.escience.dapris.monitoring.computationsMonitor.StateStructures.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,9 +28,9 @@ public class ProvenanceManager implements IRepository {
 
     private static Logger log = LogManager.getLogger(ProvenanceManager.class);
     private CommonMongoClient mongoClient;
-    private ClusterStateMonitor clusterStateMonitor;
+    private ComputationsMonitor computationsMonitor;
     private DataLayerMonitor dataLayerMonitor;
-    private MetricsMonitor metricsMonitor;
+    private InfrastructureMonitor infrastructureMonitor;
     //private ClusterState clusterState;
 
     public static void main(String[] args){
@@ -50,12 +50,12 @@ public class ProvenanceManager implements IRepository {
     public ProvenanceManager(CommonMongoClient mongoClient){
         Uow.instance.repo = this;
         this.mongoClient = mongoClient;
-        this.clusterStateMonitor = new ClusterStateMonitor(mongoClient);
-        this.metricsMonitor = new MetricsMonitor(mongoClient);
+        this.computationsMonitor = new ComputationsMonitor(mongoClient);
+        this.infrastructureMonitor = new InfrastructureMonitor(mongoClient);
         this.dataLayerMonitor = new DataLayerMonitor(mongoClient);
 
         mongoClient.open();
-        ClusterState state = clusterStateMonitor.getClusterStateFromDB();
+        ClusterState state = computationsMonitor.getClusterStateFromDB();
         TreeMap<String, TreeMap<String, String>> agents = dataLayerMonitor.GetAgents();
         List<String> fileNames = dataLayerMonitor.GetFileNames();
         mongoClient.close();
@@ -97,7 +97,7 @@ public class ProvenanceManager implements IRepository {
         int i=0;
         for (Framework framework : state.getFrameworks()){
             String typeId = framework.getName();
-            for (ifmo.escience.dapris.monitoring.clusterStateMonitor.StateStructures.Task task : framework.getTasks()){
+            for (ifmo.escience.dapris.monitoring.computationsMonitor.StateStructures.Task task : framework.getTasks()){
 
                 Random rand = new Random(i);
                 HashSet<String> parentTaskIds = null;
@@ -326,7 +326,7 @@ public class ProvenanceManager implements IRepository {
 //        hostname = "node-92-16";
 //        starttime = LocalDateTime.now().minusDays(4);
 //        endtime = LocalDateTime.now();
-        TreeMap<LocalDateTime, TreeMap<String, Object>> metrics = metricsMonitor.GetMetricsFromDb(hostname, start, finish);
+        TreeMap<LocalDateTime, TreeMap<String, Object>> metrics = infrastructureMonitor.GetMetricsFromDb(hostname, start, finish);
         for(LocalDateTime timestamp : metrics.keySet()){
             TreeMap<String, Object> metricsmap = metrics.get(timestamp);
             NodeStatus status = null;

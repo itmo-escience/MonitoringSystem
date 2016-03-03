@@ -8,6 +8,8 @@ import ifmo.escience.dapris.monitoring.common.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.json.JSONArray;
+import twitter4j.internal.org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -16,10 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Pavel Smirnov
@@ -30,7 +29,7 @@ public class StormMetricsAnalyzer {
     private CommonMongoClient mongoClient;
 
     public static void main(String[] args){
-        StormMetricsAnalyzer stormMetricsAnalyzer = new StormMetricsAnalyzer("http://192.168.92.11:8080/api/v1/topology/");
+        StormMetricsAnalyzer stormMetricsAnalyzer = new StormMetricsAnalyzer("http://192.168.92.11:8080");
         //stormMetricsMonitor.getActualData();
         //stormMetricsMonitor.analyzeData();
         if(args.length>0 && args[0].equals("test"))
@@ -47,8 +46,6 @@ public class StormMetricsAnalyzer {
     }
 
     public void getExperimentsData(){
-        Document experiment0 = new Document();
-        String abs = experiment0.toJson();
         String path = "d:/Projects/MonitoringSystem/StormMetricsMonitor/target/";
         StringBuilder output = new StringBuilder();
         output.append("<style>\n");
@@ -57,12 +54,14 @@ public class StormMetricsAnalyzer {
         output.append("</style>\n");
         mongoClient.open();
         List<Document> experiments = mongoClient.getDocumentsFromDB("storm.experiments", new Document(){{ /*put("_id", "patient_3072_5_1_1");*/ }},new Document(){{ put("updated", -1); }}, 100);
+        int expIndex=0;
         for(Document experiment : experiments){
             StringBuilder tuplesPerSecond = new StringBuilder();
             String expId = experiment.get("_id").toString();
             //List<Document> runs = (List<Document>)experiment.get("runs");
             List<Document> runs = mongoClient.getDocumentsFromDB("storm.runs", new Document(){{
                 put("expID", expId);
+                //put("_id", "patient0_10240_10_1_3_10_128-1-1456741951");
                 //put("Finished", new Document(){{ put( "$exists:", true); }} );
             }}, new Document(){{ put("started", 1); }}, 100);
 
@@ -87,10 +86,11 @@ public class StormMetricsAnalyzer {
                 runKeys.add("assignedCpu");
                 runKeys.add("assignedMemOffHeap");
                 runKeys.add("assignedTotalMem");
-                int i=0;
 
+
+                int runIndex=0;
                 for(Document run : runs){
-                    i++;
+                    runIndex++;
                     for(String key : run.keySet()){
                         if(!runKeys.contains(key))
                             runKeys.add(key);
@@ -105,45 +105,133 @@ public class StormMetricsAnalyzer {
                     if(runStats.size()>0){
                         String relPath = Paths.get("img", runID+".png").toString();
                         String absPath =  Paths.get(path,relPath).toString();
-                        HashMap<String, ArrayList<double[]>> dataSets = prepareTuplesPerSecond(runStats, true);
-                        CreatePlot(dataSets, absPath, "# "+String.valueOf(i)+" ("+scheduler+")");
+                        if(!new File(absPath).exists() || runIndex==runs.size()) {
+                            HashMap<String, ArrayList<double[]>> dataSets = prepareTuplesPerSecond(runStats, true);
+                            createPlot(dataSets, absPath, "# " + String.valueOf(runIndex) + " (" + scheduler + ")");
+
+                        }
                         run.put("image", relPath);
                     }
 
                     List<Document> factAssignments = mongoClient.getDocumentsFromDB("storm.FactAssignments", find);
                     Document structure = mongoClient.getDocumentFromDB("storm.Structure", find);
-                    Document schedule = mongoClient.getDocumentFromDB("storm.Schedules", find);
+
+                    Document supervisors = mongoClient.getDocumentFromDB("storm.Supervisors", find);
+                    HashMap<String, String> supervisorsMap = new HashMap<String, String>();
+                    if(supervisors!=null){
+                        String supervisorsStr="";
+                        for(Document supervisor : (List<Document>) supervisors.get("supervisors")){
+                            supervisorsMap.put(supervisor.get("id").toString(), supervisor.get("host").toString());
+                            supervisorsStr += supervisor.get("id").toString() + " = "+ supervisor.get("host").toString()+"<br>";
+                        }
+                        run.put("supervisors", supervisorsStr);
+                    }
 
                     String scheduleStr = "";
-                    if(schedule!=null) {
-                        if (schedule.containsKey("nodes")) {
-                            for (Document node : (List<Document>) schedule.get("nodes")) {
-                                scheduleStr += node.get("nodeId") + " => [";
-                                if (node.get("tasks") != null)
-                                    for (Object task : (List<Object>) node.get("tasks")) {
-                                        scheduleStr += ", " + ((ArrayList<Object>) task).get(0);
-                                    }
-                                scheduleStr += "]<br>";
+                    List<Document> schedules = mongoClient.getDocumentsFromDB("storm.schedules2", find);
+                    for (Document schedule : schedules)
+                        if(schedule!=null){
+                            scheduleStr += "<h4>"+schedule.get("time")+"</h4>";
+                            scheduleStr +="<table><tr>";
+                            HashMap<String, String> nodesMap = new HashMap<String, String>();
+                            for(Document node : (ArrayList<Document>)((Document)((ArrayList)schedule.get("nodes")).get(0)).get("nodes")){
+                                if( node.get("host")!=null)
+                                    nodesMap.put(node.get("id").toString(), node.get("host").toString());
+
                             }
+
+                            for (String schedulerKey : new String[]{ "annealingSchedule","resourceSchedule"}){
+                                if(schedule.containsKey(schedulerKey)) {
+                                    scheduleStr += "<td><h5>" + schedulerKey + "</h5>";
+                                    Document particularSchedule = new Document();
+                                    Object value = schedule.get(schedulerKey);
+                                    if(value!=null) {
+                                        if (value instanceof Document)
+                                            particularSchedule = (Document) schedule.get(schedulerKey);
+                                        else if (value instanceof ArrayList) {
+                                            String test = value.toString();
+                                        } else {
+                                            String test = value.toString();
+                                        }
+                                    }
+                                    for (String nodeId : particularSchedule.keySet()) {
+
+                                        String nodeAssignments = "";
+
+                                        if (particularSchedule.get(nodeId) != null)
+                                            for (Object task : (List<Object>) particularSchedule.get(nodeId)) {
+                                                if (nodeAssignments != "")
+                                                    nodeAssignments += ", ";
+                                                if(task instanceof Document)
+                                                    nodeAssignments += ((Document)task).values().iterator().next();
+                                                else if(task instanceof ArrayList){
+                                                    nodeAssignments +=  ((ArrayList)task).get(0).toString();
+                                                }
+                                            }
+
+                                        String port ="";
+                                        if(nodeId.contains(":")) {
+                                           String[] splitted = nodeId.split(":");
+                                            nodeId = splitted[0];
+                                            port = ":"+splitted[1];
+                                        }
+
+                                        if (nodesMap.containsKey(nodeId))
+                                            nodeId = nodesMap.get(nodeId);
+                                        scheduleStr += nodeId+port + " => [" + nodeAssignments + "]<br>";
+                                    }
+                                    scheduleStr += "</td>";
+                                }
+                            }
+                            scheduleStr +="</tr></table>";
                         }
+                    if(scheduleStr!="")
                         run.put("schedule", scheduleStr);
-                    }
+
+
 
                     String factAssignmentsStr = "";
+                    String prevAssignment = "";
+                    Double startTime = 0.0;
                     for (Document factAssignment : factAssignments){
-                        if(factAssignment.get("assignment")!=null) {
-                            for (Document assignment : (List<Document>) factAssignment.get("assignment")) {
-                                factAssignmentsStr += assignment.get("nodeId") + " => [";
+                        //Long date = Utils.ParseDateFromString(factAssignment.get("time").toString(), "yyyy-MM-dd HH:mm:ss");
+//                        if(startTime==0.0)
+//                            startTime = date.doubleValue();
+//                        String seconds = String.valueOf (date.doubleValue()-startTime);
+
+                        if(factAssignment.get("assignment")!=null){
+                            HashMap<String, String> assignmentsMap = new HashMap<String, String>();
+                            String currAssignment = "";
+                            for (Document assignment : (List<Document>) factAssignment.get("assignment")){
+                                String[] splitted = assignment.get("nodeId").toString().split(":");
+                                String nodeId = splitted[0];
+                                if(supervisorsMap.containsKey(nodeId))
+                                    nodeId = supervisorsMap.get(nodeId);
+                                String nodeAssignment="";
                                 if (assignment.get("tasks") != null)
                                     for (Object task : (List<Document>) assignment.get("tasks")) {
-                                        factAssignmentsStr += ", " + ((ArrayList<String>) task).get(0);
+                                        if(nodeAssignment!="")nodeAssignment+=", ";
+                                        nodeAssignment += ((ArrayList<String>) task).get(0).split(",")[0].replace("[","");
                                     }
-                                factAssignmentsStr += "]<br>";
+                                currAssignment += nodeId+":"+ splitted[1] + " => ["+nodeAssignment+ "]<br>";
+                                assignmentsMap.put(nodeId+":"+ splitted[1],"["+nodeAssignment+ "]");
                             }
-                            //factAssignmentsStr += "<hr>";
+
+                            if(!currAssignment.equals(prevAssignment)){
+                                factAssignmentsStr +="<h5>"+factAssignment.get("time").toString()+"</h5>";
+                                String[] nodeNames = assignmentsMap.keySet().toArray(new String[0]);
+                                Arrays.sort(nodeNames);
+                                for(String nodeId : nodeNames){
+                                    factAssignmentsStr += nodeId+" => "+assignmentsMap.get(nodeId)+"<br>";
+                                }
+                            }
+                            prevAssignment = currAssignment;
+//
                         }
-                        run.put("factAssignment", factAssignmentsStr);
+
+                        run.put("factAssignments", factAssignmentsStr);
                     }
+
 
 //                    if(runStats.size()>0){
 //                        //String key = scheduler;
@@ -176,22 +264,31 @@ public class StormMetricsAnalyzer {
                 for(String key : runKeys)
                     runsTable.append("<th>"+key+"</th>");
                 runsTable.append("</tr>");
-                i=0;
+                runIndex=0;
                 for(Document run : runs){
-                    i++;
+                    runIndex++;
                     runsTable.append("<tr>");
-                    runsTable.append("<td># "+String.valueOf(i)+"</td>");
+                    runsTable.append("<td># "+String.valueOf(runIndex)+"</td>");
                     for(String key : runKeys)
                         runsTable.append("<td>"+ (run.containsKey(key)?run.get(key):"")+"</td>");
                     runsTable.append("</tr>");
 
-                    if(run.containsKey("image") || run.containsKey("schedule")){
-                        runsDetailsTable.append("<td><p align=center><h3>#"+String.valueOf(i)+"("+run.get("scheduler")+")</h3></p>");
+                    if(run.containsKey("image") || run.containsKey("supervisors") || run.containsKey("schedule") ){
+                        runsDetailsTable.append("<td><p align=center><h3>#"+String.valueOf(runIndex)+"("+run.get("scheduler")+")</h3></p>");
                         if(run.containsKey("image"))
                             runsDetailsTable.append("<img src='"+run.get("image")+"'><br>");
+
+                        if(run.containsKey("supervisors")) {
+                            runsDetailsTable.append("<h3>Supervisors</h3>");
+                            runsDetailsTable.append(run.get("supervisors"));
+                        }
                         if(run.containsKey("schedule")){
                             runsDetailsTable.append("<h3>Schedule</h3>");
                             runsDetailsTable.append(run.get("schedule"));
+                        }
+                        if(run.containsKey("factAssignments")){
+                            runsDetailsTable.append("<h3>Fact assignments</h3>");
+                            runsDetailsTable.append(run.get("factAssignments"));
                         }
 //                        if(run.containsKey("factAssignment"))
 //                            runsDetailsTable.append(run.get("factAssignment"));
@@ -227,7 +324,7 @@ public class StormMetricsAnalyzer {
 
                 //output.append("<hr>\n");
             }
-
+            expIndex++;
         }
         mongoClient.close();
         String filename = Paths.get(path,"results.html").toString();
@@ -409,7 +506,7 @@ public class StormMetricsAnalyzer {
         return dataSets;
     }
 
-    public void CreatePlot(HashMap<String, ArrayList<double[]>> dataSets, String filename,  String additionalTitle){
+    public void createPlot(HashMap<String, ArrayList<double[]>> dataSets, String filename, String additionalTitle){
 
         JavaPlot p = new JavaPlot();
         p.setTitle("Tuples per second "+additionalTitle);
@@ -442,6 +539,7 @@ public class StormMetricsAnalyzer {
 
         p.setTerminal(png);
         p.setPersist(false);
+        p.setKey(JavaPlot.Key.BELOW);
         p.plot();
 
         try {
@@ -503,13 +601,11 @@ public class StormMetricsAnalyzer {
     public void startAnalysis(int sleepInterval){
         log.info("Monitoring starting");
         while(1==1){
-            try {
-                getExperimentsData();
-                log.trace("Sleeping " + sleepInterval+"ms");
-                Thread.sleep(sleepInterval);
-            } catch (InterruptedException e){
-                log.error(e);
-            }
+
+            getExperimentsData();
+            log.trace("Sleeping " + sleepInterval+"ms");
+            Utils.Wait(sleepInterval);
+
         }
     }
 }

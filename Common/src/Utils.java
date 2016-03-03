@@ -10,12 +10,16 @@ import org.apache.commons.io.IOUtils;
 //import org.apache.http.client.HttpClient;
 //import org.apache.log4j.Logger;
 //import org.apache.logging.log4j.LogManager;
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -107,7 +111,7 @@ public class Utils {
         try {
             Thread.sleep(interval);
         } catch (InterruptedException e) {
-            //log.error(e);
+            log.error(GetTracedError(e));
         }
     }
 
@@ -159,6 +163,7 @@ public class Utils {
         return obj;
     }
 
+
     public static <T> T CreateObjectFromJSON(String json, Class<T> type){
         T ret = null;
         try {
@@ -192,6 +197,38 @@ public class Utils {
             throw e;
         } catch (IOException e) {
             throw e;
+        }
+        return ret;
+    }
+
+    public static String GetTracedError(Exception e){
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        return errors.toString();
+    }
+
+    public static Date ParseDateFromString(String target, String pattern){
+        DateFormat df = new SimpleDateFormat(pattern);
+        Date result = null;
+        try {
+            result = df.parse(target);
+        } catch (ParseException e){
+            log.error(GetTracedError(e));
+        }
+        return result;
+    }
+
+    public static List<Document> JSON2Doc(JSONArray array){
+        ArrayList<Document> ret = new ArrayList<Document>();
+        for(Object item : array){
+            Document itemDoc = new Document();
+            for (String key : ((JSONObject) item).keySet()) {
+                Object value = ((JSONObject) item).get(key);
+                if(value instanceof JSONArray)
+                    value = JSON2Doc((JSONArray) value);
+                itemDoc.put(key, value);
+            }
+            ret.add(itemDoc);
         }
         return ret;
     }

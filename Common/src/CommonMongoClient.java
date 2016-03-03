@@ -1,4 +1,5 @@
 package ifmo.escience.dapris.monitoring.common;
+import ifmo.escience.dapris.monitoring.common.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.*;
@@ -42,8 +43,8 @@ public class CommonMongoClient {
 
     public CommonMongoClient(){
         ReadConfigFile();
-        Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
-        mongoLogger.setLevel(Level.OFF);
+        //Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
+        //mongoLogger.setLevel(Level.OFF);
 
     }
 
@@ -119,10 +120,10 @@ public class CommonMongoClient {
                 mapper.writeValue(new File("tmp.json"), obj);
                 obj = mapper.writeValueAsString(obj);
             } catch (IOException e){
-                log.error(e);
+                log.error(ifmo.escience.dapris.monitoring.common.Utils.GetTracedError(e));
             }
             catch (Exception e) {
-                log.error(e);
+                log.error(ifmo.escience.dapris.monitoring.common.Utils.GetTracedError(e));
             }
         }
         obj = JSON.parse((String)obj);
@@ -136,10 +137,10 @@ public class CommonMongoClient {
         try {
             MongoCollection coll = defaultDB.getCollection(collection);
             coll.insertOne(doc);
-            ret = getDocumentFromDB(collection, doc).getString("_id");
+            ret = getDocumentFromDB(collection, doc).get("_id").toString();
         }
         catch (Exception e){
-            log.error(e);
+            log.error(Utils.GetTracedError(e));
         }
         if(closeAtFinish)close();
         return ret;
@@ -153,7 +154,7 @@ public class CommonMongoClient {
             coll.findOneAndReplace(find, update);
         }
         catch (Exception e){
-            log.error(e);
+            log.error(ifmo.escience.dapris.monitoring.common.Utils.GetTracedError(e));;
         }
         if(closeAtFinish)close();
     }
@@ -172,10 +173,15 @@ public class CommonMongoClient {
             update = CreateDBObject(update);
         if(!isOpened){ open(); closeAtFinish = true;}
         DBCollection dbCollection = db.getCollection(collection);
-        if (find!=null)
-            dbCollection.update((DBObject) find, (DBObject) update, true, false);
-        else
-            dbCollection.save((DBObject)update);
+        try{
+            if (find!=null)
+                dbCollection.update((DBObject) find, (DBObject) update, true, false);
+            else
+                dbCollection.save((DBObject)update);
+        }
+        catch (Exception e){
+            log.error(GetTracedError(e));
+        }
         if(closeAtFinish)close();
     }
 
@@ -245,7 +251,7 @@ public class CommonMongoClient {
 
                 ret.add(retObj);
             } catch (IOException e) {
-                //log.error(e);
+                //log.error(ifmo.escience.dapris.monitoring.common.Utils.GetTracedError(e));;
             }
 
         }
@@ -261,6 +267,11 @@ public class CommonMongoClient {
         return cursor;
     }
 
+    public static String GetTracedError(Exception e){
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        return errors.toString();
+    }
 
 }
 

@@ -2,7 +2,7 @@
   <artifact type="jar" build-on-make="true" name="MetricsMonitor:jar">
     <output-path>$PROJECT_DIR$/MetricsMonitor/target</output-path>
     <root id="archive" name="MetricsMonitor.jar">
-      <element id="module-output" name="MetricsMonitor" />
+      <element id="module-output" name="InfrastructureMonitor" />
       <element id="module-output" name="Common" />
       <element id="extracted-dir" path="$PROJECT_DIR$/Common/lib/jackson/bson4jackson-1.3.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/Common/lib/jackson/jackson-core-2.6.3.jar" path-in-jar="/" />

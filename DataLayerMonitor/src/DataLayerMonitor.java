@@ -9,9 +9,9 @@ import itmo.escience.dstorage.utils.responses.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+//import org.json.simple.JSONObject;
+//import org.json.simple.parser.JSONParser;
+//import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -151,15 +151,15 @@ public class DataLayerMonitor {
 
             //ret.add(resultmap.get("request").toString());
 
-            JSONParser parser = new JSONParser();
-            try {
-                JSONObject json = (JSONObject) parser.parse("{"+resultmap.get("request")+"}");
-                json.put("time",resultmap.get("time"));
-                ret.add(json);
-                String test="123";
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+//            JSONParser parser = new JSONParser();
+//            try {
+//                JSONObject json = (JSONObject) parser.parse("{"+resultmap.get("request")+"}");
+//                json.put("time",resultmap.get("time"));
+//                ret.add(json);
+//                String test="123";
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
         }
         mongoClient.close();
         return ret;

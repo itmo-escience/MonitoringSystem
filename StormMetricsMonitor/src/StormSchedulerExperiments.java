@@ -35,7 +35,7 @@ public class StormSchedulerExperiments {
     private String paramString;
 
     public static void main(String[] args){
-        StormSchedulerExperiments stormMetricsMonitor = new StormSchedulerExperiments("http://192.168.92.11:8080/api/v1/topology/");
+        StormSchedulerExperiments stormMetricsMonitor = new StormSchedulerExperiments("http://192.168.92.11:8080");
         //stormMetricsMonitor.killAllProcesses();
         stormMetricsMonitor.startExperiments(60*5);
      }
@@ -52,7 +52,7 @@ public class StormSchedulerExperiments {
 
     public void startExperiments(int seconds) {
 
-        String debugTopoID = null;//
+        String debugTopoID = null; // "patient0_10240_10_1_3_10_128-64_10_20_1024-1-1456421934";//
         if (debugTopoID == null)
             killTopologies();
 
@@ -62,20 +62,21 @@ public class StormSchedulerExperiments {
 
 
         for (String scheduler : new String[]{
+
+                "annealing",
                 "resource",
                 "default"
-                //"annealing"
         }){
             Double[] onheapMBs = new Double[]{ /*32.0 */ 64.0 };
             Double[] offheapMBs = new Double[]{/*5.0,*/ 10.0};
-            int[] cpuPerComps = new int[]{/*10*/ 20 /*, 30*/};
-            int[] maxHeapSizeMbs = new int[]{9000};
+            int[] cpuPerComps = new int[]{/*10 20 */ 30};
+            int[] workerMaxHeapSizeMbs = new int[]{ 1024 };
 
 
             for (Double onheapMB : (scheduler.equals("resource")? onheapMBs: new Double[]{null}))
                 for (Double offheapMB : (scheduler.equals("resource")? offheapMBs: new Double[]{null}))
                     for (int cpuPerComp : (scheduler.equals("resource")? cpuPerComps: new int[]{ 0 }))
-                        for (int maxHeapSizeMb : (scheduler.equals("resource")? maxHeapSizeMbs: new int[]{ 0 })){
+                        for (int maxHeapSizeMb : (scheduler.equals("resource")? workerMaxHeapSizeMbs: new int[]{ 0 })){
 
                             String additionalRAparams = "";
                             HashMap<String, Object> configParams = new HashMap<String, Object>();
@@ -92,10 +93,10 @@ public class StormSchedulerExperiments {
 
                             for (int workers : new int[]{10 /*, 15*/})
                                 for (int emitters : new int[]{1})
-                                    for (int processors : new int[]{1 /*, 3, 5, 8 */})
-                                        for (int megabytes : new int[]{3 /*, 5, 10 */})
+                                    for (int processors : new int[]{/*1 */ /*3*/ /*, 5,*/ 5 })
+                                        for (int megabytes : new int[]{/*3*/ 5 })
                                             for (int cpuKoef : new int[]{ 10 /*, 40*/ })
-                                                for (int memKoef : new int[]{128}){
+                                                for (int memKoef : new int[]{ 128 }){
 
 
                             Integer kbsize = 1024 * megabytes;
@@ -158,14 +159,15 @@ public class StormSchedulerExperiments {
 
                             Document runFind = new Document() {{ put("_id", topoId); }};
                             run.put("_id", topoId);
-
-                            mongoClient.insertDocumentToDB(runsCollection, run);
-                            mongoClient.updateDocumentInDB(experimentsCollection, expFind, experiment);
+                            if (debugTopoID == null) {
+                                mongoClient.insertDocumentToDB(runsCollection, run);
+                                mongoClient.updateDocumentInDB(experimentsCollection, expFind, experiment);
+                            }
 
                             log.info("Waiting for run statistics become not empty");
-                            JSONObject topoStat = null;
+                            Document topoStat = null;
                             while(topoStat==null) {
-                                topoStat =  stormAPIClient.getTopologyStats(topoId);
+                                topoStat =  stormAPIClient.getTupleStatsByID(topoId);
                                 Utils.Wait(5000);
                             }
 
