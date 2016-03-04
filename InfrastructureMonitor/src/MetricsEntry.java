@@ -1,8 +1,6 @@
-import com.fasterxml.jackson.annotation.JsonFormat;
+package ifmo.escience.dapris.monitoring.infrastructureMonitor;
 
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.SortedMap;
 
 /**

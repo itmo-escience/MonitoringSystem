@@ -1,6 +1,5 @@
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
-import com.jcabi.ssh.Shell;
-import com.jcabi.ssh.SSH;
+import ifmo.escience.dapris.monitoring.common.CommonSSHClient;
 import ifmo.escience.dapris.monitoring.common.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,16 +22,18 @@ import java.util.HashMap;
 public class StormSchedulerExperiments {
     private static Logger log = LogManager.getLogger(StormSchedulerExperiments.class);
     private CommonMongoClient mongoClient;
-    private String sshKey = "";
+
     String experimentsCollection = "storm.experiments";
     String runsCollection = "storm.runs";
     String masterHost = "192.168.92.11";
     private StormAPIClient stormAPIClient;
     String[] slaveHosts = new String[]{"192.168.92.13", "192.168.92.14", "192.168.92.15", "192.168.92.16"};
     private String[] runStatKeys = new String[]{"tasksTotal","workersTotal", "executorsTotal", "requestedMemOffHeap" ,"requestedCpu", "requestedTotalMem", "assignedCpu","assignedMemOffHeap", "assignedTotalMem","schedulerInfo" };
-    private HashMap<String, Shell.Plain> shellPlains = new HashMap<String, Shell.Plain>();
+    private HashMap<String, CommonSSHClient> sshClients = new HashMap<String, CommonSSHClient>();
     private HashMap<String, String> schedulers = new HashMap<String, String>();
     private String paramString;
+    private String sshKey = "";
+    private String sshPath = "d:\\Projects\\MonitoringSystem\\StormMetricsMonitor\\resources\\id_rsa";
 
     public static void main(String[] args){
         StormSchedulerExperiments stormMetricsMonitor = new StormSchedulerExperiments("http://192.168.92.11:8080");
@@ -41,7 +42,7 @@ public class StormSchedulerExperiments {
      }
 
     public StormSchedulerExperiments (String base_Url){
-        sshKey = ReadSShKey();
+        sshKey = CommonSSHClient.ReadSShKey(sshPath);
 //        String[] splitted = baseUrl.split("/");
         mongoClient = new CommonMongoClient();
         stormAPIClient = new StormAPIClient(base_Url);
@@ -225,74 +226,8 @@ public class StormSchedulerExperiments {
     }
 
 
-    public String ReadSShKey(){
-        String ret = "";
-        BufferedReader br = null;
-        try {
 
-            String sCurrentLine;
 
-            br = new BufferedReader(new FileReader("d:\\Projects\\MonitoringSystem\\StormMetricsMonitor\\resources\\id_rsa"));
-            while ((sCurrentLine = br.readLine()) != null) {
-                if(ret!="")ret+="\n";
-                ret+=sCurrentLine;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (br != null)br.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return ret;
-    }
-
-    public String executeCommand(String host, String command){
-        String ret = "";
-        log.trace(host+" -> "+command);
-
-        Shell.Plain shellPlain=null;
-        if(shellPlains.containsKey(host))
-            shellPlain = shellPlains.get(host);
-
-        log.trace("Waiting for ssh conection to "+host);
-        Integer wait = 2000;
-        while (shellPlain==null){
-            try {
-                SSH hostShell = new SSH(host, 22, "vagrant", sshKey);
-                shellPlain = new Shell.Plain(hostShell);
-                if(!shellPlains.containsKey(shellPlain))
-                    shellPlains.put(host,shellPlain);
-                wait=1;
-            } catch (UnknownHostException e) {
-                //e.printStackTrace();
-
-            }
-            Utils.Wait(wait);
-        }
-        Boolean executed=false;
-        log.trace("Waiting for command executon on "+host);
-        wait = 2000;
-        while(!executed) {
-            try {
-                ret = shellPlain.exec(command);
-                if(ret.contains("Exception"))
-                    log.error(ret);
-                else{
-                    executed = true;
-                    wait = 1;
-                }
-            } catch (IOException e) {
-
-            }
-
-            Utils.Wait(wait);
-        }
-        return ret;
-    }
 
 //    public void switchScheduler(String name){
 //        log.info("Switching scheduler to "+name);
@@ -309,6 +244,16 @@ public class StormSchedulerExperiments {
 //        //executeCommand(masterHost,"sudo service supervisor restart`");
 //        getSupervisorIDs();
 //    }
+    public String executeCommand(String host, String command){
+        CommonSSHClient client;
+
+        if(!sshClients.containsKey(host)){
+            client = new CommonSSHClient(host,"vagrant",sshKey);
+            sshClients.put(host, client);
+        }else
+            client = sshClients.get(host);
+        return client.executeCommand(command);
+    }
 
     public void SetConfigParams (HashMap<String, Object> newParams){
         log.info("Setting config parameters");

@@ -8,8 +8,6 @@ import ifmo.escience.dapris.monitoring.common.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.json.JSONArray;
-import twitter4j.internal.org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.io.File;

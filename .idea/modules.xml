@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BandwidthMonitor/BandwidthMonitor.iml" filepath="$PROJECT_DIR$/BandwidthMonitor/BandwidthMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/Common/Common.iml" filepath="$PROJECT_DIR$/Common/Common.iml" />
       <module fileurl="file://$PROJECT_DIR$/ComputationsMonitor/ClusterStateMonitor.iml" filepath="$PROJECT_DIR$/ComputationsMonitor/ClusterStateMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/DataLayerMonitor/DataLayerMonitor.iml" filepath="$PROJECT_DIR$/DataLayerMonitor/DataLayerMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/DataLayerMonitor/DstorageMonitor.iml" filepath="$PROJECT_DIR$/DataLayerMonitor/DstorageMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/InfrastructureMonitor/InfrastructureMonitor.iml" filepath="$PROJECT_DIR$/InfrastructureMonitor/InfrastructureMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/ProvenanceManager/ProvenanceManager.iml" filepath="$PROJECT_DIR$/ProvenanceManager/ProvenanceManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" filepath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/monitoring.iml" filepath="$PROJECT_DIR$/monitoring.iml" />
     </modules>
   </component>

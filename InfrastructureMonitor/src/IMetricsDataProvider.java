@@ -1,3 +1,4 @@
+package ifmo.escience.dapris.monitoring.infrastructureMonitor;
 import java.util.List;
 import java.util.TreeMap;
 

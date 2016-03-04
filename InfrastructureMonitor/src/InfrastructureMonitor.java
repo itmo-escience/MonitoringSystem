@@ -1,3 +1,4 @@
+package ifmo.escience.dapris.monitoring.infrastructureMonitor;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
 import ifmo.escience.dapris.monitoring.common.Utils;
 import org.bson.Document;
@@ -11,7 +12,6 @@ import java.util.*;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
 
 /**
  * Created by Pavel Smirnov

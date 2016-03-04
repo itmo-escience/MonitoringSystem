@@ -1,3 +1,4 @@
+package ifmo.escience.dapris.monitoring.infrastructureMonitor;
 import ifmo.escience.dapris.monitoring.common.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;

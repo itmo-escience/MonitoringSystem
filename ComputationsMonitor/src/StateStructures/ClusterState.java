@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.javers.core.metamodel.annotation.Id;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +57,10 @@ public class ClusterState {
 
     @JsonProperty("AllTasks")
     public List<Task> getAllTasks(){
-        return frameworks.stream().flatMap(f -> f.getTasks().stream()).collect(Collectors.toList());
+        List<Task> ret = new ArrayList<Task>();
+        for(Framework framework : frameworks)
+            ret.addAll((Collection<? extends Task>) framework.getTasks());
+        return ret; //frameworks.stream().flatMap(f -> f.getTasks().stream()).collect(Collectors.toList());
     }
 
     @JsonProperty("StartedAsDate")

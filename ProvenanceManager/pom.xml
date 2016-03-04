@@ -29,16 +29,19 @@
             <artifactId>Common</artifactId>
             <version>1.0</version>
         </dependency>
+
         <dependency>
             <groupId>ifmo.escience.dapris.monitoring.computationsMonitor</groupId>
             <artifactId>ComputationsMonitor</artifactId>
             <version>1.0</version>
         </dependency>
+
         <dependency>
             <groupId>ifmo.escience.dapris.monitoring.infrastructureMonitor</groupId>
             <artifactId>InfrastructureMonitor</artifactId>
             <version>1.0</version>
         </dependency>
+
         <dependency>
             <groupId>ifmo.escience.dapris.monitoring.datalayerMonitor</groupId>
             <artifactId>DataLayerMonitor</artifactId>
@@ -93,34 +96,34 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>java</executable>
-                    <includeProjectDependencies>true</includeProjectDependencies>
-                    <includePluginDependencies>false</includePluginDependencies>
-                    <classpathScope>compile</classpathScope>
-                    <mainClass>${storm.topology}</mainClass>
-                </configuration>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>exec-maven-plugin</artifactId>-->
+                <!--<version>1.2.1</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>exec</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<executable>java</executable>-->
+                    <!--<includeProjectDependencies>true</includeProjectDependencies>-->
+                    <!--<includePluginDependencies>false</includePluginDependencies>-->
+                    <!--<classpathScope>compile</classpathScope>-->
+                    <!--<mainClass>${storm.topology}</mainClass>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<source>1.8</source>-->
+                    <!--<target>1.8</target>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 </project>
