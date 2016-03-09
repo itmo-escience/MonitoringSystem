@@ -23,11 +23,13 @@
             <artifactId>Common</artifactId>
             <version>1.0</version>
         </dependency>
+
         <dependency>
-            <groupId>itmo.escience.dstorage.utils</groupId>
-            <artifactId>dstorage.Utils</artifactId>
-            <version>1.0</version>
+            <groupId>itmo.escience</groupId>
+            <artifactId>dstorage-utils</artifactId>
+            <version>0.0.1</version>
         </dependency>
+
 
     </dependencies>
 
@@ -43,11 +45,11 @@
                         <id>hack-binary</id>
                         <phase>validate</phase>
                         <configuration>
-                            <file>lib/dstorage.utils.jar</file>
+                            <file>${basedir}/lib/dstorage.utils.jar</file>
                             <repositoryLayout>default</repositoryLayout>
-                            <groupId>itmo.escience.dstorage.utils</groupId>
-                            <artifactId>dstorage.Utils</artifactId>
-                            <version>1.0</version>
+                            <groupId>itmo.escience</groupId>
+                            <artifactId>dstorage-utils</artifactId>
+                            <version>0.0.1</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>
                         </configuration>
