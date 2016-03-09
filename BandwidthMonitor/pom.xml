@@ -2,15 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!--<parent>-->
-        <!--<groupId>ifmo.escience.dapris.monitoring</groupId>-->
-        <!--<artifactId>monitoring</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--<relativePath>../pom.xml</relativePath>-->
-    <!--</parent>-->
+    <parent>
+        <groupId>ifmo.escience.dapris.monitoring</groupId>
+        <artifactId>monitoring</artifactId>
+        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-    <groupId>ifmo.escience.dapris.monitoring.bandwidthMonitor</groupId>
     <name>bandwidth-monitor</name>
+    <groupId>ifmo.escience.dapris.monitoring.bandwidthMonitor</groupId>
     <artifactId>BandwidthMonitor</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
@@ -32,25 +32,24 @@
     <build>
         <sourceDirectory>src</sourceDirectory>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>exec-maven-plugin</artifactId>-->
-                <!--<version>1.2.1</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>exec</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<configuration>-->
-                    <!--<executable>java</executable>-->
-                    <!--<includeProjectDependencies>true</includeProjectDependencies>-->
-                    <!--<includePluginDependencies>false</includePluginDependencies>-->
-                    <!--<classpathScope>compile</classpathScope>-->
-                    <!--<mainClass>${storm.topology}</mainClass>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <includeProjectDependencies>true</includeProjectDependencies>
+                    <includePluginDependencies>false</includePluginDependencies>
+                    <classpathScope>compile</classpathScope>
+                </configuration>
+            </plugin>
             <!--<plugin>-->
                 <!--<groupId>org.apache.maven.plugins</groupId>-->
                 <!--<artifactId>maven-compiler-plugin</artifactId>-->

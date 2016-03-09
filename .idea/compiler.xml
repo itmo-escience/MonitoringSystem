@@ -37,13 +37,6 @@
         <processorPath useClasspath="true" />
         <module name="InfrastructureMonitor" />
       </profile>
-      <profile default="false" name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
-        <module name="BandwidthMonitor" />
-      </profile>
       <profile default="false" name="Annotation profile for Common" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -72,9 +65,16 @@
         <processorPath useClasspath="true" />
         <module name="ProvenanceManager" />
       </profile>
+      <profile default="false" name="Annotation profile for BandwidthMonitor" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="BandwidthMonitor" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="BandwidthMonitor" target="1.5" />
+      <module name="BandwidthMonitor" target="1.8" />
       <module name="ClusterStateMonitor" target="1.8" />
       <module name="Common" target="1.8" />
       <module name="ComputationsMonitor" target="1.8" />

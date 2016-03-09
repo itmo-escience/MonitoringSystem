@@ -6,7 +6,6 @@ import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.javers.core.metamodel.annotation.Id;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Pavel Smirnov

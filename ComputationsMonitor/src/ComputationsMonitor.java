@@ -1,9 +1,6 @@
 package ifmo.escience.dapris.monitoring.computationsMonitor;
 
 import com.mongodb.BasicDBObject;
-import ifmo.escience.dapris.monitoring.computationsMonitor.IStateDataProvider;
-import ifmo.escience.dapris.monitoring.computationsMonitor.MesosRestClient;
-import ifmo.escience.dapris.monitoring.computationsMonitor.StateStructures.*;
 import ifmo.escience.dapris.monitoring.computationsMonitor.StateStructures.*;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
 import ifmo.escience.dapris.monitoring.common.Utils;

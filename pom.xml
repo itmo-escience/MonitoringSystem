@@ -41,10 +41,10 @@
         <module>Common</module>
         <module>BandwidthMonitor</module>
         <module>ComputationsMonitor</module>
-        <module>DatalayerMonitor</module>
+        <module>DataLayerMonitor</module>
         <module>InfrastructureMonitor</module>
         <module>ProvenanceManager</module>
-        <module>StormMetricsMonitor</module>
+        <!--<module>StormMetricsMonitor</module>-->
     </modules>
 
     <build>
@@ -65,7 +65,7 @@
                     <includeProjectDependencies>true</includeProjectDependencies>
                     <includePluginDependencies>false</includePluginDependencies>
                     <classpathScope>compile</classpathScope>
-                    <mainClass>${storm.topology}</mainClass>
+                    <!--<mainClass>${storm.topology}</mainClass>-->
                 </configuration>
             </plugin>
 

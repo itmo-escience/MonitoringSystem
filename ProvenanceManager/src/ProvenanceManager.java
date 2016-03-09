@@ -5,9 +5,9 @@ import ifmo.escience.dapris.common.entities.*;
 import ifmo.escience.dapris.common.entities.Task;
 import ifmo.escience.dapris.common.helpers.NodeStateDateComparator;
 import ifmo.escience.dapris.monitoring.common.CommonMongoClient;
-import ifmo.escience.dapris.monitoring.datalayerMonitor.DataLayerMonitor;
 import ifmo.escience.dapris.monitoring.computationsMonitor.ComputationsMonitor;
-import ifmo.escience.dapris.monitoring.computationsMonitor.StateStructures.ClusterState;
+import ifmo.escience.dapris.monitoring.computationsMonitor.StateStructures.*;
+import ifmo.escience.dapris.monitoring.datalayerMonitor.DataLayerMonitor;
 import ifmo.escience.dapris.monitoring.infrastructureMonitor.InfrastructureMonitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +38,6 @@ public class ProvenanceManager implements IRepository {
     public static void main(String[] args){
 
         ProvenanceManager repo = new ProvenanceManager(new CommonMongoClient());
-
 
         List<Task> tasks = new ArrayList<Task>(repo.getAllTasks());
         List<Node> nodes = new ArrayList<Node>(repo.getAllNodes());
