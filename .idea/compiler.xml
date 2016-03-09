@@ -44,13 +44,6 @@
         <processorPath useClasspath="true" />
         <module name="Common" />
       </profile>
-      <profile default="false" name="Annotation profile for ComputationsMonitor" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
-        <module name="ComputationsMonitor" />
-      </profile>
       <profile default="false" name="Annotation profile for DataLayerMonitor" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -72,16 +65,74 @@
         <processorPath useClasspath="true" />
         <module name="BandwidthMonitor" />
       </profile>
+      <profile default="false" name="Annotation profile for ComputationsMonitor (1)" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Annotation profile for BandwidthMonitor (1)" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Annotation profile for Common (1)" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Annotation profile for InfrastructureMonitor (1)" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Annotation profile for DataLayerMonitor (1)" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Annotation profile for ProvenanceManager (1)" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="ProvenanceManager (1)" />
+      </profile>
+      <profile default="false" name="Annotation profile for dstorage-utils" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="ComputationsMonitor" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="BandwidthMonitor" target="1.8" />
+      <module name="BandwidthMonitor (1)" target="1.8" />
       <module name="ClusterStateMonitor" target="1.8" />
       <module name="Common" target="1.8" />
-      <module name="ComputationsMonitor" target="1.8" />
+      <module name="Common (1)" target="1.8" />
+      <module name="ComputationsMonitor" target="1.5" />
+      <module name="ComputationsMonitor (1)" target="1.8" />
       <module name="DataLayerMonitor" target="1.8" />
+      <module name="DataLayerMonitor (1)" target="1.8" />
+      <module name="dstorage-utils" target="1.8" />
       <module name="InfrastructureMonitor" target="1.8" />
-      <module name="monitoring" target="1.8" />
+      <module name="InfrastructureMonitor (1)" target="1.8" />
+      <module name="monitoring" target="1.5" />
+      <module name="monitoring (1)" target="1.8" />
       <module name="ProvenanceManager" target="1.8" />
+      <module name="ProvenanceManager (1)" target="1.8" />
       <module name="StormMetricsMonitor" target="1.8" />
     </bytecodeTargetLevel>
   </component>

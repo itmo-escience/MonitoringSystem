@@ -26,11 +26,11 @@ public class BandwidthMonitor {
     private String collection = "bandwidths";
 
     public static void main(String[] args){
-        int minutes = 15;
+        int seconds = 15;
         if(args.length>0)
-            minutes = Integer.parseInt(args[0]);
+            seconds = Integer.parseInt(args[0]);
         BandwidthMonitor bandwidthMonitor = new BandwidthMonitor(new CommonMongoClient());
-        bandwidthMonitor.startMonitoring(minutes*60*1000);
+        bandwidthMonitor.startMonitoring(seconds*1000);
     }
 
     public BandwidthMonitor(CommonMongoClient commonMongoClient){

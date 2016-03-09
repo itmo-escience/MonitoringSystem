@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/DataLayerMonitor/DstorageMonitor.iml" filepath="$PROJECT_DIR$/DataLayerMonitor/DstorageMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/InfrastructureMonitor/InfrastructureMonitor.iml" filepath="$PROJECT_DIR$/InfrastructureMonitor/InfrastructureMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/ProvenanceManager/ProvenanceManager.iml" filepath="$PROJECT_DIR$/ProvenanceManager/ProvenanceManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dstorage-utils/ProvenanceManager (1).iml" filepath="$PROJECT_DIR$/dstorage-utils/ProvenanceManager (1).iml" />
       <module fileurl="file://$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" filepath="$PROJECT_DIR$/StormMetricsMonitor/StormMetricsMonitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/monitoring.iml" filepath="$PROJECT_DIR$/monitoring.iml" />
     </modules>
