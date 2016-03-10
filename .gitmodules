@@ -7,3 +7,6 @@
 [submodule "ProvenanceManager"]
 	path = ProvenanceManager
 	url = https://gitlab.com/CLAVIRE2/Monitoring.ProvenanceManager.git
+[submodule "InfrastructureMonitor"]
+	path = InfrastructureMonitor
+	url = https://gitlab.com/CLAVIRE2/Monitoring.InfrastructureMonitor.git
