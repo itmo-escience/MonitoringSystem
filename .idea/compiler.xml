@@ -65,12 +65,6 @@
         <processorPath useClasspath="true" />
         <module name="BandwidthMonitor" />
       </profile>
-      <profile default="false" name="Annotation profile for ComputationsMonitor (1)" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
-      </profile>
       <profile default="false" name="Annotation profile for BandwidthMonitor (1)" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -114,6 +108,7 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="ComputationsMonitor" />
+        <module name="ComputationsMonitor (1)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -123,7 +118,7 @@
       <module name="Common" target="1.8" />
       <module name="Common (1)" target="1.8" />
       <module name="ComputationsMonitor" target="1.5" />
-      <module name="ComputationsMonitor (1)" target="1.8" />
+      <module name="ComputationsMonitor (1)" target="1.5" />
       <module name="DataLayerMonitor" target="1.8" />
       <module name="DataLayerMonitor (1)" target="1.8" />
       <module name="dstorage-utils" target="1.8" />

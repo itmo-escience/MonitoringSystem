@@ -1,0 +1,9 @@
+[submodule "ComputationsMonitor"]
+	path = ComputationsMonitor
+	url = https://gitlab.com/CLAVIRE2/Monitoring.ComputationsMonitor.git
+[submodule "DatalayerMonitor"]
+	path = DatalayerMonitor
+	url = https://gitlab.com/CLAVIRE2/Monitoring.DatalayerMonitor.git
+[submodule "ProvenanceManager"]
+	path = ProvenanceManager
+	url = https://gitlab.com/CLAVIRE2/Monitoring.ProvenanceManager.git
